@@ -4,11 +4,25 @@
 
 window.enableAdapter = true; // enable adapter.js
 
+var roomName = '';
+var userName = '';
+var messageSplit = "::::H@moni@::split::::";
+var newMsgCnt = 0;		// 새 메세지 수
+
 document.getElementById('open-or-join-room').onclick = function() {
-    disableInputButtons();
+	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
+		$('#room-id').focus();
+		return;
+	}
+	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
+		$('#userName').focus();
+		return;
+	}
+	
+	disableInputButtons();
     connection.openOrJoin(document.getElementById('room-id').value, function(isRoomExists, roomid) {
         if (!isRoomExists) {
-            showRoomURL(roomid);
+//            showRoomURL(roomid);
         }
     });
 };
@@ -20,11 +34,14 @@ document.getElementById('btn-leave-room').onclick = function() {
         // use this method if you did NOT set "autoCloseEntireSession===true"
         // for more info: https://github.com/muaz-khan/RTCMultiConnection#closeentiresession
         connection.closeEntireSession(function() {
-            document.querySelector('h1').innerHTML = 'Entire session has been closed.';
+//			document.querySelector('h1').innerHTML = 'Entire session has been closed.';
+        	console.log('Entire session has been closed.');
         });
     } else {
         connection.leave();
     }
+    
+    location.reload();
 };
 
 // ......................................................
@@ -35,8 +52,15 @@ document.getElementById('share-file').onclick = function() {
     var fileSelector = new FileSelector();
     fileSelector.selectSingleFile(function(file) {
         connection.send(file);
+        
+        if(!$('#chat-container').data('value')) {
+        	$('.chatBtn').trigger('click');
+        }
     });
+    
 };
+
+
 
 document.getElementById('input-text-chat').onkeyup = function(e) {
     if (e.keyCode != 13) return;
@@ -45,21 +69,18 @@ document.getElementById('input-text-chat').onkeyup = function(e) {
     this.value = this.value.replace(/^\s+|\s+$/g, '');
     if (!this.value.length) return;
 
-    connection.send(this.value);
-    appendDIV(this.value);
+    connection.send(userName + messageSplit + this.value);
+    createMeMsgDiv(this.value);
     this.value = '';
 };
 
 var chatContainer = document.querySelector('.chat-output');
 
 function appendDIV(event) {
-    var div = document.createElement('div');
-    div.innerHTML = event.data || event;
-    chatContainer.insertBefore(div, chatContainer.firstChild);
-    div.tabIndex = 0;
-    div.focus();
-
-    document.getElementById('input-text-chat').focus();
+    if(event.data.indexOf(messageSplit) != -1){
+		createreceMsgDiv(event.data.split(messageSplit)[0], event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]);
+		newMsgCntFnc();
+    }
 }
 
 // ......................................................
@@ -91,19 +112,44 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
+	// 16명 까지만 가능 - view 설정이 완료되면 제거할 것
+	if($('.media-container').length + 1 > 16){
+		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
+		location.reload();
+	}
+	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
 
+    var width;
     var video = document.createElement('video');
+    
     video.controls = true;
+    
     if(event.type === 'local') {
+    	// 내 영상
         video.muted = true;
+        
+        video.id = "myVideo";
+        
+        roomName = $('#room-id').val();
+        userName = $('#userName').val();
+        
+        $('#joinRoom').css('display', 'block');
+        $('#createRoom').remove();
+        
+        
+//        width = 100;
+    }else{
+    	// 그 외
+    	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
+//    	width = 15;
     }
+    
     video.srcObject = event.stream;
 
-    var width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
     var mediaElement = getHTMLMediaElement(video, {
-        title: event.userid,
+        /*title: event.userid,*/
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
@@ -117,7 +163,8 @@ connection.onstream = function(event) {
     
     mediaElement.id = event.streamid;
     
-    console.log(' ---- event.userid : ' + event.userid);
+    $('body').css('overflow', 'hidden');
+    refreshVideoView();
 };
 
 connection.onstreamended = function(event) {
@@ -125,6 +172,7 @@ connection.onstreamended = function(event) {
     if (mediaElement) {
         mediaElement.parentNode.removeChild(mediaElement);
     }
+    refreshVideoView();
 };
 
 connection.onmessage = appendDIV;
@@ -140,9 +188,11 @@ connection.onopen = function() {
 
 connection.onclose = function() {
     if (connection.getAllParticipants().length) {
-        document.querySelector('h1').innerHTML = 'You are still connected with: ' + connection.getAllParticipants().join(', ');
+//		document.querySelector('h1').innerHTML = 'You are still connected with: ' + connection.getAllParticipants().join(', ');
+        console.log('You are still connected with: ' + connection.getAllParticipants().join(', '));
     } else {
-//        document.querySelector('h1').innerHTML = 'Seems session has been closed or all participants left.';
+//		document.querySelector('h1').innerHTML = 'Seems session has been closed or all participants left.';
+    	console.log('Seems session has been closed or all participants left.');
     }
 };
 
@@ -155,6 +205,7 @@ connection.onEntireSessionClosed = function(event) {
 //    document.getElementById('open-room').disabled = false;
 //    document.getElementById('join-room').disabled = false;
     document.getElementById('room-id').disabled = false;
+    document.getElementById('userName').disabled = false;
 
     connection.attachStreams.forEach(function(stream) {
         stream.stop();
@@ -162,7 +213,8 @@ connection.onEntireSessionClosed = function(event) {
 
     // don't display alert for moderator
     if (connection.userid === event.userid) return;
-    document.querySelector('h1').innerHTML = 'Entire session has been closed by the moderator: ' + event.userid;
+//	document.querySelector('h1').innerHTML = 'Entire session has been closed by the moderator: ' + event.userid;
+    console.log('Entire session has been closed by the moderator: ' + event.userid);
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
@@ -175,6 +227,7 @@ function disableInputButtons() {
 //    document.getElementById('open-room').disabled = true;
 //    document.getElementById('join-room').disabled = true;
     document.getElementById('room-id').disabled = true;
+    document.getElementById('userName').disabled = true;
 }
 
 // ......................................................
@@ -210,13 +263,16 @@ function showRoomURL(roomid) {
     window.params = params;
 })();
 
+// 접속시 room 명칭 설정
 var roomid = '';
 if (localStorage.getItem(connection.socketMessageEvent)) {
 	roomid = localStorage.getItem(connection.socketMessageEvent);
+//	console.log(' ::::: roomid // userName : ' + roomid + ' // ' + userName);
 } else {
 //	roomid = connection.token();
 }
 
+// roomid 자동입력
 document.getElementById('room-id').value = roomid;
 document.getElementById('room-id').onkeyup = function() {
     localStorage.setItem(connection.socketMessageEvent, this.value);
@@ -232,7 +288,7 @@ if (!roomid && hashString.length) {
     roomid = hashString;
 }
 
-if (roomid && roomid.length) {
+if (roomid && roomid.length && $('#userName').val() !==undefined && $('#userName').val().length) {
     document.getElementById('room-id').value = roomid;
     localStorage.setItem(connection.socketMessageEvent, roomid);
 
@@ -240,8 +296,21 @@ if (roomid && roomid.length) {
     (function reCheckRoomPresence() {
         connection.checkPresence(roomid, function(isRoomExists) {
             if (isRoomExists) {
+            	// 방이 있는 경우
                 connection.join(roomid);
+                
+                roomName = $('#room-id').val();
+                userName = $('#userName').val();
+                
+                $('#joinRoom').css('display', 'block');
+                $('#createRoom').remove();
+                
                 return;
+                
+            }else{
+            	// 방이 없는 경우
+            	alert('해당 그룹을 찾을 수 없습니다.');
+            	location.href = location.protocol + "//" + location.host;
             }
 
             setTimeout(reCheckRoomPresence, 5000);

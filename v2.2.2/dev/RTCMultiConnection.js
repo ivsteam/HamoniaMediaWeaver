@@ -199,6 +199,8 @@ window.RTCMultiConnection = function(channel) {
     };
 
     function joinSession(session, joinAs) {
+    	console.log(' -- joinSession');
+    	
         if (isString(session)) {
             connection.skipOnNewSession = true;
         }
@@ -656,6 +658,7 @@ window.RTCMultiConnection = function(channel) {
     }
 
     function onStreamSuccessCallback(stream, returnBack, idInstance, streamid, forcedConstraints, forcedCallback, isRemoveVideoTracks, screen_constraints, constraints, session) {
+    	console.log(' -- onStreamSuccessCallback');
         if (!streamid) streamid = getRandomString();
 
         connection.onstatechange({

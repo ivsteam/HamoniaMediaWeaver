@@ -323,7 +323,7 @@ function runServer() {
         console.log('------------------------------');
         console.log('Need help? http://bit.ly/2ff7QGk');
     });
-
+    
     require('./Signaling-Server.js')(app, function(socket) {
         try {
             var params = socket.handshake.query;
@@ -335,7 +335,7 @@ function runServer() {
             // connection.socketCustomEvent = 'custom-message';
             // var socket = connection.getSocket();
             // socket.emit(connection.socketCustomEvent, { test: true });
-
+            
             if (!params.socketCustomEvent) {
                 params.socketCustomEvent = 'custom-message';
             }

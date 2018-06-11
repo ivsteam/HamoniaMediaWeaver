@@ -51,5 +51,8 @@
     "grunt-htmlhint": "latest",
     "grunt-jsbeautifier": "latest",
     "grunt-bump": "latest"
+  },
+  "dependencies": {
+    "bootstrap-material-design-icons": "^2.2.0"
   }
 }

@@ -251,7 +251,7 @@ function sendMessageFnt(){
 	
     if (!$('#input-text-chat').val().length) return;
 
-    connection.send(userName + messageSplit + $('#input-text-chat').val());
+    connection.send(escape(userName) + messageSplit + escape($('#input-text-chat').val()));
     createMeMsgDiv($('#input-text-chat').val());
     $('#input-text-chat').val('');
     

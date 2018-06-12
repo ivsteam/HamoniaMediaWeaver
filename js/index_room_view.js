@@ -11,6 +11,9 @@ $(document).ready(function(){
 	windowReset();
 	defaultUISet();
 	
+	// file share 제거 - UX/UI 적용 후 제거
+	deleteFileshareFnt();
+	
 	
 	// 그룹명 input tag
 	$('#room-id').keydown(function(key) {
@@ -69,6 +72,14 @@ $(window).resize(function(){
 });
 
 
+
+
+// file share 제거 - UX/UI 적용 후 제거
+function deleteFileshareFnt(){
+	$('#file-container').hide();
+	$('#share-file').hide();
+	$('.chat-output').css('height', 'calc(100% - 40px)');
+}
 
 
 /**** UI start ****/

@@ -81,7 +81,8 @@ var options = {
 
 // You don't need to change anything below
 
-var server = require(isUseHTTPs ? 'https' : 'http');
+//var server = require(isUseHTTPs ? 'https' : 'http');
+var server = require('https');
 var url = require('url');
 
 function serverHandler(request, response) {
@@ -230,13 +231,28 @@ function serverHandler(request, response) {
     }
 }
 
+
+// http -> https porwording start
+var express = require('express');
 var app;
+var http_app;
+var http = require('http');
+var HTTP_PORT = 80;
+
+http_app = express();
+http_app.set('port', port);
 
 if (isUseHTTPs) {
     app = server.createServer(options, serverHandler);
-} else {
-    app = server.createServer(serverHandler);
+    
+//} else {
+//	http_app = server.createServer(serverHandler);
+    
+    http_app = express();
+    http_app.set('port', port);
 }
+// http -> https porwording end
+
 
 function cmd_exec(cmd, args, cb_stdout, cb_end) {
     var spawn = require('child_process').spawn,
@@ -275,7 +291,7 @@ function runServer() {
 
             var socketURL = (isUseHTTPs ? 'https' : 'http') + '://' + e.address + ':' + e.port + '/';
 
-            console.log('------------------------------');
+            console.log('------------------------------ socketURL : ' + socketURL);
             console.log('\x1b[31m%s\x1b[0m ', 'Unable to listen on port: ' + e.port);
             console.log('\x1b[31m%s\x1b[0m ', socketURL + ' is already in use. Please kill below processes using "kill PID".');
             console.log('------------------------------');
@@ -302,7 +318,7 @@ function runServer() {
 
         var domainURL = (isUseHTTPs ? 'https' : 'http') + '://' + addr.address + ':' + addr.port + '/';
 
-        console.log('------------------------------');
+        console.log('------------------------------ domainURL : ' + domainURL);
 
         console.log('socket.io is listening at:');
         console.log('\x1b[31m%s\x1b[0m ', '\t' + domainURL);
@@ -347,6 +363,29 @@ function runServer() {
             });
         } catch (e) {}
     });
+    
+    
+    // http -> https porwording start
+    http_app.all('/*', function(req, res, next) {
+    	if (/^http$/.test(req.protocol)) {
+    		var host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
+
+    		if ((port != null) && port !== port) {
+//    			console.log(' -- 1111');
+    			return res.redirect("https://" + host + ":" + port + req.url, 301);
+    		} else {
+//    			console.log(' -- 2222');
+    			return res.redirect("https://" + host + req.url, 301);
+    		}
+    	} else {
+    		return next();
+    	}
+    });
+
+    http.createServer(http_app).listen(HTTP_PORT).on('listening', function() {
+    	return console.log("HTTP to HTTPS redirect app launched.");
+    });
+    // http -> https porwording end
 }
 
 if (autoRebootServerOnFailure) {

@@ -69,8 +69,8 @@ document.getElementById('input-text-chat').onkeyup = function(e) {
     // removing trailing/leading whitespace
     this.value = this.value.replace(/^\s+|\s+$/g, '');
     if (!this.value.length) return;
-
-    connection.send(userName + messageSplit + this.value);
+    
+    connection.send(escape(userName) + messageSplit + escape(this.value));
     createMeMsgDiv(this.value);
     this.value = '';
 };
@@ -78,8 +78,9 @@ document.getElementById('input-text-chat').onkeyup = function(e) {
 var chatContainer = document.querySelector('.chat-output');
 
 function appendDIV(event) {
+	console.log(' ------ event.data : ' + unescape(event.data));
     if(event.data.indexOf(messageSplit) != -1){
-		createreceMsgDiv(event.data.split(messageSplit)[0], event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]);
+		createreceMsgDiv(unescape(event.data.split(messageSplit)[0]), unescape(event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]));
 		newMsgCntFnc();
     }
 }

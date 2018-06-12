@@ -50,6 +50,12 @@ $(document).ready(function(){
 	});
 	
 	
+	// 메뉴 버튼
+	$('#menuBtn').click(function(){
+		menuFnc($(this).data('value'));
+	});
+	
+	
 	// 초대 버튼
 	$('#invite').click(function(){
 		inviteFnt();
@@ -123,8 +129,7 @@ function defaultUISet(){
 			// 메뉴
 			$('#menuDiv').css('padding', '.5rem');
 			$('#menuDiv .btn').css('width', '50px').css('height', '50px');
-			$('#chat-container .btn').css('width', '50px').css('height', '50px');
-			$('#share-file').css('top', '4rem').css('right', '.5rem');
+			$('#share-file').css('top', '4rem').css('right', '.5rem').css('width', '50px').css('height', '50px');
 			
 			// 채팅
 			$('#chat-container').css('min-width', '0').css('width', '0.001px');
@@ -133,6 +138,9 @@ function defaultUISet(){
 			$('#myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo');
 		}else{
 			//alert("PC");
+			$('#menuBtn').remove();
+			$('#menuDiv').css('top', '1rem');
+			$('.menuLineDiv').css('display', 'inline-block');
 		}
 		
 		// 영상 전체화면 아이콘
@@ -215,17 +223,17 @@ function chattingDivFnt(){
 		if(checkmob){
 //			alert("Mobile");
 			if($('#chat-container').data('value')){
-				$('#invite').css('top', '0');
-				$('#btn-leave-room').css('top', '0');
+				$('#menuDiv').css('top', '-65px');
 				
 				$('#chat-container').css('width', '0.001px').css('left', $(window).width() + 'px');
 				$('#chat-container').data('value' , false);
 			}else{
-				$('#invite').css('top', '-60px');
-				$('#btn-leave-room').css('top', '-60px');
+				$('#menuDiv').css('top', '-130px');
 				
 				$('#chat-container').css('width', $(window).width() + 'px').css('left', '0px');
 				$('#chat-container').data('value' , true);
+				
+				$('#menuBtn').data('value' , false);
 			}
 		}else{
 //			alert("PC");
@@ -243,7 +251,7 @@ function chattingDivFnt(){
 		}
 	}
 	
-	// new message count removr
+	// new message count remove
 	if(newMsgCnt != 0){
 		newMsgCnt = 0;
 		$('.msgCntDiv').css('display', 'none');
@@ -290,6 +298,52 @@ function volumeUIFnt(){
 		$('.buttonVolume').removeClass('md-volume-off');
 		$('.buttonVolume').addClass('md-volume-up');
 	}
+}
+
+
+//전체화면
+var fsCheck = false;
+function goFullscreen(data){
+	var fullscreenTarget = document.getElementById('page-top');
+	
+	if (fsCheck) { 
+		if(document.exitFullscreen) {
+		    document.exitFullscreen();
+		} else if(document.webkitExitFullscreen) {
+		    document.webkitExitFullscreen();
+		} else if(document.mozCancelFullScreen) {
+		    document.mozCancelFullScreen();
+		} else if(document.msExitFullscreen) {
+		    document.msExitFullscreen();
+		}
+		$(data).attr('class', $(data).attr('class').replace('-exit', ''));
+		fsCheck = false;
+	} else {
+		if (fullscreenTarget.requestFullscreen) {
+		    fullscreenTarget.requestFullscreen();
+		} else if (fullscreenTarget.webkitRequestFullScreen) {
+		    fullscreenTarget.webkitRequestFullScreen();
+		} else if (fullscreenTarget.mozRequestFullScreen) {
+		    fullscreenTarget.mozRequestFullScreen();
+		} else if (fullscreenTarget.msRequestFullscreen) {
+		    fullscreenTarget.msRequestFullscreen();
+		}
+		$(data).attr('class', $(data).attr('class').replace('md-fullscreen', 'md-fullscreen-exit'));
+		fsCheck = true;
+	}
+}
+
+
+//메뉴 버튼
+function menuFnc(check){
+	if(check){
+		$('#menuDiv').css('top', '-65px');
+		$('#menuBtn').data('value', false);
+	}else{
+		$('#menuDiv').css('top', '.5rem');
+		$('#menuBtn').data('value', true);
+	}
+	
 }
 
 

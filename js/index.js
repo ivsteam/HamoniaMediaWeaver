@@ -120,10 +120,10 @@ connection.onstream = function(event) {
     }
     
 	// 16명 까지만 가능 - view 설정이 완료되면 제거할 것
-	if($('.media-container').length + 1 > 16){
-		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
-		location.reload();
-	}
+//	if($('.media-container').length + 1 > 16){
+//		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
+//		location.reload();
+//	}
 	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');

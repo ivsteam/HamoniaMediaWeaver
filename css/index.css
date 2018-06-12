@@ -285,11 +285,15 @@ video {
 
 #menuDiv {
 	padding: 1rem;
+	padding-top: 0;
 	position: absolute;
 	right: 0;
-	top: 0;
+	text-align: right;
+	top: -65px;
 	z-index: 7;
 }
+.menuLineDiv { margin-bottom: 8px; }
+.menuLineDiv:first-child { margin-bottom: 20px; }
 /* menu end */
 
 

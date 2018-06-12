@@ -44,7 +44,8 @@
 	<script src="/dev/getHTMLMediaElement.js"></script>
 	<script src="/dev/FileBufferReader.js"></script>
 </head>
-<body>
+
+<body id="page-top">
 	
 	<!-- main page start -->
 	<div id="createRoom">
@@ -159,28 +160,46 @@
 			<!-- 메뉴 -->
 			<div id="menuDiv">
 				
-				<!-- 종료 -->
-				<button class="btn btn--xl btn--red btn--fab mdi md-call-end" id="btn-leave-room" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
-				</button>
+				<div class="menuLineDiv">
+					<!-- 종료 -->
+					<button class="btn btn--xl btn--red btn--fab mdi md-call-end" id="btn-leave-room" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+						<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
+					</button>
+					
+					<!-- 초대 -->
+					<button class="btn btn--xl btn--pink btn--fab mdi md-quick-contacts-dialer" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+						<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
+					</button>
+					
+					<!-- 전체화면 -->
+					<!-- 
+					<button class="mobNone btn btn--xl btn--green btn--fab mdi md-fullscreen" onclick="goFullscreen(this)" title="Full screen" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+						<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+					</button>
+					-->
+					
+					<!-- 볼륨 버튼 -->
+					<button class="btn btn--xl btn--blue btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+						<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+					</button>
+				</div>
 				
-				<!-- 초대 -->
-				<button class="btn btn--xl btn--brown btn--fab mdi md-quick-contacts-dialer" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-					<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
-				</button>
+				<div class="menuLineDiv">
+					<!-- 메뉴 -->
+					<button class="btn btn--xl btn--orange btn--fab mdi md-menu allManu" id="menuBtn" data-value="false" style="position: relative; font-size: 1.9rem;">
+						<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+					</button>
+				</div>
 				
-				<!-- 볼륨 버튼 -->
-				<button class="btn btn--xl btn--teal btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
-				</button>
-				
-				<!-- 채팅 open/close -->
-				<button class="btn btn--xl btn--blue btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
-					<div class="msgCntDiv" style="display: none;">
-						<span>0</span>
-					</div>
-					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
-				</button>
+				<div class="menuLineDiv">
+					<!-- 채팅 open/close -->
+					<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
+						<div class="msgCntDiv" style="display: none;">
+							<span>0</span>
+						</div>
+						<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+					</button>
+				</div>
 				
 			</div>
 		</div>
@@ -192,7 +211,7 @@
 		<div id="chat-container" data-value="false">
 			
 			<!-- 파일공유 -->
-			<button class="btn btn--xl btn--orange btn--fab mdi md-file-upload" id="share-file" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+			<button class="btn btn--xl btn--purple btn--fab mdi md-file-upload" id="share-file" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 				<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
 			</button>
 			

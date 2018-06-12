@@ -78,7 +78,7 @@ $(window).resize(function(){
 function deleteFileshareFnt(){
 	$('#file-container').hide();
 	$('#share-file').hide();
-	$('.chat-output').css('height', 'calc(100% - 40px)');
+	$('.chat-output').css('height', 'calc(100% - 40px)').css('padding-top', '65px;');
 }
 
 

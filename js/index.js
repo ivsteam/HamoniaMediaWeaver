@@ -160,6 +160,7 @@ connection.onstream = function(event) {
 //        width = 100;
     }else{
     	// 그 외
+    	video.id = event.userid;
     	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
 //    	width = 15;
     }
@@ -185,19 +186,19 @@ connection.onstream = function(event) {
     refreshVideoView();
 };
 
-// 연결종료
 connection.onstreamended = function(event) {
+	console.log(' ---- onstreamended : ');
     var mediaElement = document.getElementById(event.streamid);
     if (mediaElement) {
         mediaElement.parentNode.removeChild(mediaElement);
     }
-    refreshVideoView();
 };
 
 connection.onmessage = appendDIV;
 connection.filesContainer = document.getElementById('file-container');
 
 connection.onopen = function() {
+	console.log(' ---- onopen : ');
     document.getElementById('share-file').disabled = false;
     document.getElementById('input-text-chat').disabled = false;
     document.getElementById('btn-leave-room').disabled = false;
@@ -205,7 +206,8 @@ connection.onopen = function() {
 //    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
 
-connection.onclose = function() {
+connection.onclose = function(event) {
+//	console.log(' ---- onclose : ' + connection.userid + ' // ' + event.userid);
     if (connection.getAllParticipants().length) {
 //		document.querySelector('h1').innerHTML = 'You are still connected with: ' + connection.getAllParticipants().join(', ');
         console.log('You are still connected with: ' + connection.getAllParticipants().join(', '));
@@ -213,14 +215,18 @@ connection.onclose = function() {
 //		document.querySelector('h1').innerHTML = 'Seems session has been closed or all participants left.';
     	console.log('Seems session has been closed or all participants left.');
     }
+    
+    // safari video delete
+    $('#'+event.userid).parent('.media-box').parent('.media-container').remove();
 };
 
 connection.onEntireSessionClosed = function(event) {
+	console.log(' ---- onEntireSessionClosed : ');
     document.getElementById('share-file').disabled = true;
     document.getElementById('input-text-chat').disabled = true;
 //    document.getElementById('btn-leave-room').disabled = true;
 
-    document.getElementById('open-or-join-room').disabled = false;
+//    document.getElementById('open-or-join-room').disabled = false;
 //    document.getElementById('open-room').disabled = false;
 //    document.getElementById('join-room').disabled = false;
     document.getElementById('room-id').disabled = false;
@@ -237,6 +243,7 @@ connection.onEntireSessionClosed = function(event) {
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
+	console.log(' ---- onUserIdAlreadyTaken : ');
     // seems room is already opened
     connection.join(useridAlreadyTaken);
 };

@@ -159,7 +159,7 @@ video {
 	left: 0px;
 	position: absolute;
 	top: 0px;
-	z-index: 1;
+	z-index: 5;
 }
 #logo img { height: 100%;}
 
@@ -288,8 +288,10 @@ video {
 	position: absolute;
 	right: 0;
 	top: 0;
+	z-index: 7;
 }
 /* menu end */
+
 
 /* video start */
 #videos-container { 
@@ -300,7 +302,8 @@ video {
 	bottom: 0;
 	position: relative;
 	width: 50%; 
-	/* position: absolute; */ 
+	/* position: absolute; */
+	z-index: 1; 
 }
 .media-container .media-box video {
 	height: 100%;
@@ -308,7 +311,14 @@ video {
 }
 .media-controls { display: none; }
 .media-box { height: 100%; }
+
+.media-container.mainVideo {
+	height: 100% !important;
+	width: 100%  !important;
+	z-index: 0;
+}
 /* video end */
+
 
 /* chat start */
 /* chat new message count */
@@ -340,6 +350,7 @@ video {
 	position: absolute;
 	top: 0;
 	width: 25%;
+	z-index: 1;
 }
 .chat-output {
 	background-color: rgb(244, 247, 253);

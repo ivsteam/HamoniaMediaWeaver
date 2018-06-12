@@ -65,10 +65,15 @@ $(document).ready(function(){
 		clipboardBtn();
 	});
 	
-	
 	// 초대창 닫기 버튼
 	$('#inviteAlertNoBtn').click(function(){
 		inviteFnt();
+	});
+	
+	
+	// 모바일 선택영상 크게 보기
+	$('#videos-container').on('click', '.media-container', function(){
+		changeVideo(this);
 	});
 });
 
@@ -125,7 +130,7 @@ function defaultUISet(){
 			$('#chat-container').css('min-width', '0').css('width', '0.001px');
 			
 			// 영상
-			$('#myVideo').parent('.media-box').parent('.media-container').css('width', '100%');
+			$('#myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo');
 		}else{
 			//alert("PC");
 		}
@@ -151,6 +156,8 @@ function refreshVideoView(){
     	if(checkmob){
     		// mob video css
     		
+    		$('.mainVideo').removeClass('mainVideo');
+    		
     		if(cnt <= 4){
     			// 본인 포함 4명 이하
     			var idx = 0;
@@ -165,7 +172,7 @@ function refreshVideoView(){
     			}
     			
     			// 본인
-    			$('.media-container #myVideo').parent('.media-box').parent('.media-container').css('width', '100%').css('height', '100%');
+    			$('.media-container #myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo').css('left', '');
     			
     		}else{
     			// 본인 포함 5명 이상
@@ -327,6 +334,32 @@ function clipboardBtn() {
  	alert('이 브라우저는 지원하지 않습니다.');
 	}
 }
+
+
+// 모바일 선택영상 크게 보기
+function changeVideo(videoDiv){
+	// 모바일체크
+	if(navigator.platform){
+		if(!checkmob){
+			return;
+		}
+	}
+	// 영상수체크
+	if($('.media-container').length > 4){
+		return;
+	}
+	
+	// 화면크기체크
+	if($(videoDiv)[0].style.width == '100%'){
+		return
+	}
+	
+	var leftVal = $(videoDiv).eq(0).css('left');
+	
+	$('.mainVideo').removeClass('mainVideo').css('left', leftVal);
+	$(videoDiv).eq(0).addClass('mainVideo').css('left', '');
+}
+
 
 /**** 채팅 start ****/
 //시간설정

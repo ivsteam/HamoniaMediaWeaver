@@ -39,6 +39,16 @@ $(document).ready(function(){
 		sendMessageFnt();
 	});
 	
+	
+	// 볼륨 버튼
+	$('.md-volume-up').click(function(){
+		localStream.getAudioTracks()[0].enabled = !(localStream.getAudioTracks()[0].enabled);
+		
+		// 아이콘변경
+		volumeUIFnt();
+	});
+	
+	
 	// 초대 버튼
 	$('#invite').click(function(){
 		inviteFnt();
@@ -78,7 +88,13 @@ $(window).resize(function(){
 function deleteFileshareFnt(){
 	$('#file-container').hide();
 	$('#share-file').hide();
-	$('.chat-output').css('height', 'calc(100% - 40px)').css('padding-top', '65px;');
+	$('.chat-output').css('height', 'calc(100% - 40px)');
+	
+	if(navigator.platform){
+		if(checkmob){
+			$('.chat-output').css('padding-top', '65px');
+		}
+	}
 }
 
 
@@ -234,6 +250,19 @@ function newMsgCntFnc(){
 		$('.msgCntDiv > span').text(newMsgCnt);
 	}
 }
+
+
+//볼륨 off 버튼 UI
+function volumeUIFnt(){
+	if($('.buttonVolume').hasClass('md-volume-up')){
+		$('.buttonVolume').removeClass('md-volume-up');
+		$('.buttonVolume').addClass('md-volume-off');
+	}else if($('.buttonVolume').hasClass('md-volume-off')){
+		$('.buttonVolume').removeClass('md-volume-off');
+		$('.buttonVolume').addClass('md-volume-up');
+	}
+}
+
 
 // 초대 버튼 , 초대창 닫기 버튼
 function inviteFnt(){

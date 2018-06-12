@@ -4,6 +4,7 @@
 
 window.enableAdapter = true; // enable adapter.js
 
+var localStream;
 var roomName = '';
 var userName = '';
 var messageSplit = "::::H@moni@::split::::";
@@ -143,6 +144,9 @@ connection.onstream = function(event) {
     if(event.type === 'local') {
     	// 내 영상
     	video.volume = 0;
+    	
+		localStream = event.stream;
+    	
         try {
             video.setAttributeNode(document.createAttribute('muted'));
         } catch (e) {

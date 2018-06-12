@@ -6,6 +6,7 @@ var filter = "win16|win32|win64|mac|linux x86_32|linux x86_64|macintel";
 var checkmob = 0 > filter.indexOf(navigator.platform.toLowerCase());
 //var checkmob = true;	// true is mobile
 
+
 $(document).ready(function(){
 	// set UI
 	windowReset();
@@ -149,7 +150,28 @@ function refreshVideoView(){
 	if(navigator.platform){
     	if(checkmob){
     		// mob video css
-    		videoDiv.css('width', '100%').css('height', '100%');
+    		
+    		if(cnt <= 4){
+    			// 본인 포함 4명 이하
+    			var idx = 0;
+    			
+    			videoDiv.css('position', 'absolute').css('width', '33.3333%').css('height', '20%');
+    			
+    			for(var i=0 ; i<cnt ; ++i){
+    				if(videoDiv.eq(i).find('#myVideo').attr('id') === undefined){
+    					videoDiv.eq(i).css('left', (idx * 33.3333) + '%');
+    					++idx;
+    				}
+    			}
+    			
+    			// 본인
+    			$('.media-container #myVideo').parent('.media-box').parent('.media-container').css('width', '100%').css('height', '100%');
+    			
+    		}else{
+    			// 본인 포함 5명 이상
+    			videoDiv.css('left', '').css('position', 'relative').css('width', '50%').css('height', ( 100 / parseInt(cnt / 2 + cnt % 2)) + '%');
+    		}
+    		
     	}else{
     		// web video css - 수식으로 변경 필요
     		

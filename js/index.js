@@ -222,6 +222,7 @@ connection.onclose = function(event) {
     
     // safari video delete
     $('#'+event.userid).parent('.media-box').parent('.media-container').remove();
+	refreshVideoView();
 };
 
 connection.onEntireSessionClosed = function(event) {

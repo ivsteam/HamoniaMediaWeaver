@@ -112,6 +112,11 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
+	var existing = document.getElementById(event.streamid);
+    if(existing && existing.parentNode) {
+      existing.parentNode.removeChild(existing);
+    }
+    
 	// 16명 까지만 가능 - view 설정이 완료되면 제거할 것
 	if($('.media-container').length + 1 > 16){
 		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
@@ -120,15 +125,29 @@ connection.onstream = function(event) {
 	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
+    event.mediaElement.muted = true;
 
     var width;
     var video = document.createElement('video');
     
-    video.controls = true;
+//    video.controls = true;
+    
+    try {
+        video.setAttributeNode(document.createAttribute('autoplay'));
+        video.setAttributeNode(document.createAttribute('playsinline'));
+    } catch (e) {
+        video.setAttribute('autoplay', true);
+        video.setAttribute('playsinline', true);
+    }
     
     if(event.type === 'local') {
     	// 내 영상
-        video.muted = true;
+    	video.volume = 0;
+        try {
+            video.setAttributeNode(document.createAttribute('muted'));
+        } catch (e) {
+            video.setAttribute('muted', true);
+        }
         
         video.id = "myVideo";
         
@@ -137,7 +156,6 @@ connection.onstream = function(event) {
         
         $('#joinRoom').css('display', 'block');
         $('#createRoom').remove();
-        
         
 //        width = 100;
     }else{
@@ -167,6 +185,7 @@ connection.onstream = function(event) {
     refreshVideoView();
 };
 
+// 연결종료
 connection.onstreamended = function(event) {
     var mediaElement = document.getElementById(event.streamid);
     if (mediaElement) {
@@ -199,7 +218,7 @@ connection.onclose = function() {
 connection.onEntireSessionClosed = function(event) {
     document.getElementById('share-file').disabled = true;
     document.getElementById('input-text-chat').disabled = true;
-    document.getElementById('btn-leave-room').disabled = true;
+//    document.getElementById('btn-leave-room').disabled = true;
 
     document.getElementById('open-or-join-room').disabled = false;
 //    document.getElementById('open-room').disabled = false;

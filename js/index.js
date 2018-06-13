@@ -114,11 +114,38 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
+	
+	// os 및 browser 체크
+	var agt = navigator.userAgent.toLowerCase();
+	var text = '';
+	
+	if (agt.indexOf("chrome") != -1)			text = 'Chrome';
+	else if (agt.indexOf("opera") != -1)		text = 'Opera';
+	else if (agt.indexOf("staroffice") != -1)	text = 'Star Office';
+	else if (agt.indexOf("webtv") != -1)		text = 'WebTV';
+	else if (agt.indexOf("beonex") != -1)	text = 'Beonex';
+	else if (agt.indexOf("chimera") != -1)	text = 'Chimera';
+	else if (agt.indexOf("netpositive") != -1)text = 'NetPositive';
+	else if (agt.indexOf("phoenix") != -1)	text = 'Phoenix';
+	else if (agt.indexOf("firefox") != -1)		text = 'Firefox';
+	else if (agt.indexOf("safari") != -1)		text = 'Safari';
+	else if (agt.indexOf("skipstone") != -1)	text = 'SkipStone';
+	else if (agt.indexOf("netscape") != -1)	text = 'Netscape';
+	else if (agt.indexOf("mozilla/5.0") != -1)	text = 'Mozilla';
+	
+	console.log(' ---- text : ' + text);
+
+	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
+		alert('iOS Safari 는 지원 예정입니다.');
+		location.reload();
+	}
+	
+	
 	var existing = document.getElementById(event.streamid);
-    if(existing && existing.parentNode) {
-      existing.parentNode.removeChild(existing);
-    }
-    
+	if(existing && existing.parentNode) {
+		existing.parentNode.removeChild(existing);
+	}
+
 	// 16명 까지만 가능 - view 설정이 완료되면 제거할 것
 //	if($('.media-container').length + 1 > 16){
 //		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
@@ -131,7 +158,9 @@ connection.onstream = function(event) {
     var width;
     var video = document.createElement('video');
     
-    video.controls = true;
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
+		video.controls = true;
+	}
     
     if(event.type === 'local') {
     	// 내 영상

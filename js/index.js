@@ -127,34 +127,18 @@ connection.onstream = function(event) {
 	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
-    event.mediaElement.muted = true;
 
     var width;
     var video = document.createElement('video');
     
-//    video.controls = true;
-    
-    try {
-        video.setAttributeNode(document.createAttribute('autoplay'));
-        video.setAttributeNode(document.createAttribute('playsinline'));
-    } catch (e) {
-        video.setAttribute('autoplay', true);
-        video.setAttribute('playsinline', true);
-    }
+    video.controls = true;
     
     if(event.type === 'local') {
     	// 내 영상
-    	video.volume = 0;
+        video.muted = true;
+        video.id = "myVideo";
     	
 		localStream = event.stream;
-    	
-        try {
-            video.setAttributeNode(document.createAttribute('muted'));
-        } catch (e) {
-            video.setAttribute('muted', true);
-        }
-        
-        video.id = "myVideo";
         
         roomName = $('#room-id').val();
         userName = $('#userName').val();
@@ -173,7 +157,7 @@ connection.onstream = function(event) {
     video.srcObject = event.stream;
 
     var mediaElement = getHTMLMediaElement(video, {
-        /*title: event.userid,*/
+        title: event.userid,
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
@@ -235,8 +219,8 @@ connection.onEntireSessionClosed = function(event) {
 //    document.getElementById('open-or-join-room').disabled = false;
 //    document.getElementById('open-room').disabled = false;
 //    document.getElementById('join-room').disabled = false;
-    document.getElementById('room-id').disabled = false;
-    document.getElementById('userName').disabled = false;
+//    document.getElementById('room-id').disabled = false;
+//    document.getElementById('userName').disabled = false;
 
     connection.attachStreams.forEach(function(stream) {
         stream.stop();
@@ -246,6 +230,8 @@ connection.onEntireSessionClosed = function(event) {
     if (connection.userid === event.userid) return;
 //	document.querySelector('h1').innerHTML = 'Entire session has been closed by the moderator: ' + event.userid;
     console.log('Entire session has been closed by the moderator: ' + event.userid);
+    
+    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.reload();
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {

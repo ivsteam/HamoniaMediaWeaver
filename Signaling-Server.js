@@ -49,6 +49,7 @@ module.exports = exports = function(app, socketCallback) {
     // io.set('origins', 'https://domain.com');
 
     function appendUser(socket) {
+    	console.log(' ---- appendUser() ');
         var alreadyExist = listOfUsers[socket.userid];
         var extra = {};
 
@@ -68,7 +69,7 @@ module.exports = exports = function(app, socketCallback) {
                 extra = params.extra;
             }
         }
-
+        
         listOfUsers[socket.userid] = {
             socket: socket,
             connectedWith: {},
@@ -79,12 +80,13 @@ module.exports = exports = function(app, socketCallback) {
     }
 
     function onConnection(socket) {
+    	console.log(' ---- onConnection() ');
         var params = socket.handshake.query;
         var socketMessageEvent = params.msgEvent || 'RTCMultiConnection-Message';
 
         var sessionid = params.sessionid;
         var autoCloseEntireSession = params.autoCloseEntireSession;
-
+        
         if (params.enableScalableBroadcast) {
             if (!ScalableBroadcast) {
                 ScalableBroadcast = require('./Scalable-Broadcast.js');
@@ -110,10 +112,12 @@ module.exports = exports = function(app, socketCallback) {
         }
 
         socket.on('shift-moderator-control-on-disconnect', function() {
+        	console.log(' ---- shift-moderator-control-on-disconnect ');
             socket.shiftModerationControlBeforeLeaving = true;
         });
 
         socket.on('extra-data-updated', function(extra) {
+        	console.log(' ---- extra-data-updated ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].extra = extra;
@@ -127,6 +131,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('get-remote-user-extra-data', function(remoteUserId, callback) {
+        	console.log(' ---- get-remote-user-extra-data ');
             callback = callback || function() {};
             if (!remoteUserId || !listOfUsers[remoteUserId]) {
                 callback('remoteUserId (' + remoteUserId + ') does NOT exist.');
@@ -136,6 +141,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('become-a-public-moderator', function() {
+        	console.log(' ---- become-a-public-moderator ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = true;
@@ -146,6 +152,7 @@ module.exports = exports = function(app, socketCallback) {
 
         var dontDuplicateListeners = {};
         socket.on('set-custom-socket-event-listener', function(customEvent) {
+        	console.log(' ---- set-custom-socket-event-listener ');
             if (dontDuplicateListeners[customEvent]) return;
             dontDuplicateListeners[customEvent] = customEvent;
 
@@ -157,6 +164,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('dont-make-me-moderator', function() {
+        	console.log(' ---- dont-make-me-moderator ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = false;
@@ -166,6 +174,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('get-public-moderators', function(userIdStartsWith, callback) {
+        	console.log(' ---- get-public-moderators ');
             try {
                 userIdStartsWith = userIdStartsWith || '';
                 var allPublicModerators = [];
@@ -186,6 +195,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('changed-uuid', function(newUserId, callback) {
+        	console.log(' ---- changed-uuid ');
             callback = callback || function() {};
 
             if (params.dontUpdateUserId) {
@@ -216,6 +226,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('set-password', function(password) {
+        	console.log(' ---- set-password ');
             try {
                 if (listOfUsers[socket.userid]) {
                     listOfUsers[socket.userid].password = password;
@@ -226,6 +237,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('disconnect-with', function(remoteUserId, callback) {
+        	console.log(' ---- disconnect-with ');
             try {
                 if (listOfUsers[socket.userid] && listOfUsers[socket.userid].connectedWith[remoteUserId]) {
                     delete listOfUsers[socket.userid].connectedWith[remoteUserId];
@@ -245,6 +257,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('close-entire-session', function(callback) {
+        	console.log(' ---- close-entire-session ');
             try {
                 var connectedWith = listOfUsers[socket.userid].connectedWith;
                 Object.keys(connectedWith).forEach(function(key) {
@@ -263,6 +276,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('check-presence', function(userid, callback) {
+        	console.log(' ---- check-presence ');
             if (!listOfUsers[userid]) {
                 callback(false, userid, {});
             } else {
@@ -308,6 +322,8 @@ module.exports = exports = function(app, socketCallback) {
         }
 
         function joinARoom(message) {
+        	console.log(' ---- joinARoom() : ' + message);
+        	
             var roomInitiator = listOfUsers[message.remoteUserId];
 
             if (!roomInitiator) {
@@ -348,6 +364,8 @@ module.exports = exports = function(app, socketCallback) {
 
         var numberOfPasswordTries = 0;
         socket.on(socketMessageEvent, function(message, callback) {
+        	console.log(' ---- ???? ' + socketMessageEvent + ' : ' + message);
+        	
             if (message.remoteUserId && message.remoteUserId === socket.userid) {
                 // remoteUserId MUST be unique
                 return;
@@ -446,6 +464,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('disconnect', function() {
+        	console.log(' ---- disconnect ');
             try {
                 if (socket && socket.namespace && socket.namespace.sockets) {
                     delete socket.namespace.sockets[this.id];

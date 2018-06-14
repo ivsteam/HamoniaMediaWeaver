@@ -11,6 +11,31 @@ var messageSplit = "::::H@moni@::split::::";
 var newMsgCnt = 0;		// 새 메세지 수
 
 document.getElementById('open-or-join-room').onclick = function() {
+	// os 및 browser 체크
+	var agt = navigator.userAgent.toLowerCase();
+	var text = '';
+	
+	if (agt.indexOf("chrome") != -1)			text = 'Chrome';
+	else if (agt.indexOf("opera") != -1)		text = 'Opera';
+	else if (agt.indexOf("staroffice") != -1)	text = 'Star Office';
+	else if (agt.indexOf("webtv") != -1)		text = 'WebTV';
+	else if (agt.indexOf("beonex") != -1)	text = 'Beonex';
+	else if (agt.indexOf("chimera") != -1)	text = 'Chimera';
+	else if (agt.indexOf("netpositive") != -1)text = 'NetPositive';
+	else if (agt.indexOf("phoenix") != -1)	text = 'Phoenix';
+	else if (agt.indexOf("firefox") != -1)		text = 'Firefox';
+	else if (agt.indexOf("safari") != -1)		text = 'Safari';
+	else if (agt.indexOf("skipstone") != -1)	text = 'SkipStone';
+	else if (agt.indexOf("netscape") != -1)	text = 'Netscape';
+	else if (agt.indexOf("mozilla/5.0") != -1)	text = 'Mozilla';
+	
+	console.log(' ---- text : ' + text);
+
+	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
+		alert('iOS Safari 는 지원 예정입니다');
+		return;
+	}
+	
 	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
 		$('#room-id').focus();
 		return;
@@ -78,7 +103,7 @@ document.getElementById('input-text-chat').onkeyup = function(e) {
 var chatContainer = document.querySelector('.chat-output');
 
 function appendDIV(event) {
-	console.log(' ------ event.data : ' + unescape(event.data));
+	console.log(' ------ event.data : ' + unescape(event.data) + ' // ' + event.userid);
     if(event.data.indexOf(messageSplit) != -1){
 		createreceMsgDiv(unescape(event.data.split(messageSplit)[0]), unescape(event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]));
 		newMsgCntFnc();
@@ -114,33 +139,6 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
-	
-	// os 및 browser 체크
-	var agt = navigator.userAgent.toLowerCase();
-	var text = '';
-	
-	if (agt.indexOf("chrome") != -1)			text = 'Chrome';
-	else if (agt.indexOf("opera") != -1)		text = 'Opera';
-	else if (agt.indexOf("staroffice") != -1)	text = 'Star Office';
-	else if (agt.indexOf("webtv") != -1)		text = 'WebTV';
-	else if (agt.indexOf("beonex") != -1)	text = 'Beonex';
-	else if (agt.indexOf("chimera") != -1)	text = 'Chimera';
-	else if (agt.indexOf("netpositive") != -1)text = 'NetPositive';
-	else if (agt.indexOf("phoenix") != -1)	text = 'Phoenix';
-	else if (agt.indexOf("firefox") != -1)		text = 'Firefox';
-	else if (agt.indexOf("safari") != -1)		text = 'Safari';
-	else if (agt.indexOf("skipstone") != -1)	text = 'SkipStone';
-	else if (agt.indexOf("netscape") != -1)	text = 'Netscape';
-	else if (agt.indexOf("mozilla/5.0") != -1)	text = 'Mozilla';
-	
-	console.log(' ---- text : ' + text);
-
-	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
-		alert('iOS Safari 는 지원 예정입니다.');
-		location.reload();
-	}
-	
-	
 	var existing = document.getElementById(event.streamid);
 	if(existing && existing.parentNode) {
 		existing.parentNode.removeChild(existing);
@@ -159,8 +157,20 @@ connection.onstream = function(event) {
     var video = document.createElement('video');
     
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
+    	// iOS safari 인 경우
 		video.controls = true;
 	}
+
+    /* iOS 자동재생용
+	try {
+		video.setAttributeNode(document.createAttribute('autoplay'));
+	    video.setAttributeNode(document.createAttribute('playsinline'));
+	} catch (e) {
+		video.setAttribute('autoplay', true);
+	    video.setAttribute('playsinline', true);
+	}
+    //*/
+    
     
     if(event.type === 'local') {
     	// 내 영상
@@ -169,6 +179,14 @@ connection.onstream = function(event) {
     	
 		localStream = event.stream;
         
+		/*
+		try {
+            video.setAttributeNode(document.createAttribute('muted'));
+        } catch (e) {
+            video.setAttribute('muted', true);
+        }
+		//*/
+		
         roomName = $('#room-id').val();
         userName = $('#userName').val();
         

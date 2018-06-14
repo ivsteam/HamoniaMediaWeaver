@@ -355,7 +355,7 @@ function runServer() {
             if (!params.socketCustomEvent) {
                 params.socketCustomEvent = 'custom-message';
             }
-
+            
             socket.on(params.socketCustomEvent, function(message) {
                 try {
                     socket.broadcast.emit(params.socketCustomEvent, message);

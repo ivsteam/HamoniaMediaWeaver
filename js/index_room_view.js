@@ -6,6 +6,7 @@ var filter = "win16|win32|win64|mac|linux x86_32|linux x86_64|macintel";
 var checkmob = 0 > filter.indexOf(navigator.platform.toLowerCase());
 //var checkmob = true;	// true is mobile
 
+var isFileshare = false;
 
 $(document).ready(function(){
 	// set UI
@@ -13,13 +14,13 @@ $(document).ready(function(){
 	defaultUISet();
 	
 	// file share 제거 - UX/UI 적용 후 제거
-	deleteFileshareFnt();
+	if( ! isFileshare ) deleteFileshareFnt();
 	
 	
 	// 그룹명 input tag
 	$('#room-id').keydown(function(key) {
 		if(key.keyCode != 13) return;
-		$('#name').focus();
+		$('#userName').focus();
 	});
 		
 	// 대화명 input tag

@@ -15,8 +15,8 @@ function browserCheck(){
 	var agt = navigator.userAgent.toLowerCase();
 	var text = '';
 	
-	if (agt.indexOf("chrome") != -1)			text = 'Chrome';
-	else if (agt.indexOf("opera") != -1)		text = 'Opera';
+	if (agt.indexOf("opr/") != -1)					text = 'Opera';
+	else if (agt.indexOf("chrome") != -1)	text = 'Chrome';
 	else if (agt.indexOf("staroffice") != -1)	text = 'Star Office';
 	else if (agt.indexOf("webtv") != -1)		text = 'WebTV';
 	else if (agt.indexOf("beonex") != -1)	text = 'Beonex';
@@ -39,15 +39,21 @@ document.getElementById('open-or-join-room').onclick = function() {
 	var text = browserCheck();
 	console.log(' ---- text : ' + text);
 	
+	 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    	// iOS safari 인 경우
+		alert('아이폰에서 이용하실 수 없습니다.');
+		return;
+	}
+	
 //	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
 //		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
 //		return;
 //	}
 	
-//	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
-//		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
-//		return;
-//	}
+	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
+		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
+		return;
+	}
 	
 	
 	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
@@ -97,7 +103,6 @@ document.getElementById('share-file').onclick = function() {
         	$('.chatBtn').trigger('click');
         }
     });
-    
 };
 
 
@@ -158,11 +163,11 @@ connection.onstream = function(event) {
 		existing.parentNode.removeChild(existing);
 	}
 
-	// 16명 까지만 가능 - view 설정이 완료되면 제거할 것
-//	if($('.media-container').length + 1 > 16){
-//		alert('한 그룹당 최대 접속 인원은 16명 입니다.');
-//		location.reload();
-//	}
+	// 4명 까지만 가능
+	if($('.media-container').length + 1 > 4){
+		alert('한 그룹의 최대 접속 인원은 4명 입니다.');
+		location.reload();
+	}
 	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
@@ -176,7 +181,6 @@ connection.onstream = function(event) {
 		video.controls = true;
 	}
 
-    //* iOS 자동재생용
 	try {
 		video.setAttributeNode(document.createAttribute('autoplay'));
 	    video.setAttributeNode(document.createAttribute('playsinline'));
@@ -184,8 +188,6 @@ connection.onstream = function(event) {
 		video.setAttribute('autoplay', true);
 	    video.setAttribute('playsinline', true);
 	}
-    //*/
-    
     
     if(event.type === 'local') {
     	// 내 영상
@@ -194,13 +196,11 @@ connection.onstream = function(event) {
     	
 		localStream = event.stream;
         
-		//*
 		try {
             video.setAttributeNode(document.createAttribute('muted'));
         } catch (e) {
             video.setAttribute('muted', true);
         }
-		//*/
 		
         roomName = $('#room-id').val();
         userName = $('#userName').val();
@@ -219,7 +219,7 @@ connection.onstream = function(event) {
     video.srcObject = event.stream;
 
     var mediaElement = getHTMLMediaElement(video, {
-        title: event.userid,
+        /*title: event.userid,*/ // 영상 상단 text
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
@@ -308,6 +308,7 @@ function disableInputButtons() {
 //    document.getElementById('join-room').disabled = true;
     document.getElementById('room-id').disabled = true;
     document.getElementById('userName').disabled = true;
+    document.getElementById('share-file').disabled = true;
 }
 
 // ......................................................
@@ -345,11 +346,16 @@ function showRoomURL(roomid) {
 
 // 접속시 room 명칭 설정
 var roomid = '';
-if (localStorage.getItem(connection.socketMessageEvent)) {
-	roomid = localStorage.getItem(connection.socketMessageEvent);
+
+//if (localStorage.getItem(connection.socketMessageEvent)) {
+//	roomid = localStorage.getItem(connection.socketMessageEvent);
 //	console.log(' ::::: roomid // userName : ' + roomid + ' // ' + userName);
-} else {
+//} else {
 //	roomid = connection.token();
+//}
+
+if(document.location.href.split("?roomid=")[1] != undefined){
+	roomid = document.location.href.split("?roomid=")[1];
 }
 
 // roomid 자동입력

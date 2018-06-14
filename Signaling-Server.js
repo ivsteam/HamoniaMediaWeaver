@@ -364,7 +364,7 @@ module.exports = exports = function(app, socketCallback) {
 
         var numberOfPasswordTries = 0;
         socket.on(socketMessageEvent, function(message, callback) {
-        	console.log(' ---- ???? ' + socketMessageEvent + ' : ' + message);
+//        	console.log(' ---- ???? ' + socketMessageEvent + ' : ' + message);
         	
             if (message.remoteUserId && message.remoteUserId === socket.userid) {
                 // remoteUserId MUST be unique

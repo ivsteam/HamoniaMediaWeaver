@@ -10,8 +10,8 @@ var userName = '';
 var messageSplit = "::::H@moni@::split::::";
 var newMsgCnt = 0;		// 새 메세지 수
 
-document.getElementById('open-or-join-room').onclick = function() {
-	// os 및 browser 체크
+// 브라우저 체크
+function browserCheck(){
 	var agt = navigator.userAgent.toLowerCase();
 	var text = '';
 	
@@ -29,12 +29,26 @@ document.getElementById('open-or-join-room').onclick = function() {
 	else if (agt.indexOf("netscape") != -1)	text = 'Netscape';
 	else if (agt.indexOf("mozilla/5.0") != -1)	text = 'Mozilla';
 	
-	console.log(' ---- text : ' + text);
+	return text;
+}
 
-	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
-		alert('iOS Safari 는 지원 예정입니다');
+
+document.getElementById('open-or-join-room').onclick = function() {
+	// os 및 browser 체크
+	
+	var text = browserCheck();
+	console.log(' ---- text : ' + text);
+	
+	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
+		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
 		return;
 	}
+	
+	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
+		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
+		return;
+	}
+	
 	
 	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
 		$('#room-id').focus();
@@ -155,6 +169,7 @@ connection.onstream = function(event) {
 
     var width;
     var video = document.createElement('video');
+    var text = browserCheck();
     
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
     	// iOS safari 인 경우

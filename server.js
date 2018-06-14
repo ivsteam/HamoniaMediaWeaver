@@ -22,7 +22,7 @@ try {
             isUseHTTPs = true;
         }
     });
-} catch (e) {}
+} catch (e) { console.log(' ==== error : ' + e); }
 
 var fs = require('fs');
 var path = require('path');
@@ -69,7 +69,7 @@ try {
             }
         }
     });
-} catch (e) {}
+} catch (e) { console.log(' ==== error : ' + e); }
 
 // see how to use a valid certificate:
 // https://github.com/muaz-khan/WebRTC-Experiment/issues/62
@@ -193,7 +193,7 @@ function serverHandler(request, response) {
 
                     file = file.replace('<section class="experiment own-widgets latest-commits">', otherDemos);
                 }
-            } catch (e) {}
+            } catch (e) { console.log(' ==== error : ' + e); }
 
             try {
                 var docs = (fs.readdirSync('docs') || []);
@@ -359,9 +359,9 @@ function runServer() {
             socket.on(params.socketCustomEvent, function(message) {
                 try {
                     socket.broadcast.emit(params.socketCustomEvent, message);
-                } catch (e) {}
+                } catch (e) { console.log(' ==== error : ' + e); }
             });
-        } catch (e) {}
+        } catch (e) { console.log(' ==== error : ' + e); }
     });
     
     

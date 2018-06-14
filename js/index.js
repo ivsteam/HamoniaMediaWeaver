@@ -39,15 +39,15 @@ document.getElementById('open-or-join-room').onclick = function() {
 	var text = browserCheck();
 	console.log(' ---- text : ' + text);
 	
-	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
-		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
-		return;
-	}
+//	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
+//		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
+//		return;
+//	}
 	
-	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
-		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
-		return;
-	}
+//	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
+//		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
+//		return;
+//	}
 	
 	
 	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
@@ -147,8 +147,8 @@ connection.session = {
 };
 
 connection.sdpConstraints.mandatory = {
-    OfferToReceiveAudio: true,
-    OfferToReceiveVideo: true
+    OfferToReceiveAudio: false,
+    OfferToReceiveVideo: false
 };
 
 connection.videosContainer = document.getElementById('videos-container');
@@ -176,7 +176,7 @@ connection.onstream = function(event) {
 		video.controls = true;
 	}
 
-    /* iOS 자동재생용
+    //* iOS 자동재생용
 	try {
 		video.setAttributeNode(document.createAttribute('autoplay'));
 	    video.setAttributeNode(document.createAttribute('playsinline'));
@@ -194,7 +194,7 @@ connection.onstream = function(event) {
     	
 		localStream = event.stream;
         
-		/*
+		//*
 		try {
             video.setAttributeNode(document.createAttribute('muted'));
         } catch (e) {

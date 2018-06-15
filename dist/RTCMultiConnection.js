@@ -395,8 +395,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             connection.onNumberOfBroadcastViewersUpdated(data);
         });
 
-        connection.socket.on('room-full', function(roomid) {
-            connection.onRoomFull(roomid);
+        connection.socket.on('room-full', function(roomid, memCnt) {
+            connection.onRoomFull(roomid, memCnt);
         });
 
         connection.socket.on('become-next-modrator', function(sessionid) {
@@ -4432,6 +4432,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         connection.openOrJoin = function(localUserid, password, callback) {
             callback = callback || function() {};
 
+            console.log('connection.openOrJoin2');
+            
             connection.checkPresence(localUserid, function(isRoomExist, roomid) {
                 // i.e. 2nd parameter is a callback function
                 if (typeof password === 'function' && typeof password !== 'undefined') {
@@ -4508,6 +4510,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                     callback(isRoomExist, roomid);
                 });
             });
+            
+            console.log(' ---- connection.getAllParticipants() 2 : ' + connection.getAllParticipants());
         };
 
         // don't allow someone to join this person until he has the media
@@ -6045,10 +6049,14 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             connection.join(useridAlreadyTaken);
         };
 
-        connection.onRoomFull = function(roomid) {
-            if (connection.enableLogs) {
+        connection.onRoomFull = function(roomid, memCnt) {
+    		alert('최대 인원수를 초과할 수 없습니다.(' + memCnt + '명)');
+            
+    		if (connection.enableLogs) {
                 console.warn(roomid, 'is full.');
             }
+            
+    		location.reload();
         };
 
         connection.trickleIce = true;

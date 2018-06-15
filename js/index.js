@@ -163,12 +163,6 @@ connection.onstream = function(event) {
 		existing.parentNode.removeChild(existing);
 	}
 
-	// 4명 까지만 가능
-	if($('.media-container').length + 1 > 4){
-		alert('한 그룹의 최대 접속 인원은 4명 입니다.');
-		location.reload();
-	}
-	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
 

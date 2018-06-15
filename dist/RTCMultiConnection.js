@@ -4429,7 +4429,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // 1st paramter is roomid
         // 2nd paramter can be either password or a callback function
         // 3rd paramter is a callback function
-        connection.openOrJoin = function(localUserid, password, callback) {
+        connection.openOrJoin = function(localUserid, password, userName, callback) {
             callback = callback || function() {};
 
             console.log('connection.openOrJoin2');
@@ -4511,7 +4511,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 });
             });
             
-            console.log(' ---- connection.getAllParticipants() 2 : ' + connection.getAllParticipants());
+            // 이름 변경 - 방 생성자 이름 변경이 안됨.. 수정 필요
+            connection.changeUserId(userName);
         };
 
         // don't allow someone to join this person until he has the media

@@ -66,7 +66,7 @@ document.getElementById('open-or-join-room').onclick = function() {
 	}
 	
 	disableInputButtons();
-    connection.openOrJoin(document.getElementById('room-id').value, function(isRoomExists, roomid) {
+    connection.openOrJoin(document.getElementById('room-id').value, null, document.getElementById('userName').value, function(isRoomExists, roomid) {
         if (!isRoomExists) {
 //            showRoomURL(roomid);
         }
@@ -213,7 +213,7 @@ connection.onstream = function(event) {
     video.srcObject = event.stream;
 
     var mediaElement = getHTMLMediaElement(video, {
-        /*title: event.userid,*/ // 영상 상단 text
+        /*title: event.userid,*/ // 영상 상단 text // 이름 변경 - 방 생성자 이름 변경이 안됨.. 수정 필요
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false

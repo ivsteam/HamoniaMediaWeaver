@@ -35,7 +35,7 @@ router.get('/', function(req, res) {
 
     if (errMsg) msg = errMsg;
 
-    res.render('join.ejs', {'message' : msg});
+    res.render('./member/join.ejs', {'message' : msg});
 });
 
 passport.serializeUser(function(user, done) {
@@ -48,7 +48,7 @@ passport.deserializeUser(function(id, done) {
 
 // 성공했을때 리다이렉트 시키는 부분
 router.post('/', passport.authenticate('join-local', {
-    successRedirect: '/main',
+    successRedirect: '/login',
     failureRedirect: '/join',
     failureFlash: true
 }));

@@ -90,20 +90,20 @@ function serverHandler(request, response) {
         var uri = url.parse(request.url).pathname,
             filename = path.join(process.cwd(), uri);
 
-        if (request.method !== 'GET' || path.join('/', uri).indexOf('../') !== -1) {
-            response.writeHead(401, {
-                'Content-Type': 'text/plain'
-            });
-            response.write('401 Unauthorized: ' + path.join('/', uri) + '\n');
-            response.end();
-            return;
-        }
+//        if (request.method !== 'GET' || path.join('/', uri).indexOf('../') !== -1) {
+//            response.writeHead(401, {
+//                'Content-Type': 'text/plain'
+//            });
+//            response.write('401 Unauthorized: ' + path.join('/', uri) + '\n');
+//            response.end();
+//            return;
+//        }
 
         if (filename && filename.search(/server.js|Scalable-Broadcast.js|Signaling-Server.js/g) !== -1) {
             response.writeHead(404, {
                 'Content-Type': 'text/plain'
             });
-            response.write('404 Not Found: ' + path.join('/', uri) + '\n');
+            response.write('404 Not Found 2---------------------: ' + path.join('/', uri) + '\n');
             response.end();
             return;
         }
@@ -111,18 +111,20 @@ function serverHandler(request, response) {
         ['Video-Broadcasting', 'Screen-Sharing', 'Switch-Cameras'].forEach(function(fname) {
             if (filename && filename.indexOf(fname + '.html') !== -1) {
                 filename = filename.replace(fname + '.html', fname.toLowerCase() + '.html');
+				console.log("filename="+filename);
             }
         });
 
         var stats;
-
         try {
             stats = fs.lstatSync(filename);
 
             if (filename && filename.search(/views/g) === -1 && stats.isDirectory()) {
                 if (response.redirect) {
                     response.redirect('/views/');
+					console.log("qqqqqqqqqqq");
                 } else {
+					console.log("sssssssssss");
                     response.writeHead(301, {
                         'Location': '/views/'
                     });
@@ -134,7 +136,7 @@ function serverHandler(request, response) {
             response.writeHead(404, {
                 'Content-Type': 'text/plain'
             });
-            response.write('404 Not Found: ' + path.join('/', uri) + '\n');
+            response.write('404 Not Found 1----------------: ' + e.message+ '\n');
             response.end();
             return;
         }
@@ -173,48 +175,11 @@ function serverHandler(request, response) {
                 response.writeHead(500, {
                     'Content-Type': 'text/plain'
                 });
-                response.write('404 Not Found: ' + path.join('/', uri) + '\n');
+                response.write('404 Not Found 3 -----------------: ' + path.join('/', uri) + '\n');
                 response.end();
                 return;
             }
 
-            try {
-                var views = (fs.readdirSync('views') || []);
-
-                if (views.length) {
-                    var h2 = '<h2 style="text-align:center;display:block;"><a href="https://www.npmjs.com/package/rtcmulticonnection-v3"><img src="https://img.shields.io/npm/v/rtcmulticonnection-v3.svg"></a><a href="https://www.npmjs.com/package/rtcmulticonnection-v3"><img src="https://img.shields.io/npm/dm/rtcmulticonnection-v3.svg"></a><a href="https://travis-ci.org/muaz-khan/RTCMultiConnection"><img src="https://travis-ci.org/muaz-khan/RTCMultiConnection.png?branch=master"></a></h2>';
-                    var otherDemos = '<section class="experiment" id="demos"><details><summary style="text-align:center;">Check ' + (views.length - 1) + ' other RTCMultiConnection-v3 demos</summary>' + h2 + '<ol>';
-                    views.forEach(function(f) {
-                        if (f && f !== 'index.html' && f.indexOf('.html') !== -1) {
-                            otherDemos += '<li><a href="/views/' + f + '">' + f + '</a> (<a href="https://github.com/muaz-khan/RTCMultiConnection/tree/master/views/' + f + '">Source</a>)</li>';
-                        }
-                    });
-                    otherDemos += '<ol></details></section><section class="experiment own-widgets latest-commits">';
-
-                    file = file.replace('<section class="experiment own-widgets latest-commits">', otherDemos);
-                }
-            } catch (e) { console.log(' ==== error : ' + e); }
-
-            try {
-                var docs = (fs.readdirSync('docs') || []);
-
-                if (docs.length) {
-                    var html = '<section class="experiment" id="docs">';
-                    html += '<details><summary style="text-align:center;">RTCMultiConnection Docs</summary>';
-                    html += '<h2 style="text-align:center;display:block;"><a href="http://www.rtcmulticonnection.org/docs/">http://www.rtcmulticonnection.org/docs/</a></h2>';
-                    html += '<ol>';
-
-                    docs.forEach(function(f) {
-                        if (f.indexOf('DS_Store') == -1) {
-                            html += '<li><a href="https://github.com/muaz-khan/RTCMultiConnection/tree/master/docs/' + f + '">' + f + '</a></li>';
-                        }
-                    });
-
-                    html += '</ol></details></section><section class="experiment own-widgets latest-commits">';
-
-                    file = file.replace('<section class="experiment own-widgets latest-commits">', html);
-                }
-            } catch (e) {}
 
             response.writeHead(200, {
                 'Content-Type': contentType
@@ -234,24 +199,59 @@ function serverHandler(request, response) {
 
 // http -> https porwording start
 var express = require('express');
-var app;
+var app= express();
 var http_app;
 var http = require('http');
 var HTTP_PORT = 80;
 
 http_app = express();
 http_app.set('port', port);
+var router = require('./router/index');
 
 if (isUseHTTPs) {
-    app = server.createServer(options, serverHandler);
-    
+    app = server.createServer(options, http_app);
+
 //} else {
 //	http_app = server.createServer(serverHandler);
     
-    http_app = express();
-    http_app.set('port', port);
+//    http_app = express();
+//    http_app.set('port', port);
 }
 // http -> https porwording end
+
+var passport = require('passport');
+var session = require('express-session');
+var flash = require('connect-flash');
+var ejs = require('ejs');
+var path = require('path');
+var bodyParser = require('body-parser'); 
+
+
+http_app.use(express.static(path.join(__dirname, 'public')));
+http_app.use(bodyParser.json());
+http_app.use(bodyParser.urlencoded({extended : true}));
+http_app.use(session({
+	secret: 'keyboard cat',
+	resave: false,
+	saveUninitialized: true
+}));
+http_app.set('view engine', 'ejs'); 
+http_app.use(passport.initialize());
+http_app.use(passport.session());
+http_app.use(flash());
+http_app.use(router);
+
+http_app.get('/', function(req, res){
+  console.log('get /');
+	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+			roomID : req.query.roomID,  
+//			isLogin : isLogin,
+			description : 'Hello ejs With Node.js.. !'  
+		}));  
+	});  
+});
 
 
 function cmd_exec(cmd, args, cb_stdout, cb_end) {

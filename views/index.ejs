@@ -35,7 +35,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 	
 	
-	<script src="/dist/RTCMultiConnection.min.js"></script>
+	<!-- 확인을 위해 script src="/dist/RTCMultiConnection.min.js"></script -->
+	<script src="/dist/RTCMultiConnection.js"></script>
 	<script src="/dev/adapter.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -45,6 +46,19 @@
 	<script src="/dev/FileBufferReader.js"></script>
 </head>
 
+<script type="text/javascript">
+$(document).ready(function(){
+	var psycareRoom = '<%= roomID %>';
+	var psycareName = '<%= userName %>';
+	var psycare = '<%= psycare %>';
+	document.getElementById('room-id').value = psycareRoom;
+	document.getElementById('userName').value = psycareName;
+	document.getElementById('psycare').value = psycare;
+	if( document.getElementById('room-id').value.length != 0 ){
+		$('#open-or-join-room').trigger('click');
+	}
+});
+</script>
 <body id="page-top">
 	
 	<!-- main page start -->
@@ -72,7 +86,7 @@
 				
 				<div class="bottom_right">
 					<div class="box1">
-						<p>대화명, 그룹명을 입력하여<br> 영상통화를 참여하세요.</p>
+						<p>개설/참여하기<br>방 이름을 입력하여 개설 또는 바로 참여하세요</p>
 					</div>
 					
 					<div class="box3">
@@ -81,14 +95,14 @@
 						    <input type="text" id="room-id" placeholder="그룹명을 입력하세요." autocorrect=off autocapitalize=off size=20>
 						</lx-text-field>
 					</div>
-					
+					 <input type="hidden" id="userName" name="userName">
+					 <input type="hidden" id="psycare" name="psycare">
 					<hr style="margin: 0;"/>
-					
-					<div class="box4">
+					<!-- div class="box4">
 						<lx-text-field label="Username">
 						    <input type="text" id="userName" name="userName" required placeholder="대화명을  입력하세요." autocomplete="off">
 						</lx-text-field>
-					</div>
+					</div -->
 					
 					<div class="row joinBtn">
 						<!-- <button type="submit" id="createRoomBtn" class="btn btn-primary btn-block">Join room!</button> -->
@@ -263,5 +277,7 @@
 	<script type="text/javascript" src="/js/index.js"></script>
 	<script type="text/javascript" src="/js/index_room_view.js"></script>
 	<script src="https://cdn.webrtc-experiment.com/common.js"></script>
+
+
 </body>
 </html>

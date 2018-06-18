@@ -460,10 +460,10 @@ function createreceMsgDiv(userName, message){
 	var $img = $('<i></i>').attr('class','mdi md-account-circle');
 	
 	var $messageDiv = $('<div></div>').attr('class','messageDiv');
-	var $div_userName = $('<div></div>').attr('class','userTextDiv').text(userName);
 	var $div_message = $('<div></div>').attr('class','messageBox').text(message);
 	var $span_time = $('<span></span>').attr('class','timeSpan').text(timeSetting());
-	
+	var $div_userName = $('<div></div>').attr('class','userTextDiv').text(userName);
+
 	$img_iconBox.append($img);
 	$messageDiv.append($div_userName);
 	$messageDiv.append($div_message);

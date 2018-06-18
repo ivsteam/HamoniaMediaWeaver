@@ -1,24 +1,21 @@
-// Muaz Khan      - www.MuazKhan.com
-// MIT License    - www.WebRTC-Experiment.com/licence
-// Documentation  - github.com/muaz-khan/RTCMultiConnection
-
-// to use this signaling-server.js file:
-// require('./Signaling-Server.js')(socketio_object); --- pass socket.io object
-// require('./Signaling-Server.js')(nodejs_app_object); --- pass node.js "app" object
-
-// stores all sockets, user-ids, extra-data and connected sockets
-// you can check presence as following:
-// var isRoomExist = listOfUsers['room-id'] != null;
 var listOfUsers = {};
-
+var roomList = {};
 var shiftedModerationControls = {};
-
-// for scalable-broadcast demos
 var ScalableBroadcast;
+
+const { Pool, Client } = require('pg')
+
+const client = new Pool({
+  user: 'ivs',
+  host: '52.231.15.128',
+  database: 'hamonia',
+  password: 'exitem08',
+  port: 5432,
+})
 
 module.exports = exports = function(app, socketCallback) {
     socketCallback = socketCallback || function() {};
-
+	
     if (!!app.listen) {
         var io = require('socket.io');
 
@@ -45,11 +42,12 @@ module.exports = exports = function(app, socketCallback) {
         onConnection(app);
     }
 
+	
     // to secure your socket.io usage: (via: docs/tips-tricks.md)
     // io.set('origins', 'https://domain.com');
 
     function appendUser(socket) {
-    	console.log(' ---- appendUser() ');
+
         var alreadyExist = listOfUsers[socket.userid];
         var extra = {};
 
@@ -78,6 +76,17 @@ module.exports = exports = function(app, socketCallback) {
             maxParticipantsAllowed: params.maxParticipantsAllowed || 1000
         };
     }
+	
+
+	function insVendorUsage(data, callback){
+	client.query('insert into tbl_auth_vendor_usage_history ( vendor,room_nm, room_user_session_id, first_date,last_date, ipaddress ) values($1, $2, $3, $4, $5, $6) RETURNING id',data, function(error, result2){ 
+		if(error) {
+			console.log("insVendorUsage error === "+ error);
+			throw error; 
+		}
+		callback(null, result2);
+	});
+}
 
     function onConnection(socket) {
     	console.log(' ---- onConnection() ');
@@ -106,6 +115,8 @@ module.exports = exports = function(app, socketCallback) {
 
         socket.userid = params.userid;
         appendUser(socket);
+
+	
 
         if (autoCloseEntireSession == 'false' && Object.keys(listOfUsers).length == 1) {
             socket.shiftModerationControlBeforeLeaving = true;
@@ -193,9 +204,22 @@ module.exports = exports = function(app, socketCallback) {
                 pushLogs('get-public-moderators', e);
             }
         });
+	
 
         socket.on('changed-uuid', function(newUserId, callback) {
-        	console.log(' ---- changed-uuid ');
+        	console.log(' ---- changed-uuid ' + newUserId);
+			roomList[newUserId] = {
+				userid: socket.userid,
+				roomNm : newUserId
+			};
+//			console.log("---roomList--- " + JSON.stringify(roomList));
+			var ip = require("ip");
+			var data = ['public', newUserId, socket.userid, new Date(), new Date(),ip.address() ]; 
+			insVendorUsage( data,function(err, content2) {
+//				console.log("-chk---------------"+ JSON.stringify(content2));
+			});
+
+
             callback = callback || function() {};
 
             if (params.dontUpdateUserId) {
@@ -215,7 +239,6 @@ module.exports = exports = function(app, socketCallback) {
                     callback();
                     return;
                 }
-
                 socket.userid = newUserId;
                 appendUser(socket);
 
@@ -226,7 +249,7 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('set-password', function(password) {
-        	console.log(' ---- set-password ');
+//        	console.log(' ---- set-password ');
             try {
                 if (listOfUsers[socket.userid]) {
                     listOfUsers[socket.userid].password = password;
@@ -322,8 +345,14 @@ module.exports = exports = function(app, socketCallback) {
         }
 
         function joinARoom(message) {
-        	console.log(' ---- joinARoom() : ' + message);
-        	
+		
+			roomList[message.sender] = {
+				userid: message.sender,
+				roomNm : message.remoteUserId
+			};
+			
+//			console.log("roomList====="+ JSON.stringify(roomList));
+
             var roomInitiator = listOfUsers[message.remoteUserId];
 
             if (!roomInitiator) {
@@ -360,17 +389,38 @@ module.exports = exports = function(app, socketCallback) {
                 message.remoteUserId = userSocket.userid;
                 userSocket.emit(socketMessageEvent, message);
             });
+			var ip = require("ip");
+			var data = ['public', message.remoteUserId, message.sender, new Date(), new Date(), ip.address()]; 
+			insVendorUsage( data,function(err, content3) {
+
+				for (let roomId in roomList) {
+					if( roomList[message.remoteUserId].roomNm == roomList[roomId].roomNm ){
+						var query_stop = "update tbl_auth_vendor_usage_history set start_time = now()";
+						query_stop += ", last_date = now()";
+						query_stop += " where room_user_session_id = '" +roomList[roomId].userid+"'";
+						
+//						console.log("query stop is : " + query_stop);
+						client.query(query_stop, function(error, result3){ 
+//							console.log(result3); 
+							if(!error){ 
+//								console.log(result3); 
+							} 
+						});
+					}
+				}
+			});
         }
+		
+
 
         var numberOfPasswordTries = 0;
         socket.on(socketMessageEvent, function(message, callback) {
-//        	console.log(' ---- ???? ' + socketMessageEvent + ' : ' + message);
-        	
+
             if (message.remoteUserId && message.remoteUserId === socket.userid) {
                 // remoteUserId MUST be unique
                 return;
             }
-
+			
             try {
                 if (message.remoteUserId && message.remoteUserId != 'system' && message.message.newParticipationRequest) {
                     if (listOfUsers[message.remoteUserId] && listOfUsers[message.remoteUserId].password) {
@@ -406,7 +456,6 @@ module.exports = exports = function(app, socketCallback) {
                     shiftedModerationControls[message.sender] = message;
                     return;
                 }
-
                 // for v3 backward compatibility; >v3.3.3 no more uses below block
                 if (message.remoteUserId == 'system') {
                     if (message.message.detectPresence) {
@@ -463,12 +512,14 @@ module.exports = exports = function(app, socketCallback) {
             }
         });
 
+
         socket.on('disconnect', function() {
-        	console.log(' ---- disconnect ');
             try {
                 if (socket && socket.namespace && socket.namespace.sockets) {
                     delete socket.namespace.sockets[this.id];
+//					delete roomList[this.id];
                 }
+				
             } catch (e) {
                 pushLogs('disconnect', e);
             }
@@ -485,10 +536,25 @@ module.exports = exports = function(app, socketCallback) {
             }
 
             try {
+				
+				for (let roomId in roomList) {
+					var query_stop = "update tbl_auth_vendor_usage_history set stop_time = now()";
+						query_stop += ", last_date = now()";
+						query_stop += " where room_user_session_id = '" +roomList[roomId].userid+"'";
+					client.query(query_stop, function(error, result3){ 
+						if(error){ 
+							console.log(result3); 
+						} 
+					});
+				}
+
+				
+				delete roomList[socket.userid];
+
                 // inform all connected users
                 if (listOfUsers[socket.userid]) {
                     var firstUserSocket = null;
-
+			
                     for (var s in listOfUsers[socket.userid].connectedWith) {
                         if (!firstUserSocket) {
                             firstUserSocket = listOfUsers[socket.userid].connectedWith[s];
@@ -497,8 +563,12 @@ module.exports = exports = function(app, socketCallback) {
                         listOfUsers[socket.userid].connectedWith[s].emit('user-disconnected', socket.userid);
 
                         if (listOfUsers[s] && listOfUsers[s].connectedWith[socket.userid]) {
+
                             delete listOfUsers[s].connectedWith[socket.userid];
                             listOfUsers[s].socket.emit('user-disconnected', socket.userid);
+
+							
+
                         }
                     }
 
@@ -517,6 +587,9 @@ module.exports = exports = function(app, socketCallback) {
             socketCallback(socket);
         }
     }
+
+	
+
 };
 
 var enableLogs = false;

@@ -68,7 +68,7 @@ passport.use('join-local', new LocalStrategy({
             }
             else {
                 bcrypt.hash(password, null, null, function(err, hash) {
-                    var sql = [email, hash, 'aaa', 'email'];
+                    var sql = [email, hash, email, 'email'];
                     connection.query('insert into tbl_user ( email, password, nickname, auth_type) values($1, $2, $3, $4) RETURNING email, id ', sql, function (err, result) {
                         if (err) throw err;
 						console.log("rows=="+ JSON.stringify(rows));

@@ -84,8 +84,10 @@ var options = {
 //var server = require(isUseHTTPs ? 'https' : 'http');
 var server = require('https');
 var url = require('url');
-
+//var ip;
 function serverHandler(request, response) {
+
+
     try {
         var uri = url.parse(request.url).pathname,
             filename = path.join(process.cwd(), uri);
@@ -122,9 +124,7 @@ function serverHandler(request, response) {
             if (filename && filename.search(/views/g) === -1 && stats.isDirectory()) {
                 if (response.redirect) {
                     response.redirect('/views/');
-					console.log("qqqqqqqqqqq");
                 } else {
-					console.log("sssssssssss");
                     response.writeHead(301, {
                         'Location': '/views/'
                     });
@@ -242,13 +242,29 @@ http_app.use(flash());
 http_app.use(router);
 
 http_app.get('/', function(req, res){
-  console.log('get /');
+
+	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+			roomID : '',  
+			userName : '',  
+			psycare : '',
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+
+
+// 심리상담 접속 URL
+http_app.get('/psycare', function(req, res){
 	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   
 		res.end(ejs.render(data, {  
 			roomID : req.query.roomID,  
+			userName : req.query.name,  
+			psycare : "psycare",
 //			isLogin : isLogin,
-			description : 'Hello ejs With Node.js.. !'  
+			description : 'Hello .. !'  
 		}));  
 	});  
 });

@@ -60,10 +60,10 @@ document.getElementById('open-or-join-room').onclick = function() {
 		$('#room-id').focus();
 		return;
 	}
-	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
-		$('#userName').focus();
-		return;
-	}
+//	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
+//		$('#userName').focus();
+//		return;
+//	}
 	
 	disableInputButtons();
     connection.openOrJoin(document.getElementById('room-id').value, function(isRoomExists, roomid) {
@@ -86,8 +86,7 @@ document.getElementById('btn-leave-room').onclick = function() {
     } else {
         connection.leave();
     }
-    
-    location.reload();
+	location.href= "/";
 };
 
 // ......................................................
@@ -219,7 +218,7 @@ connection.onstream = function(event) {
     video.srcObject = event.stream;
 
     var mediaElement = getHTMLMediaElement(video, {
-        /*title: event.userid,*/ // 영상 상단 text
+        //title: event.userid, // 영상 상단 text
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
@@ -260,10 +259,8 @@ connection.onopen = function() {
 connection.onclose = function(event) {
 //	console.log(' ---- onclose : ' + connection.userid + ' // ' + event.userid);
     if (connection.getAllParticipants().length) {
-//		document.querySelector('h1').innerHTML = 'You are still connected with: ' + connection.getAllParticipants().join(', ');
         console.log('You are still connected with: ' + connection.getAllParticipants().join(', '));
     } else {
-//		document.querySelector('h1').innerHTML = 'Seems session has been closed or all participants left.';
     	console.log('Seems session has been closed or all participants left.');
     }
     
@@ -276,13 +273,6 @@ connection.onEntireSessionClosed = function(event) {
 	console.log(' ---- onEntireSessionClosed : ');
     document.getElementById('share-file').disabled = true;
     document.getElementById('input-text-chat').disabled = true;
-//    document.getElementById('btn-leave-room').disabled = true;
-
-//    document.getElementById('open-or-join-room').disabled = false;
-//    document.getElementById('open-room').disabled = false;
-//    document.getElementById('join-room').disabled = false;
-//    document.getElementById('room-id').disabled = false;
-//    document.getElementById('userName').disabled = false;
 
     connection.attachStreams.forEach(function(stream) {
         stream.stop();
@@ -290,7 +280,6 @@ connection.onEntireSessionClosed = function(event) {
 
     // don't display alert for moderator
     if (connection.userid === event.userid) return;
-//	document.querySelector('h1').innerHTML = 'Entire session has been closed by the moderator: ' + event.userid;
     console.log('Entire session has been closed by the moderator: ' + event.userid);
     
     if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.reload();
@@ -304,10 +293,8 @@ connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
 
 function disableInputButtons() {
     document.getElementById('open-or-join-room').disabled = true;
-//    document.getElementById('open-room').disabled = true;
-//    document.getElementById('join-room').disabled = true;
     document.getElementById('room-id').disabled = true;
-    document.getElementById('userName').disabled = true;
+//    document.getElementById('userName').disabled = true;
     document.getElementById('share-file').disabled = true;
 }
 
@@ -354,9 +341,14 @@ var roomid = '';
 //	roomid = connection.token();
 //}
 
-if(document.location.href.split("?roomid=")[1] != undefined){
-	roomid = document.location.href.split("?roomid=")[1];
-}
+//if(document.location.href.split("?roomID=")[1] != undefined){
+//	roomid = document.location.href.split("?roomID=")[1];
+//	userName = document.location.href.split("&name=")[1];
+//	
+//	alert("roomid=111====="+ roomid );
+//	alert("=="+ userName );
+//	
+//}
 
 // roomid 자동입력
 document.getElementById('room-id').value = roomid;

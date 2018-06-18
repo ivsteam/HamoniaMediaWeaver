@@ -167,6 +167,7 @@
     // 2nd paramter can be either password or a callback function
     // 3rd paramter is a callback function
     connection.openOrJoin = function(localUserid, password, callback) {
+console.log("localUserid========="+ localUserid);
         callback = callback || function() {};
 
         connection.checkPresence(localUserid, function(isRoomExist, roomid) {

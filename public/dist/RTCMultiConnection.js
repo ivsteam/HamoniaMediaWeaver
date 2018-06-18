@@ -4430,6 +4430,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // 2nd paramter can be either password or a callback function
         // 3rd paramter is a callback function
         connection.openOrJoin = function(localUserid, password, callback) {
+console.log("localUserid===1111111111111======"+ localUserid);
             callback = callback || function() {};
 
             connection.checkPresence(localUserid, function(isRoomExist, roomid) {
@@ -4629,6 +4630,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         connection.join = connection.connect = function(remoteUserId, options) {
+			console.log("remoteUserId========="+ remoteUserId);
             connection.sessionid = (remoteUserId ? remoteUserId.sessionid || remoteUserId.remoteUserId || remoteUserId : false) || connection.sessionid;
             connection.sessionid += '';
 

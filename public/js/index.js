@@ -33,9 +33,18 @@ function browserCheck(){
 }
 
 
-document.getElementById('open-or-join-room').onclick = function() {
-	// os 및 browser 체크
+
+$('.bottom_right').on('click', '#open-or-join-room', function(){
+	$('#userName').css('display', 'none');
 	
+	// 비회원 사용자 id 설정
+	if(!$('#userName').val()){
+		$('#userName').val(connection.token());
+	}
+	
+	
+	// os 및 browser 체크
+
 	var text = browserCheck();
 	console.log(' ---- text : ' + text);
 	
@@ -71,7 +80,7 @@ document.getElementById('open-or-join-room').onclick = function() {
 //            showRoomURL(roomid);
         }
     });
-};
+});
 
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
@@ -354,8 +363,15 @@ var roomid = '';
 //	roomid = connection.token();
 //}
 
+$.cookie('roomid', null);
+
 if(document.location.href.split("?roomid=")[1] != undefined){
 	roomid = document.location.href.split("?roomid=")[1];
+	$.cookie('roomid', roomid);
+}
+
+if(!$.cookie('roomid')){
+	roomid = $.cookie('roomid');
 }
 
 // roomid 자동입력
@@ -390,6 +406,8 @@ if (roomid && roomid.length && $('#userName').val() !==undefined && $('#userName
                 
                 $('#joinRoom').css('display', 'block');
                 $('#createRoom').remove();
+                
+                $.cookie('roomid', null);
                 
                 return;
                 

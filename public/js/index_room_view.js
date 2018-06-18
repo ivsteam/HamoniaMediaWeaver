@@ -12,11 +12,13 @@ $(document).ready(function(){
 	// set UI
 	windowReset();
 	defaultUISet();
-	loginUISet();
+//	loginUISet();
+//	publicLoginUISet();
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	
+	$('#userName').css('display', 'none');
 	
 	// 그룹명 input tag
 	$('#room-id').keydown(function(key) {
@@ -28,6 +30,22 @@ $(document).ready(function(){
 	$('#userName').keydown(function(key) {
 		if(key.keyCode != 13) return;
 		$('#open-or-join-room').trigger('click');
+	});
+	
+	
+	// 로그인 버튼
+	$('#openLoginDiv').click(function(){
+		loginUISet();
+	});
+	
+	// 비회원 버튼
+	$('.bottom_right').on('click', '#notLoginDiv', function(){
+		location.reload();
+	});
+	
+	// 회원가입 버튼
+	$('#openSignupDiv').click(function(){
+		signupUISet();
 	});
 	
 	
@@ -124,6 +142,9 @@ function defaultUISet(){
 	if(navigator.platform){
 		if(checkmob){	
 			//alert("Mobile");
+			// main bottom_right
+			$('.box3 img').css('width', '100px').css('margin-bottom', '15px');
+			
 			// logo
 			$('#logo img').css('padding-top', '10px');
 			$('#logo').css('height', '50px');
@@ -158,6 +179,7 @@ function defaultUISet(){
 }
 
 
+// 로그인 버튼
 function loginUISet(){
 	$.ajax({
 		url	:"/login",
@@ -166,6 +188,32 @@ function loginUISet(){
 		},
 		error : function(result, status, error){
 			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
+// 회원가입 버튼
+function signupUISet(){
+	$.ajax({
+		url	:"/join",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
+// 비회원 버튼 -- 사용X
+function publicLoginUISet(){
+	$.ajax({
+		url	:"/member/publicLogin",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== publicLoginUISet() error : ' + result + '\n' + status + '\n' + error);
 		}
 	});
 }

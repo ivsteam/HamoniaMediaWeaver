@@ -35,7 +35,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 	
 	
-	<script src="/dist/RTCMultiConnection.min.js"></script>
+	<script src="/dist/RTCMultiConnection.js"></script>
 	<script src="/dev/adapter.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -70,31 +70,7 @@
 				
 				<div style="width: 1%;"></div>
 				
-				<div class="bottom_right">
-					<div class="box1">
-						<p>대화명, 그룹명을 입력하여<br> 영상통화를 참여하세요.</p>
-					</div>
-					
-					<div class="box3">
-						<lx-text-field label="Room">
-						    <!-- <input type="text" id="roomID" name="roomID" required placeholder="그룹명을 입력하세요." autocomplete="off"> -->
-						    <input type="text" id="room-id" placeholder="그룹명을 입력하세요." autocorrect=off autocapitalize=off size=20>
-						</lx-text-field>
-					</div>
-					
-					<hr style="margin: 0;"/>
-					
-					<div class="box4">
-						<lx-text-field label="Username">
-						    <input type="text" id="userName" name="userName" required placeholder="대화명을  입력하세요." autocomplete="off">
-						</lx-text-field>
-					</div>
-					
-					<div class="row joinBtn">
-						<!-- <button type="submit" id="createRoomBtn" class="btn btn-primary btn-block">Join room!</button> -->
-						<button id="open-or-join-room" class="btn btn-primary btn-block">Join room!</button>
-					</div>
-				</div>
+				<div class="bottom_right"></div>
 		    </div>
 		    
 			<hr style="width: 100%; margin: 30px 0 ; border: 0;"/>

@@ -12,6 +12,7 @@ $(document).ready(function(){
 	// set UI
 	windowReset();
 	defaultUISet();
+	loginUISet();
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
@@ -155,6 +156,20 @@ function defaultUISet(){
 								.css('top', ($(window).height() - $('#inviteAlert').height() - 130 ) / 2);
 	}
 }
+
+
+function loginUISet(){
+	$.ajax({
+		url	:"/login",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
 
 // 영상 사이즈 조절
 function refreshVideoView(){

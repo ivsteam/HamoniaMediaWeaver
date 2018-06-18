@@ -43,8 +43,22 @@
     "muaz-khan"
   ],
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "connect-flash": "^0.1.1",
+    "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "socket.io": "latest"
+    "express-session": "^1.15.6",
+    "log4js": "^2.9.0",
+    "passport": "^0.4.0",
+    "passport-facebook": "^2.1.1",
+    "passport-google-oauth": "^1.0.0",
+    "passport-kakao": "0.0.5",
+    "passport-local": "^1.0.0",
+    "passport-naver": "^1.0.6",
+    "path": "^0.12.7",
+    "pg": "^7.4.3",
+    "socket.io": "^2.1.1"
   },
   "analyze": false,
   "license": "MIT",

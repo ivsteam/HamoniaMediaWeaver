@@ -48,8 +48,8 @@ passport.deserializeUser(function(id, done) {
 
 // 성공했을때 리다이렉트 시키는 부분
 router.post('/', passport.authenticate('join-local', {
-    successRedirect: '/',
-    failureRedirect: '/',
+    successRedirect: '/login',
+    failureRedirect: '/join',
     failureFlash: true
 }));
 
@@ -59,6 +59,7 @@ passport.use('join-local', new LocalStrategy({
         passReqToCallback: true
     },
     function(req, email, password, done) {
+
         connection.query('select * from tbl_user where email=$1', [email], function (err, rows) {
             if (err) { return done(err); }
 

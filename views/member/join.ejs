@@ -1,41 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <title>Sign up</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/signup.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
+<div class="box1">
+	<p>회원가입</p>
+    <form action="/join" method="post">
+        <label for="email" class="sr-only">Email</label>
+        <input type="email" name="email" class="form-control" placeholder="Email" required autofocus>
 
-        <div class="form-signin">
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
 
-            <form action="/join" method="post">
-                <h3 class="form-signin-heading">Please Sign up</h3>
+        <!--<label for="inputPassword" class="sr-only">Password</label>-->
+        <!--<input type="password" name="password" class="form-control" placeholder="Password" required>-->
 
-                <label for="inputEmail" class="sr-only">Email address</label>
-                <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus>
+        <button class="btn btn-lg btn-default btn-block loginButton">가입하기</button>
+    </form>
 
-                <label for="inputPassword" class="sr-only">Password</label>
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
+    <div class="showResult"></div>
 
-                <!--<label for="inputPassword" class="sr-only">Password</label>-->
-                <!--<input type="password" name="password" class="form-control" placeholder="Password" required>-->
+    <hr />
 
-                <button class="btn btn-lg btn-default btn-block loginButton">Sign up</button>
-            </form>
-
-            <div class="showResult"></div>
-
-            <hr />
-
-            <div>Sign up with <a href='https://localhost/login/kakao'>kakao</a> or <a href=''>Naver</a> or <a href='https://localhost/login/kakao'>Kakao</a></div>
-
-        </div>
-
-    </div>
-
-</body>
-</html>
+    <div>Sign up with <a href='https://localhost/login/kakao'>kakao</a> or <a href=''>Naver</a> or <a href='https://localhost/login/kakao'>Kakao</a></div>
+</div>

@@ -171,7 +171,7 @@ passport.use('login-kakao', new KakaoStrategy({
 
 router.get('/kakao', passport.authenticate('login-kakao'));
 router.get('/oauth/kakao/callback', passport.authenticate('login-kakao', {
-    successRedirect: '/login',
+    successRedirect: '/',
     failureRedirect: '/'
 }));
 
@@ -273,8 +273,8 @@ passport.use('login-naver', new NaverStrategy({
 
 router.get('/naver', passport.authenticate('login-naver'));
 router.get('/oauth/naver/callback', passport.authenticate('login-naver', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 
@@ -312,8 +312,8 @@ passport.use('login-facebook', new FacebookStrategy({
 
 router.get('/facebook', passport.authenticate('login-facebook'));
 router.get('/oauth/facebook/callback', passport.authenticate('login-facebook', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 
@@ -353,8 +353,8 @@ passport.use('login-google', new GoogleStrategy({
 
 router.get('/google', passport.authenticate('login-google'));
 router.get('/oauth/google/callback', passport.authenticate('login-google', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 

@@ -269,6 +269,23 @@ video {
 #room-id[disabled] , #userName[disabled] {
 	background-color: white;
 }
+
+.loginBtnDiv {
+	display: flex;
+	margin: 10px 0;
+}
+.loginBtnDiv div { 
+	max-width: 20%; 
+	overflow: hidden;
+	padding-left: 5px;
+	padding-right: 5px;
+	position: relative; 
+}
+.loginBtnDiv img { 
+	border-radius: 8px;
+	cursor: pointer;
+	width: 100%; 
+}
 /****** index css ******/
 
 

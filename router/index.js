@@ -3,6 +3,7 @@ var router = express.Router();
 var path = require('path');
 
 //var main = require('./main/main');
+var first = require('./first/index');
 var email = require('./email/email');
 var join = require('./join/index');
 var login = require('./login/index');
@@ -17,6 +18,7 @@ var movie = require('./movie/index');
 //});
 
 //router.use('/main', main);
+router.use('/first', first);
 router.use('/email', email);
 router.use('/join', join);
 router.use('/login', login);

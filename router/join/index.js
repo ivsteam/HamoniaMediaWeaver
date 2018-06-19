@@ -48,8 +48,8 @@ passport.deserializeUser(function(id, done) {
 
 // 성공했을때 리다이렉트 시키는 부분
 router.post('/', passport.authenticate('join-local', {
-    successRedirect: '/login',
-    failureRedirect: '/join',
+    successRedirect: '/',
+    failureRedirect: '/',
     failureFlash: true
 }));
 
@@ -59,16 +59,15 @@ passport.use('join-local', new LocalStrategy({
         passReqToCallback: true
     },
     function(req, email, password, done) {
-
         connection.query('select * from tbl_user where email=$1', [email], function (err, rows) {
             if (err) { return done(err); }
-
+            
             if (rows.length) {
                 return done(null, false, {message: 'your email is already used'});
             }
             else {
                 bcrypt.hash(password, null, null, function(err, hash) {
-                    var sql = [email, hash, email, 'email'];
+                    var sql = [email, hash, email.split('@')[0], 'email'];
                     connection.query('insert into tbl_user ( email, password, nickname, auth_type) values($1, $2, $3, $4) RETURNING email, id ', sql, function (err, result) {
                         if (err) throw err;
 						console.log("rows=="+ JSON.stringify(rows));
@@ -78,7 +77,7 @@ passport.use('join-local', new LocalStrategy({
                     });
                 });
             }
-        })
+        });
     }
 ));
 

@@ -269,6 +269,10 @@ video {
 #room-id[disabled] , #userName[disabled] {
 	background-color: white;
 }
+#userName {
+	background-color: white;
+	box-shadow: none;
+}
 
 .loginBtnDiv {
 	display: flex;

@@ -125,8 +125,8 @@ function sendAjax(url, email, password) {
 		
         console.log("xmlHttpRequest.status : " + xmlHttpRequest.status);
         console.log("xmlHttpRequest.status of result : " + result);
-
-        if (result.email) {
+		
+        if (result.nickname) {
             window.location.href="/";
         }
         else {

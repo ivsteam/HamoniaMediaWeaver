@@ -25,7 +25,8 @@
 	<input type="text" id="room-id" class="form-control" placeholder="그룹명을 입력하세요." autocorrect=off autocapitalize=off size=20>
 	
 	<% if (isLogin){ %>
-    	<input type="text" id="userName" class="form-control" name="userName" required autocomplete="off" style="border: 0; font-weight: bold; text-align: center;">
+		<!--<%=auth_type%>:-->
+    	<input type="text" id="userName" value="<%= nickname %>" class="form-control" name="userName" required autocomplete="off" style="border: 0; font-weight: bold; text-align: center;" readonly>
 	<% }else{ %>
     	<input type="text" id="userName" class="form-control" name="userName" required placeholder="대화명을 입력하세요." autocomplete="off" style="display: none;">
 	<% } %>

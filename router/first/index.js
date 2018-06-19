@@ -4,14 +4,19 @@ var path = require('path');
 
 router.get('/', function(req, res) {
     var id = req.user;
-
-    console.log("id : " + id);
+    var user_id;
+    var nickname;
+    var auth_type;
+    
+    if(id && id.user_id) user_id = id.user_id;
+    if(id && id.nickname) nickname = id.nickname;
+    if(id && id.auth_type) auth_type = id.auth_type;
 
     if (!id) {
-        res.render('./member/first.ejs', { isLogin: false });
+        res.render('./member/first.ejs', { isLogin: false , nickname : '' , auth_type : ''});
     }
     else {
-        res.render('./member/first.ejs', { isLogin: true } );
+        res.render('./member/first.ejs', { isLogin: true , nickname : nickname , auth_type : auth_type} );
     }
 
 });

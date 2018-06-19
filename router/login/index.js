@@ -46,7 +46,7 @@ router.get('/', function(req, res) {
     else {
 		isLogin = true;
     }
-
+    
     res.render('./member/login.ejs', {'message' : msg, 'isLogin' : isLogin}); // login.ejs 호출
 });
 

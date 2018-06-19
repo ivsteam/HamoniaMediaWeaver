@@ -353,33 +353,6 @@ function showRoomURL(roomid) {
     window.params = params;
 })();
 
-// 접속시 room 명칭 설정
-var roomid = '';
-
-//if (localStorage.getItem(connection.socketMessageEvent)) {
-//	roomid = localStorage.getItem(connection.socketMessageEvent);
-//	console.log(' ::::: roomid // userName : ' + roomid + ' // ' + userName);
-//} else {
-//	roomid = connection.token();
-//}
-
-$.cookie('roomid', null);
-
-if(document.location.href.split("?roomid=")[1] != undefined){
-	roomid = document.location.href.split("?roomid=")[1];
-	$.cookie('roomid', roomid);
-}
-
-if(!$.cookie('roomid')){
-	roomid = $.cookie('roomid');
-}
-
-// roomid 자동입력
-document.getElementById('room-id').value = roomid;
-document.getElementById('room-id').onkeyup = function() {
-    localStorage.setItem(connection.socketMessageEvent, this.value);
-};
-
 var hashString = location.hash.replace('#', '');
 if (hashString.length && hashString.indexOf('comment-') == 0) {
     hashString = '';

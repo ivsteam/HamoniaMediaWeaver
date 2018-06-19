@@ -14,6 +14,8 @@ $(document).ready(function(){
 	defaultUISet();
 //	loginUISet();
 //	publicLoginUISet();
+	getIndexEjs();
+	
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
@@ -34,7 +36,7 @@ $(document).ready(function(){
 	
 	
 	// 로그인 버튼
-	$('#openLoginDiv').click(function(){
+	$('.bottom_right').on('click', '#openLoginDiv', function(){
 		loginUISet();
 	});
 	
@@ -44,7 +46,7 @@ $(document).ready(function(){
 	});
 	
 	// 회원가입 버튼
-	$('#openSignupDiv').click(function(){
+	$('.bottom_right').on('click', '#openSignupDiv', function(){
 		signupUISet();
 	});
 	
@@ -178,6 +180,19 @@ function defaultUISet(){
 	}
 }
 
+
+// index.ejs 불러오기
+function getIndexEjs(){
+	$.ajax({
+		url	:"/first",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
 
 // 로그인 버튼
 function loginUISet(){

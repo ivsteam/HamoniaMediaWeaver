@@ -69,15 +69,6 @@ $('#signupDiv').click(function(){
 	});
 });
 
-// icon button
-$('.btn-login img').click(function(){
-	if($(this).attr('alt') != 'Hamonikr') {
-		location.href='https://localhost/login/' + $(this).attr('alt');
-	} else {
-		alert('준비중');
-	}
-});
-
 
 $('.btn-login-local').click(function(){
 	var email = document.getElementsByName('email')[0].value;

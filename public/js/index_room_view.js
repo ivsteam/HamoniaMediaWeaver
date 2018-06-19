@@ -49,6 +49,16 @@ $(document).ready(function(){
 	});
 	
 	
+	// icon button
+	$('.bottom_right').on('click', '.btn-login img', function(){
+		if($(this).attr('alt') != 'Hamonikr') {
+			location.href='https://localhost/login/' + $(this).attr('alt');
+		} else {
+			alert('준비중');
+		}
+	});
+	
+	
 	//set button
 	// 채팅창 open/close 버튼
 	$('.chatBtn').click(function(){

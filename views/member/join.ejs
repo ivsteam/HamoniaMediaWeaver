@@ -7,7 +7,7 @@
 		<a id="loginDiv" href='javascript:;'>로그인</a>
 	</div>
 	
-	<form action="/join" method="post">
+	<form method="post" onsubmit="return joinFnc();">
 	    <label for="email" class="sr-only">Email</label>
 	    <input type="email" name="email" class="form-control" placeholder="Email" required autofocus>
 	
@@ -66,4 +66,44 @@ $('#loginDiv').click(function(){
 		}
 	});
 });
+
+
+function joinFnc(){
+	var email = document.getElementsByName('email')[0].value;
+	var password = document.getElementsByName('password')[0].value;
+	sendAjax('https://localhost/join', email, password);
+	return false;
+}
+
+
+// Ajax로 전달
+function sendAjax(url, email, password) {
+    var data = { 'email' : email, 'password' : password };
+
+    data = JSON.stringify(data);
+    var xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open('POST', url); // POST로 보냄
+    xmlHttpRequest.setRequestHeader('Content-Type', 'application/json');
+    xmlHttpRequest.send(data);
+
+    xmlHttpRequest.addEventListener('load', function() {
+        var result = JSON.parse(xmlHttpRequest.responseText);
+        var resultDiv = document.querySelector(".showResult");
+		var reText = '';
+		
+		resultDiv.innerHTML = reText;
+		
+        console.log("xmlHttpRequest.status : " + xmlHttpRequest.status);
+        console.log("xmlHttpRequest.status of result : " + result);
+		
+        if (result.nickname) {
+            window.location.href="/";
+        }
+        else {
+        	if(result == "your email is already used") reText = "사용중인 메일입니다.";
+        	resultDiv.innerHTML = reText;
+            if(reText == '') resultDiv.innerHTML = result;
+        }
+    });
+}
 </script>

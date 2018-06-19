@@ -47,11 +47,35 @@ passport.deserializeUser(function(id, done) {
 });
 
 // 성공했을때 리다이렉트 시키는 부분
-router.post('/', passport.authenticate('join-local', {
-    successRedirect: '/',
-    failureRedirect: '/',
-    failureFlash: true
-}));
+//router.post('/', passport.authenticate('join-local', {
+//    successRedirect: '/',
+//    failureRedirect: '/',
+//    failureFlash: true
+//}));
+
+router.post('/', function(req, res, next) {
+    console.log('join local');
+    passport.authenticate('join-local', function(err, user, info) {
+        if (err) {
+            res.status(500).json(err); // 500 : Server Error
+		}
+        if (!user) {
+            return res.status(401).json(info.message); // 401 : 권한없음
+		}
+
+        req.logIn(user, function(err) {
+            if (err) return next(err);
+            
+            for(var key in user){
+            	console.log(' ---- key // user : ' + key + ' // ' + user[key]);
+            }
+            
+            return res.json(user);
+        });
+    }) (req, res, next);
+});
+
+
 
 passport.use('join-local', new LocalStrategy({
         usernameField: 'email',
@@ -62,7 +86,7 @@ passport.use('join-local', new LocalStrategy({
         connection.query('select * from tbl_user where email=$1', [email], function (err, rows) {
             if (err) { return done(err); }
             
-            if (rows.length) {
+            if (rows['rowCount'] > 0) {
                 return done(null, false, {message: 'your email is already used'});
             }
             else {
@@ -73,7 +97,7 @@ passport.use('join-local', new LocalStrategy({
 						console.log("rows=="+ JSON.stringify(rows));
 						console.log("rows=="+ result.rows[0].email);
 						console.log("rows=="+ result.rows[0].id);
-                        return done(null, { 'email' : result.rows[0].email, 'id' : result.rows[0].id});
+                        return done(null, {'user_id' : result.rows[0].id , 'nickname' : email.split('@')[0] , 'auth_type' : 'email' });
                     });
                 });
             }

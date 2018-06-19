@@ -240,8 +240,10 @@ passport.use('login-hamonikr', new LocalStrategy({
 //https://developers.naver.com/apps
 // for Naver Auth
 passport.use('login-naver', new NaverStrategy({
-        clientID : 'lXcYqHZGWz8A0zEy5_00',
-		clientSecret : '0HejW2Rynn',
+//		clientID : 'lXcYqHZGWz8A0zEy5_00',
+//		clientSecret : '0HejW2Rynn',
+        clientID : '3waik800SSUnar7dVamk',
+		clientSecret : 'wG1_yTjwQU',
         callbackURL : 'https://127.0.0.1/login/oauth/naver/callback'
     },
     function(accessToken, refreshToken, profile, done) {
@@ -287,8 +289,10 @@ router.get('/oauth/naver/callback', passport.authenticate('login-naver', {
 //https://developers.facebook.com/apps
 // for facebook Auth
 passport.use('login-facebook', new FacebookStrategy({
-        clientID : '244239102977944',
-		clientSecret : '5525a20d2764a6f5181086f84e000249',
+//		clientID : '244239102977944',
+//		clientSecret : '5525a20d2764a6f5181086f84e000249',
+        clientID : '192538538067835',
+		clientSecret : 'd092ebeefcf9f08068eab400bbebc0c3',
         callbackURL : 'https://localhost/login/oauth/facebook/callback'
     },
     function(accessToken, refreshToken, profile, done) {

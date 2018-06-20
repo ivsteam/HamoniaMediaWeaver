@@ -1,0 +1,64 @@
+<div class="box3">
+	<!-- <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p> -->
+	<img alt="" src="/img/hamonia-logo.png">
+</div>
+
+<% if (isLogin){ %>
+	<div class="box1" style="margin-top: -10px; padding-top: 0; padding-right: 25px;">
+		<div class='signup' style="position: static;">
+			<a href="/logout">LOGOUT</a>
+		</div>
+	</div>
+<% }else{ %>
+	<div class="box1" style="padding-right: 25px;">
+		<!-- <p>Hamonia</p> -->
+		<div class='signup' style="position: static;">
+			<a href='javascript:;' id="openLoginDiv">로그인</a>
+			<span> / </span>
+			<a href='javascript:;' id="openSignupDiv">회원가입</a>
+		</div>
+	</div>
+<% } %>
+
+
+<div class="box4">
+	<input type="text" id="room-id" class="form-control" placeholder="그룹명을 입력하세요." autocorrect=off autocapitalize=off size=20>
+	
+	<% if (isLogin){ %>
+		<!--<%=auth_type%>:-->
+    	<input type="text" id="userName" value="<%= nickname %>" class="form-control" name="userName" required autocomplete="off" style="border: 0; font-weight: bold; text-align: center;" readonly>
+	<% }else{ %>
+    	<input type="text" id="userName" class="form-control" name="userName" required placeholder="대화명을 입력하세요." autocomplete="off" style="display: none;">
+	<% } %>
+</div>
+
+<div class="row joinBtn">
+	<button id="open-or-join-room" class="btn btn-primary btn-block">Join room!</button>
+</div>
+
+<script>
+// 접속시 room 명칭 설정
+var roomid = '';
+
+//if (localStorage.getItem(connection.socketMessageEvent)) {
+//	roomid = localStorage.getItem(connection.socketMessageEvent);
+//	console.log(' ::::: roomid // userName : ' + roomid + ' // ' + userName);
+//} else {
+//	roomid = connection.token();
+//}
+
+if(document.location.href.split("?roomid=")[1] != undefined){
+	roomid = document.location.href.split("?roomid=")[1];
+	$.cookie('roomid', roomid);
+}
+
+if($.cookie('roomid')){
+	roomid = $.cookie('roomid');
+}
+
+// roomid 자동입력
+document.getElementById('room-id').value = roomid;
+document.getElementById('room-id').onkeyup = function() {
+    localStorage.setItem(connection.socketMessageEvent, this.value);
+};
+</script>

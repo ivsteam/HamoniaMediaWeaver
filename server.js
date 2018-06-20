@@ -228,8 +228,6 @@ var bodyParser = require('body-parser');
 
 
 http_app.use(express.static(path.join(__dirname, 'public')));
-http_app.use(bodyParser.json());
-http_app.use(bodyParser.urlencoded({extended : true}));
 http_app.use(session({
 	secret: 'keyboard cat',
 	resave: false,
@@ -241,8 +239,65 @@ http_app.use(passport.session());
 http_app.use(flash());
 http_app.use(router);
 
-http_app.get('/', function(req, res){
+http_app.use(bodyParser.json({limit: '50mb'}));
+http_app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
+
+// 화이트보드] 이미지 저장
+http_app.post('/cavasImgSave', function(req, res){
+//	console.log('params: ' + JSON.stringify(req.params));
+//	console.log('body: ' + JSON.stringify(req.body));
+//	console.log('query: ' + JSON.stringify(req.query));
+
+	var data_url = req.body.imgBase64;
+	var matches = data_url.match(/^data:.+\/(.+);base64,(.*)$/);	///data:(.*);base64,(.*)/
+	var ext = matches[1];
+	var base64_data = matches[2];
+	var buffer = new Buffer(base64_data, 'base64');
+
+	var filedirectory = __dirname + '/upload/' + req.session.user_id;
+	try{ 
+		fs.mkdirSync(filedirectory);
+	}catch(e){ 
+		if ( e.code != 'EEXIST' ) throw e; // 존재할경우 패스처리함. 
+	}
+
+	fs.writeFile(filedirectory +"/"+req.body.fileNm+'.png', buffer, function (err) {
+		var resData = {}
+		resData.success = 'Y';
+		resData.user_id = req.session.user_id;
+		res.send(resData);
+		console.log(err);
+	});
+
+});
+// 화이트보드] 접속 페이지
+http_app.get('/test', function(req, res){
+
+	// 로그인에 상관없이 룸 생성자의 고유값을 세션에 저장한다.
+	req.session.user_id = '1234', // 아이디
+	req.session.name = 'chris' // 이름
+
+	fs.readFile(__dirname + '/views/test.html', 'utf8', function(error, data) {  
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+//			isLogin : isLogin,
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+// 이미지 뷰어
+http_app.get('/img/:path/:imgnm', function(req, res){
+	console.log("path==="+  req.params.path +"=="+ req.params.imgnm);
+	var filename ='pageNum1';
+	var img = fs.readFileSync('./upload/' + req.params.path + '/' + req.params.imgnm +'.png');
+	res.writeHead(200, {'Content-Type': 'image/png' });
+	res.end(img, 'binary');
+	console.log('view PNG: '+filename+'.png');
+});
+
+
+http_app.get('/', function(req, res){
 	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   
 		res.end(ejs.render(data, {  

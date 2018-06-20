@@ -12,10 +12,13 @@ $(document).ready(function(){
 	// set UI
 	windowReset();
 	defaultUISet();
+	getIndexEjs();
+	
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	
+	$('#userName').css('display', 'none');
 	
 	// 그룹명 input tag
 	$('#room-id').keydown(function(key) {
@@ -27,6 +30,32 @@ $(document).ready(function(){
 	$('#userName').keydown(function(key) {
 		if(key.keyCode != 13) return;
 		$('#open-or-join-room').trigger('click');
+	});
+	
+	
+	// 로그인 버튼
+	$('.bottom_right').on('click', '#openLoginDiv', function(){
+		loginUISet();
+	});
+	
+	// 비회원 버튼
+	$('.bottom_right').on('click', '#notLoginDiv', function(){
+		location.reload();
+	});
+	
+	// 회원가입 버튼
+	$('.bottom_right').on('click', '#openSignupDiv', function(){
+		signupUISet();
+	});
+	
+	
+	// icon button
+	$('.bottom_right').on('click', '.btn-login img', function(){
+		if($(this).attr('alt') != 'Hamonikr') {
+			location.href='https://localhost/login/' + $(this).attr('alt');
+		} else {
+			alert('준비중');
+		}
 	});
 	
 	
@@ -123,6 +152,9 @@ function defaultUISet(){
 	if(navigator.platform){
 		if(checkmob){	
 			//alert("Mobile");
+			// main bottom_right
+			$('.box3 img').css('width', '100px').css('margin-bottom', '15px');
+			
 			// logo
 			$('#logo img').css('padding-top', '10px');
 			$('#logo').css('height', '50px');
@@ -155,6 +187,61 @@ function defaultUISet(){
 								.css('top', ($(window).height() - $('#inviteAlert').height() - 130 ) / 2);
 	}
 }
+
+
+//index.ejs 불러오기
+function getIndexEjs(){
+	$.ajax({
+		url	:"/first",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+			psycareFnt();
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
+//로그인 버튼
+function loginUISet(){
+	$.ajax({
+		url	:"/login",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
+//회원가입 버튼
+function signupUISet(){
+	$.ajax({
+		url	:"/join",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
+//비회원 버튼 -- 사용X
+function publicLoginUISet(){
+	$.ajax({
+		url	:"/member/publicLogin",
+		success : function(result, status, xhr){
+			$('.bottom_right').html(result);
+		},
+		error : function(result, status, error){
+			console.log(' ==== publicLoginUISet() error : ' + result + '\n' + status + '\n' + error);
+		}
+	});
+}
+
 
 // 영상 사이즈 조절
 function refreshVideoView(){

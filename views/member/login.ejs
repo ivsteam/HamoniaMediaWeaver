@@ -1,111 +1,132 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Login</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/signin.css" rel="stylesheet">
-</head>
-<body>
+<% if (!isLogin) { %>
+	<!-- not login -->
+	<!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="/login">LOGIN</a>-->
+	
+	<div class="box1">
+		<p>Hamonia</p>
+	
+		<div class='signup'>
+			<a id="notLoginDiv" href='javascript:;'>비회원</a>
+			<span> / </span>
+			<a id="signupDiv" href='javascript:;'>회원가입</a>
+		</div>
+		
+		<form method="post">
+    	    <label for="email" class="sr-only">Email</label>
+	        <input type="email" name="email" class="form-control" placeholder="Email" required autofocus>
+	        <label for="password" class="sr-only">Password</label>
+	        <input type="password" name="password" class="form-control" placeholder="Password" required>
+		    <button class="btn btn-lg btn-default btn-block btn-login-local">로그인</button>
+	    </form>
+		
+		<!--<button id="open-or-join-room" class="btn btn-lg btn-default btn-block btn-login-local">로그인</button>-->
+		
+	    <div class="showResult"></div>
+	</div>
 
-<div class="container">
-
-<!-- Todo : Session 정보로 로그인 or 로그아웃 -->
-                    <% if (isLogin) { %>
-                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="/logout">LOGOUT</a>
-                    <% } else { %>
-                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="/login">LOGIN</a>
-                    <% } %>
-
-    <div class="form-signin">
-
-        <h3 class="form-signin-heading">Please Sign in</h3>
-
-        <button class="btn btn-lg btn-warning btn-block btn-login-kakao" onclick="location.href='https://localhost/login/kakao'">Kakao</button>
-        <button class="btn btn-lg btn-primary btn-block btn-login-facebook" onclick="location.href='https://localhost/login/facebook'">Facebook</button>
-        <button class="btn btn-lg btn-success btn-block btn-login-naver" onclick="location.href='https://localhost/login/naver'">Naver</button>
-	<button class="btn btn-lg btn-success btn-block btn-login-naver" onclick="location.href='https://localhost/login/google'">Google</button>
-	<button class="btn btn-lg btn-success btn-block btn-login-naver" onclick="location.href='http://localhost:8090/acountLogin.php'">Hamonikr</button>
-
-        <hr />
-
-        <form method="post">
-            <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="email" name="email" class="form-control" placeholder="Email address" required autofocus>
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
-        </form>
-
-        <button class="btn btn-lg btn-default btn-block btn-login-local">Sign in</button>
-
-        <div class="showResult"></div>
-
-        <hr />
-
-        <div class='signup'>Don't have an account? <a href='/join'>Sign up</a></div>
-
-    </div>
-
-</div>
-
+	<!-- sosial -->
+	<div class="box2">
+		<hr style=" margin-top:  8px; margin-bottom:  10px;">
+		
+		<b>SNS 계정으로 회원가입/로그인</b>
+		
+		<div class="loginBtnDiv">
+			
+			<div class="btn-login">
+				<img alt="kakao" src="/img/kakaolink_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="naver" src="/img/naver_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="google" src="/img/google+_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="facebook" src="/img/facebook-icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="Hamonikr" src="/img/hamonikr-icon.png">
+			</div>
+		</div>
+	</div>
+<% } %>
 
 <script>
-    document.querySelector('.btn-login-local').addEventListener('click', function() {
-        var email = document.getElementsByName('email')[0].value;
-        var password = document.getElementsByName('password')[0].value;
-        sendAjax('https://localhost/login', email, password);
+// signup button
+$('#signupDiv').click(function(){
+	$.ajax({
+		url : 'join',
+		success : function(data){
+			$('.bottom_right').empty().append(data);
+		},
+		error : function(request, status, error){
+			console.log('status : ' + status + '\nrequest : ' + request + '\nerror : ' + error);
+		}
+	});
+});
+
+
+$('.btn-login-local').click(function(){
+	var email = document.getElementsByName('email')[0].value;
+	var password = document.getElementsByName('password')[0].value;
+	sendAjax('https://localhost/login', email, password);
+	return false;
+});
+	
+//	document.querySelector('.btn-login-kakao').addEventListener('click', function() {
+//		sendKakaoAjax('https://localhost/login/kakao');
+//	});
+
+function sendKakaoAjax(url) {
+    console.log("sendKakaoAjax : " + url);
+    
+    $.ajax({
+        type: 'post',
+        url: url,
+        success: function (args) {
+            console.log("success");
+        },
+        error: function (err) {
+            console.log("error", err);
+        }
     });
+}
 
-    document.querySelector('.btn-login-kakao').addEventListener('click', function() {
-        sendKakaoAjax('https://localhost/login/kakao');
+
+// Ajax로 전달
+function sendAjax(url, email, password) {
+    var data = { 'email' : email, 'password' : password };
+
+    data = JSON.stringify(data);
+    var xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open('POST', url); // POST로 보냄
+    xmlHttpRequest.setRequestHeader('Content-Type', 'application/json');
+    xmlHttpRequest.send(data);
+
+    xmlHttpRequest.addEventListener('load', function() {
+        var result = JSON.parse(xmlHttpRequest.responseText);
+        var resultDiv = document.querySelector(".showResult");
+		var reText = '';
+		
+		resultDiv.innerHTML = reText;
+		
+        console.log("xmlHttpRequest.status : " + xmlHttpRequest.status);
+        console.log("xmlHttpRequest.status of result : " + result);
+		
+        if (result.nickname) {
+            window.location.href="/";
+        }
+        else {
+        	if(result == "Missing credentials") reText = "유효한 입력이 아닙니다.";
+        	if(result == "Your login info is not found") reText = "로그인 정보를 찾을 수 없습니다.";
+        	if(result == "Your password is incorrect") reText = "비밀번호가 일치하지 않습니다.";
+        	resultDiv.innerHTML = reText;
+            if(reText == '') resultDiv.innerHTML = result;
+        }
     });
-
-    function sendKakaoAjax(url) {
-        console.log("sendKakaoAjax : " + url);
-        
-        $.ajax({
-            type: 'post',
-            url: url,
-            success: function (args) {
-                console.log("success");
-            },
-            error: function (err) {
-                console.log("error", err);
-            }
-        });
-    }
-
-
-    // Ajax로 전달
-    function sendAjax(url, email, password) {
-        var data = { 'email' : email, 'password' : password };
-
-        data = JSON.stringify(data);
-        var xmlHttpRequest = new XMLHttpRequest();
-        xmlHttpRequest.open('POST', url); // POST로 보냄
-        xmlHttpRequest.setRequestHeader('Content-Type', 'application/json');
-        xmlHttpRequest.send(data);
-
-        xmlHttpRequest.addEventListener('load', function() {
-            var result = JSON.parse(xmlHttpRequest.responseText);
-            var resultDiv = document.querySelector(".showResult");
-
-            console.log("xmlHttpRequest.status : " + xmlHttpRequest.status);
-            console.log("xmlHttpRequest.status of result : " + result);
-
-            if (result.email) {
-                window.location.href="/";
-            }
-            else {
-                resultDiv.innerHTML = result;
-            }
-        });
-
-    }
-
+}
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-</body>
-</html>

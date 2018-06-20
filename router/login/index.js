@@ -46,12 +46,12 @@ router.get('/', function(req, res) {
     else {
 		isLogin = true;
     }
-
+    
     res.render('./member/login.ejs', {'message' : msg, 'isLogin' : isLogin}); // login.ejs 호출
 });
 
 passport.serializeUser(function(user, done) {
-    done(null, user.user_id);
+    done(null, user);
 });
 
 passport.deserializeUser(function(id, done) {
@@ -80,8 +80,9 @@ function loginByThirdparty(info, done) {
 						return done(err);
 					}else{
 						done(null, {
-						'user_id': info.auth_id,
-						'nickname': info.auth_name
+							'user_id': info.auth_id,
+							'nickname': info.auth_name,
+							'auth_type' : info.auth_type
 						});
 					}
 				});
@@ -90,7 +91,8 @@ function loginByThirdparty(info, done) {
 				console.log('Old User' + result.rows[0].user_id +"=="+ result.rows[0].nickname);
 				done(null, {
 					'user_id': result.rows[0].user_id,
-					'nickname': result.rows[0].nickname
+					'nickname': result.rows[0].nickname,
+					'auth_type' : result.rows[0].auth_type
 				});
 			}
 		}
@@ -114,7 +116,7 @@ router.post('/', function(req, res, next) {
 
         req.logIn(user, function(err) {
             if (err) return next(err);
-
+            
             return res.json(user);
         });
     }) (req, res, next);
@@ -134,7 +136,8 @@ passport.use('login-local', new LocalStrategy({
 			if (result.rows.length) {
 				bcrypt.compare(password, result.rows[0].password, function(err, res) {
 					if (res) {
-						return done(null, { 'email' : email, 'id' : result.rows[0].id });
+//						return done(null, { 'email' : email, 'id' : result.rows[0].id });
+						return done(null, { 'user_id' : result.rows[0].id , 'nickname' : result.rows[0].nickname , 'auth_type' : result.rows[0].auth_type });
 					}else {
 						return done(null, false, {'message' : 'Your password is incorrect'});
 					}
@@ -171,7 +174,7 @@ passport.use('login-kakao', new KakaoStrategy({
 
 router.get('/kakao', passport.authenticate('login-kakao'));
 router.get('/oauth/kakao/callback', passport.authenticate('login-kakao', {
-    successRedirect: '/login',
+    successRedirect: '/',
     failureRedirect: '/'
 }));
 
@@ -237,44 +240,46 @@ passport.use('login-hamonikr', new LocalStrategy({
 //https://developers.naver.com/apps
 // for Naver Auth
 passport.use('login-naver', new NaverStrategy({
-        clientID : 'lXcYqHZGWz8A0zEy5_00',
-		clientSecret : '0HejW2Rynn',
+//		clientID : 'lXcYqHZGWz8A0zEy5_00',
+//		clientSecret : '0HejW2Rynn',
+        clientID : '3waik800SSUnar7dVamk',
+		clientSecret : 'wG1_yTjwQU',
         callbackURL : 'https://127.0.0.1/login/oauth/naver/callback'
     },
     function(accessToken, refreshToken, profile, done) {
-	process.nextTick(function () {
-		// data to be saved in DB
-
-		console.log("profile.displayName=="+ profile.displayName);
-		console.log("profile.emails[0].value==="+ profile.emails[0].value);
-		console.log("profile._json==="+ profile._json);
-
-//		user = {
-//			name: profile.displayName,
-//			email: profile.emails[0].value,
-//			username: profile.displayName,
-//			provider: 'naver',
-//			naver: profile._json
-//		};
-//		return done(null, profile);
-
-		var _profile = profile._json;
-		loginByThirdparty({
-			'auth_type': 'naver',
-			'auth_id': _profile.id,
-			'auth_name': _profile.nickname,
-			'auth_email': _profile.email
-		}, done);
-
-	});
+		process.nextTick(function () {
+			// data to be saved in DB
+	
+			console.log("profile.displayName=="+ profile.displayName);
+			console.log("profile.emails[0].value==="+ profile.emails[0].value);
+			console.log("profile._json==="+ profile._json);
+	
+//			user = {
+//				name: profile.displayName,
+//				email: profile.emails[0].value,
+//				username: profile.displayName,
+//				provider: 'naver',
+//				naver: profile._json
+//			};
+//			return done(null, profile);
+	
+			var _profile = profile._json;
+			loginByThirdparty({
+				'auth_type': 'naver',
+				'auth_id': _profile.id,
+				'auth_name': _profile.nickname,
+				'auth_email': _profile.email
+			}, done);
+	
+		});
 	}
 ));
 
 
 router.get('/naver', passport.authenticate('login-naver'));
 router.get('/oauth/naver/callback', passport.authenticate('login-naver', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 
@@ -284,36 +289,38 @@ router.get('/oauth/naver/callback', passport.authenticate('login-naver', {
 //https://developers.facebook.com/apps
 // for facebook Auth
 passport.use('login-facebook', new FacebookStrategy({
-        clientID : '244239102977944',
-		clientSecret : '5525a20d2764a6f5181086f84e000249',
+//		clientID : '244239102977944',
+//		clientSecret : '5525a20d2764a6f5181086f84e000249',
+        clientID : '192538538067835',
+		clientSecret : 'd092ebeefcf9f08068eab400bbebc0c3',
         callbackURL : 'https://localhost/login/oauth/facebook/callback'
     },
     function(accessToken, refreshToken, profile, done) {
-	process.nextTick(function () {
-		// data to be saved in DB
-
-		console.log("profile.displayName=="+ profile.displayName);
-		console.log("profile.id==="+ profile.id);
-		console.log("profile.username==="+ profile.username);
-
-	console.log("profile._json=="+ JSON.stringify(profile._json));
-		var _profile = profile._json;
-		loginByThirdparty({
-			'auth_type': 'facebook',
-			'auth_id': _profile.id,
-			'auth_name': _profile.name
-//			'auth_email': _profile.email
-		}, done);
-
-	});
+		process.nextTick(function () {
+			// data to be saved in DB
+	
+			console.log("profile.displayName=="+ profile.displayName);
+			console.log("profile.id==="+ profile.id);
+			console.log("profile.username==="+ profile.username);
+	
+		console.log("profile._json=="+ JSON.stringify(profile._json));
+			var _profile = profile._json;
+			loginByThirdparty({
+				'auth_type': 'facebook',
+				'auth_id': _profile.id,
+				'auth_name': _profile.name
+//				'auth_email': _profile.email
+			}, done);
+	
+		});
 	}
 ));
 
 
 router.get('/facebook', passport.authenticate('login-facebook'));
 router.get('/oauth/facebook/callback', passport.authenticate('login-facebook', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 
@@ -330,31 +337,29 @@ passport.use('login-google', new GoogleStrategy({
 
     },
     function(accessToken, refreshToken, profile, done) {
-	process.nextTick(function () {
-		// data to be saved in DB
-
-		console.log("profile.displayName=="+ profile.displayName);
-		console.log("profile.id==="+ profile.id);
-		console.log("profile.username==="+ profile.username);
-
-
-		var _profile = profile._json;
-		loginByThirdparty({
-			'auth_type': 'google',
-			'auth_id': _profile.id,
-			'auth_name': _profile.displayName
-//			'auth_email': _profile.email
-		}, done);
-
-	});
+		process.nextTick(function () {
+			// data to be saved in DB
+	
+			console.log("profile.displayName=="+ profile.displayName);
+			console.log("profile.id==="+ profile.id);
+			console.log("profile.username==="+ profile.username);
+			
+			var _profile = profile._json;
+			loginByThirdparty({
+				'auth_type': 'google',
+				'auth_id': _profile.id,
+				'auth_name': _profile.displayName
+//				'auth_email': _profile.email
+			}, done);
+		});
 	}
 ));
 
 
 router.get('/google', passport.authenticate('login-google'));
 router.get('/oauth/google/callback', passport.authenticate('login-google', {
-    successRedirect: '/login',
-    failureRedirect: '/login'
+    successRedirect: '/',
+    failureRedirect: '/'
 //	failureRedirect: '/'
 }));
 

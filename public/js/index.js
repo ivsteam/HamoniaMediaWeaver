@@ -33,7 +33,15 @@ function browserCheck(){
 }
 
 
-document.getElementById('open-or-join-room').onclick = function() {
+$('.bottom_right').on('click', '#open-or-join-room', function(){
+	$('#userName').css('display', 'none');
+	
+	// 비회원 사용자 id 설정
+	if(!$('#userName').val()){
+		$('#userName').val(connection.token());
+	}
+	
+	
 	// os 및 browser 체크
 	
 	var text = browserCheck();
@@ -60,18 +68,20 @@ document.getElementById('open-or-join-room').onclick = function() {
 		$('#room-id').focus();
 		return;
 	}
-//	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
-//		$('#userName').focus();
-//		return;
-//	}
+	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
+		$('#userName').focus();
+		return;
+	}
 	
 	disableInputButtons();
     connection.openOrJoin(document.getElementById('room-id').value, function(isRoomExists, roomid) {
+    	$.cookie('roomid', '');
+    	
         if (!isRoomExists) {
 //            showRoomURL(roomid);
         }
     });
-};
+});
 
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
@@ -294,7 +304,7 @@ connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
 function disableInputButtons() {
     document.getElementById('open-or-join-room').disabled = true;
     document.getElementById('room-id').disabled = true;
-//    document.getElementById('userName').disabled = true;
+    document.getElementById('userName').disabled = true; //
     document.getElementById('share-file').disabled = true;
 }
 
@@ -330,31 +340,6 @@ function showRoomURL(roomid) {
         params[d(match[1])] = d(match[2]);
     window.params = params;
 })();
-
-// 접속시 room 명칭 설정
-var roomid = '';
-
-//if (localStorage.getItem(connection.socketMessageEvent)) {
-//	roomid = localStorage.getItem(connection.socketMessageEvent);
-//	console.log(' ::::: roomid // userName : ' + roomid + ' // ' + userName);
-//} else {
-//	roomid = connection.token();
-//}
-
-//if(document.location.href.split("?roomID=")[1] != undefined){
-//	roomid = document.location.href.split("?roomID=")[1];
-//	userName = document.location.href.split("&name=")[1];
-//	
-//	alert("roomid=111====="+ roomid );
-//	alert("=="+ userName );
-//	
-//}
-
-// roomid 자동입력
-document.getElementById('room-id').value = roomid;
-document.getElementById('room-id').onkeyup = function() {
-    localStorage.setItem(connection.socketMessageEvent, this.value);
-};
 
 var hashString = location.hash.replace('#', '');
 if (hashString.length && hashString.indexOf('comment-') == 0) {

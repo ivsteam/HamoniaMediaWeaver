@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Hamonia Media Weaver</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="shortcut icon" href="/views/logo.png">
+	<link rel="shortcut icon" href="/img/favicon.ico">
 	<!-- <link rel="stylesheet" href="/views/stylesheet.css"> -->
 	
 	<!-- Bootstrap core CSS-->
@@ -32,6 +32,7 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+	<script src="/js/jquery.cookie.js"></script> 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 	
 	
@@ -47,18 +48,17 @@
 </head>
 
 <script type="text/javascript">
-$(document).ready(function(){
-	var psycareRoom = '<%= roomID %>';
-	var psycareName = '<%= userName %>';
-	var psycare = '<%= psycare %>';
-	document.getElementById('room-id').value = psycareRoom;
-	document.getElementById('userName').value = psycareName;
-	document.getElementById('psycare').value = psycare;
-	if( document.getElementById('room-id').value.length != 0 ){
-		$('#open-or-join-room').trigger('click');
+	function psycareFnt(){
+		if( '<%= roomID %>') document.getElementById('room-id').value = '<%= roomID %>';
+		if( '<%= userName %>') document.getElementById('userName').value = '<%= userName %>';
+		if( '<%= psycare %>') document.getElementById('psycare').value = '<%= psycare %>';
+		
+		if( document.getElementById('room-id').value.length != 0 && document.getElementById('psycare').value == 'psycare' ){
+			$('#open-or-join-room').trigger('click');
+		}
 	}
-});
 </script>
+
 <body id="page-top">
 	
 	<!-- main page start -->
@@ -84,31 +84,9 @@ $(document).ready(function(){
 				
 				<div style="width: 1%;"></div>
 				
-				<div class="bottom_right">
-					<div class="box1">
-						<p>개설/참여하기<br>방 이름을 입력하여 개설 또는 바로 참여하세요</p>
-					</div>
-					
-					<div class="box3">
-						<lx-text-field label="Room">
-						    <!-- <input type="text" id="roomID" name="roomID" required placeholder="그룹명을 입력하세요." autocomplete="off"> -->
-						    <input type="text" id="room-id" placeholder="그룹명을 입력하세요." autocorrect=off autocapitalize=off size=20>
-						</lx-text-field>
-					</div>
-					 <input type="hidden" id="userName" name="userName">
-					 <input type="hidden" id="psycare" name="psycare">
-					<hr style="margin: 0;"/>
-					<!-- div class="box4">
-						<lx-text-field label="Username">
-						    <input type="text" id="userName" name="userName" required placeholder="대화명을  입력하세요." autocomplete="off">
-						</lx-text-field>
-					</div -->
-					
-					<div class="row joinBtn">
-						<!-- <button type="submit" id="createRoomBtn" class="btn btn-primary btn-block">Join room!</button> -->
-						<button id="open-or-join-room" class="btn btn-primary btn-block">Join room!</button>
-					</div>
-				</div>
+				<input type="hidden" id="psycare" name="psycare">
+				
+				<div class="bottom_right"></div>
 		    </div>
 		    
 			<hr style="width: 100%; margin: 30px 0 ; border: 0;"/>

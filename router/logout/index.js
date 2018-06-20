@@ -3,7 +3,7 @@ var router = express.Router();
 
 router.get('/', function(req, res){
     req.logout();
-    res.render('./member/login.ejs', { isLogin: false, roomID :'' });
+    res.render('./index.ejs', { isLogin: false, roomID :'', userName : '', psycare : '' });
 
     console.log("logout done");
 });

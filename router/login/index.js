@@ -183,10 +183,11 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-router.post('/oauth/hamonikr/callback', passport.authenticate('login-hamonikr', {failureRedirect: '/login', failureFlash: true}), // 인증 실패 시 401 리턴, {} -> 인증 스트레티지
-  function (req, res) {
-    res.redirect('/login');
-  });
+router.post('/oauth/hamonikr/callback', passport.authenticate('login-hamonikr', {failureRedirect: '/', failureFlash: true}), // 인증 실패 시 401 리턴, {} -> 인증 스트레티지
+	function (req, res) {
+		res.redirect('/login');
+	}
+);
 
 
 passport.use('login-hamonikr', new LocalStrategy({
@@ -214,8 +215,9 @@ passport.use('login-hamonikr', new LocalStrategy({
 							return done(err);
 						}else{
 							done(null, {
-							'user_id': req.body.id,
-							'nickname': req.body.name
+								'user_id': req.body.id,
+								'nickname': req.body.name,
+								'auth_type' : req.body.auth_type
 							});
 						}
 					});
@@ -224,13 +226,13 @@ passport.use('login-hamonikr', new LocalStrategy({
 					console.log('Old User' + result.rows[0].user_id +"=="+ result.rows[0].nickname);
 					done(null, {
 						'user_id': result.rows[0].user_id,
-						'nickname': result.rows[0].nickname
+						'nickname': result.rows[0].nickname,
+						'auth_type' : result.rows[0].auth_type
 					});
 				}
 			}
 		});
 	}
-
 ));
 
 

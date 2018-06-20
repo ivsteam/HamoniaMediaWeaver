@@ -395,8 +395,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             connection.onNumberOfBroadcastViewersUpdated(data);
         });
 
-        connection.socket.on('room-full', function(roomid) {
-            connection.onRoomFull(roomid);
+        connection.socket.on('room-full', function(roomid, memCnt) {
+            connection.onRoomFull(roomid, memCnt);
         });
 
         connection.socket.on('become-next-modrator', function(sessionid) {
@@ -1913,6 +1913,9 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         DetectRTC.checkWebSocketsSupport = function(callback) {
             callback = callback || function() {};
+            
+            console.log('connection.openOrJoin2');
+            
             try {
                 var starttime;
                 var websocket = new WebSocket('wss://echo.websocket.org:443/');
@@ -4509,6 +4512,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
                     callback(isRoomExist, roomid);
                 });
             });
+            
+            console.log(' ---- connection.getAllParticipants() 2 : ' + connection.getAllParticipants());
         };
 
         // don't allow someone to join this person until he has the media
@@ -6047,8 +6052,10 @@ console.log("localUserid===1111111111111======"+ localUserid);
             connection.join(useridAlreadyTaken);
         };
 
-        connection.onRoomFull = function(roomid) {
-            if (connection.enableLogs) {
+        connection.onRoomFull = function(roomid, memCnt) {
+    		alert('최대 인원수를 초과할 수 없습니다.(' + memCnt + '명)');
+            
+    		if (connection.enableLogs) {
                 console.warn(roomid, 'is full.');
             }
         };

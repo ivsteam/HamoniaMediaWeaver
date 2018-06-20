@@ -3,6 +3,9 @@ var roomList = {};
 var shiftedModerationControls = {};
 var ScalableBroadcast;
 
+//maximum member of users = customMaxParticipantsAllowed
+var customMaxParticipantsAllowed = 4;
+
 const { Pool, Client } = require('pg')
 
 const client = new Pool({
@@ -73,7 +76,8 @@ module.exports = exports = function(app, socketCallback) {
             connectedWith: {},
             isPublic: false, // means: isPublicModerator
             extra: extra || {},
-            maxParticipantsAllowed: params.maxParticipantsAllowed || 1000
+//          maxParticipantsAllowed: params.maxParticipantsAllowed || 1000
+            maxParticipantsAllowed: customMaxParticipantsAllowed-1 || 1000
         };
     }
 	
@@ -345,7 +349,16 @@ module.exports = exports = function(app, socketCallback) {
         }
 
         function joinARoom(message) {
-		
+        	console.log(' ---- joinARoom() : ' + message);
+        	
+        	var userNum = 0;
+        	
+//        	for(var key in message){
+//        		++userNum;
+//    			console.log(' ---- joinARoom() key : ' + key + ' // message[key] : ' + message[key]);
+//        	}
+        	
+        	
 			roomList[message.sender] = {
 				userid: message.sender,
 				roomNm : message.remoteUserId
@@ -363,7 +376,9 @@ module.exports = exports = function(app, socketCallback) {
             var maxParticipantsAllowed = roomInitiator.maxParticipantsAllowed;
 
             if (Object.keys(usersInARoom).length >= maxParticipantsAllowed) {
-                socket.emit('room-full', message.remoteUserId);
+            	var memCnt = ( Object.keys(usersInARoom).length+1 ) + '/' + ( customMaxParticipantsAllowed );
+            	
+                socket.emit('room-full', message.remoteUserId, memCnt);
 
                 if (roomInitiator.connectedWith[socket.userid]) {
                     delete roomInitiator.connectedWith[socket.userid];

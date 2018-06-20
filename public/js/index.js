@@ -38,7 +38,7 @@ $('.bottom_right').on('click', '#open-or-join-room', function(){
 	
 	// 비회원 사용자 id 설정
 	if(!$('#userName').val()){
-		$('#userName').val(connection.token());
+		$('#userName').val(messageSplit + connection.token());
 	}
 	
 	
@@ -172,12 +172,6 @@ connection.onstream = function(event) {
 		existing.parentNode.removeChild(existing);
 	}
 
-	// 4명 까지만 가능
-	if($('.media-container').length + 1 > 4){
-		alert('한 그룹의 최대 접속 인원은 4명 입니다.');
-		location.reload();
-	}
-	
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
 
@@ -210,9 +204,15 @@ connection.onstream = function(event) {
         } catch (e) {
             video.setAttribute('muted', true);
         }
-		
+        
+        
+        
         roomName = $('#room-id').val();
         userName = $('#userName').val();
+        
+        if(userName.indexOf(messageSplit) != -1){
+        	userName = 'Guest-' + userName.split(messageSplit)[1];
+        }
         
         $('#joinRoom').css('display', 'block');
         $('#createRoom').remove();

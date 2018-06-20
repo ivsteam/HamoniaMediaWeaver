@@ -13,10 +13,10 @@ router.get('/', function(req, res) {
     if(id && id.auth_type) auth_type = id.auth_type;
 
     if (!id) {
-        res.render('./member/first.ejs', { isLogin: false , nickname : '' , auth_type : ''});
+        res.render('./member/bottom_right_main.ejs', { isLogin: false , nickname : '' , auth_type : ''});
     }
     else {
-        res.render('./member/first.ejs', { isLogin: true , nickname : nickname , auth_type : auth_type} );
+        res.render('./member/bottom_right_main.ejs', { isLogin: true , nickname : nickname , auth_type : auth_type} );
     }
 
 });

@@ -49,12 +49,12 @@ $(document).ready(function(){
 	});
 	
 	
-	// icon button
+	// SNS icon button
 	$('.bottom_right').on('click', '.btn-login img', function(){
 		if($(this).attr('alt') != 'Hamonikr') {
-			location.href='https://localhost/login/' + $(this).attr('alt');
+			location.href='https://' + location.host + '/login/' + $(this).attr('alt');
 		} else {
-			alert('준비중');
+			location.href='http://localhost/hamoniRenewal/acountLogin.php';
 		}
 	});
 	
@@ -192,7 +192,7 @@ function defaultUISet(){
 //index.ejs 불러오기
 function getIndexEjs(){
 	$.ajax({
-		url	:"/first",
+		url	:"/bottom_right_main",
 		success : function(result, status, xhr){
 			$('.bottom_right').html(result);
 			psycareFnt();

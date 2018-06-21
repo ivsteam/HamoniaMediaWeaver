@@ -228,8 +228,8 @@ var bodyParser = require('body-parser');
 
 
 http_app.use(express.static(path.join(__dirname, 'public')));
-http_app.use(bodyParser.json());
-http_app.use(bodyParser.urlencoded({extended : true}));
+//http_app.use(bodyParser.json());
+//http_app.use(bodyParser.urlencoded({extended : true}));
 http_app.use(session({
 	secret: 'keyboard cat',
 	resave: false,
@@ -240,6 +240,68 @@ http_app.use(passport.initialize());
 http_app.use(passport.session());
 http_app.use(flash());
 http_app.use(router);
+
+http_app.use(bodyParser.json({limit: '50mb'}));
+http_app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
+
+// È­ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½] ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+http_app.post('/cavasImgSave', function(req, res){
+//	console.log('params: ' + JSON.stringify(req.params));
+//	console.log('body: ' + JSON.stringify(req.body));
+//	console.log('query: ' + JSON.stringify(req.query));
+
+	var data_url = req.body.imgBase64;
+	var matches = data_url.match(/^data:.+\/(.+);base64,(.*)$/);	///data:(.*);base64,(.*)/
+	var ext = matches[1];
+	var base64_data = matches[2];
+	var buffer = new Buffer(base64_data, 'base64');
+	
+	for(var key in req.session){
+		console.log(' ---- key // req.session : ' + key + ' // ' + req.session[key]);
+	}
+	
+	var filedirectory = __dirname + '/upload/' + req.session.user_id;
+	
+	try{ 
+		fs.mkdirSync(filedirectory);
+	}catch(e){ 
+		if ( e.code != 'EEXIST' ) throw e; // ï¿½ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ ï¿½Ð½ï¿½Ã³ï¿½ï¿½ï¿½ï¿½. 
+	}
+
+	fs.writeFile(filedirectory +"/"+req.body.fileNm+'.png', buffer, function (err) {
+		var resData = {}
+		resData.success = 'Y';
+		resData.user_id = req.session.user_id;
+		res.send(resData);
+		console.log(err);
+	});
+
+});
+// È­ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+http_app.get('/test', function(req, res){
+
+	// ï¿½Î±ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	req.session.user_id = '1234', // ï¿½ï¿½ï¿½Ìµï¿½
+	req.session.name = 'chris' // ï¿½Ì¸ï¿½
+
+	fs.readFile(__dirname + '/views/test.html', 'utf8', function(error, data) {  
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+//			isLogin : isLogin,
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+// ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+http_app.get('/img/:path/:imgnm', function(req, res){
+	console.log("path==="+  req.params.path +"=="+ req.params.imgnm);
+	var filename ='pageNum1';
+	var img = fs.readFileSync('./upload/' + req.params.path + '/' + req.params.imgnm +'.png');
+	res.writeHead(200, {'Content-Type': 'image/png' });
+	res.end(img, 'binary');
+	console.log('view PNG: '+filename+'.png');
+});
 
 http_app.get('/', function(req, res){
 
@@ -255,7 +317,7 @@ http_app.get('/', function(req, res){
 });
 
 
-// ½É¸®»ó´ã Á¢¼Ó URL
+// ï¿½É¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ URL
 http_app.get('/psycare', function(req, res){
 	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   

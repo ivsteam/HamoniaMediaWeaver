@@ -29,6 +29,8 @@ function browserCheck(){
 	else if (agt.indexOf("netscape") != -1)	text = 'Netscape';
 	else if (agt.indexOf("mozilla/5.0") != -1)	text = 'Mozilla';
 	
+	console.log(' ---- agt //  text : ' + agt + ' // ' + text);
+	
 	return text;
 }
 
@@ -44,12 +46,11 @@ $('.bottom_right').on('click', '#open-or-join-room', function(){
 	// os 및 browser 체크
 	
 	var text = browserCheck();
-	console.log(' ---- text : ' + text);
 	
 	 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     	// iOS safari 인 경우
 		alert('아이폰에서 이용하실 수 없습니다.');
-		return;
+//		return;
 	}
 	
 //	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
@@ -204,8 +205,6 @@ connection.onstream = function(event) {
             video.setAttribute('muted', true);
         }
         
-        
-        
         roomName = $('#room-id').val();
         userName = $('#userName').val();
         
@@ -242,7 +241,7 @@ connection.onstream = function(event) {
     mediaElement.id = event.streamid;
     
     $('body').css('overflow', 'hidden');
-    refreshVideoView();
+    refreshVideoView(true);
 };
 
 connection.onstreamended = function(event) {
@@ -261,6 +260,7 @@ connection.onopen = function() {
     document.getElementById('share-file').disabled = false;
     document.getElementById('input-text-chat').disabled = false;
     document.getElementById('btn-leave-room').disabled = false;
+    document.getElementsByClassName('boardBtn')[0].disabled = false;
 
 //    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
@@ -275,7 +275,7 @@ connection.onclose = function(event) {
     
     // safari video delete
     $('#'+event.userid).parent('.media-box').parent('.media-container').remove();
-	refreshVideoView();
+	refreshVideoView(false);
 };
 
 connection.onEntireSessionClosed = function(event) {

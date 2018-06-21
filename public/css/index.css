@@ -310,11 +310,11 @@ video {
 	position: absolute;
 	right: 0;
 	text-align: right;
-	top: -65px;
-	z-index: 7;
+	top: -125px;
+	z-index: 5;
 }
 .menuLineDiv { margin-bottom: 8px; }
-.menuLineDiv:first-child { margin-bottom: 20px; }
+.menuLineDiv:last-child { margin-top: 20px; }
 /* menu end */
 
 
@@ -326,8 +326,9 @@ video {
 .media-container { 
 	bottom: 0;
 	position: relative;
-	width: 50%; 
 	/* position: absolute; */
+	transition: unset !important;
+	width: 50%; 
 	z-index: 1; 
 }
 .media-container .media-box video {
@@ -342,12 +343,20 @@ video {
 	width: 100%  !important;
 	z-index: 0;
 }
+
+.media-container.media-container-boardview {
+	width: 100% !important;
+	height: 25% !important;
+}
+
+#roomname { display: none; }
+#username { display: none; }
 /* video end */
 
 
 /* chat start */
 /* chat new message count */
-.msgCntDiv {
+.msgCntDiv , .newInfoDiv {
 	background-color: red;
 	border: 2px solid white;
 	border-radius: 50%;
@@ -357,7 +366,7 @@ video {
 	top: -5px;
 	width: 25px;
 }
-.msgCntDiv > span {
+.msgCntDiv > span , .newInfoDiv > span{
 	font-size: 1rem;
 	font-weight: bold;
 	height: 100%;
@@ -374,7 +383,6 @@ video {
 	overflow: hidden;
 	position: absolute;
 	top: 0;
-	width: 25%;
 	z-index: 1;
 }
 .chat-output {
@@ -495,6 +503,61 @@ video {
 	text-align:  center;
 }
 /* chat end */
+
+
+/* board start */
+#__gesture_canvas__ { opacity: 0; }
+#whiteBoardDiv {
+	border: 0;
+	border-right: 1px solid #2BC1A4;
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	width: 60%;
+	z-index: 1;
+}
+.boardLeftDiv {
+	display: inline-block;
+	height: 100%;
+}
+.boardLeftDiv .center {
+	background-color: aliceblue;
+	border-radius: inherit;
+	box-shadow: none;
+	height: 20%;
+	padding: 2rem 1rem;
+	position: static;
+	overflow-y: overlay;
+	width: 200px;
+}
+.boardLeftDiv .profile{
+	display: inline-block;
+	height: 20%;
+	position: relative;
+	width: 100%;
+}
+.boardLeftDiv #imgDiv {
+	background-color: aliceblue;
+	border-radius: inherit;
+	overflow-y: overlay;
+	height: 80%;
+	border: 0;
+	border-top: 1px solid #2BC1A4;
+}
+
+#whiteBoardLayer {
+	display: inline-block;
+	height: 100%;
+	vertical-align: top;
+	width: calc(100% - 205px);
+}
+
+#whiteboard {
+	height: 100%;
+	width: 100%;
+}
+/* boart end */
 
 
 /* 알람창 start */

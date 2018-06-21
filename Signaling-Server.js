@@ -377,8 +377,8 @@ module.exports = exports = function(app, socketCallback) {
 
             if (Object.keys(usersInARoom).length >= maxParticipantsAllowed) {
             	var memCnt = ( Object.keys(usersInARoom).length+1 ) + '/' + ( customMaxParticipantsAllowed );
-            	
-                socket.emit('room-full', message.remoteUserId, memCnt);
+				
+				socket.emit('room-full', message.remoteUserId, memCnt);
 
                 if (roomInitiator.connectedWith[socket.userid]) {
                     delete roomInitiator.connectedWith[socket.userid];

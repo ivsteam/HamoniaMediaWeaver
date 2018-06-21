@@ -4,6 +4,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Hamonia Media Weaver</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="PDF Viewer" />
+	
 	<link rel="shortcut icon" href="/views/logo.png">
 	<!-- <link rel="stylesheet" href="/views/stylesheet.css"> -->
 	
@@ -30,8 +32,13 @@
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	
+	<link rel="stylesheet" href="/css/fileshare_style.css" />
+	<link rel="stylesheet" type="text/css" href="/css/fileshare_mian.css" />
+	
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+	<script src="/js/jquery.cookie.js"></script> 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 	
 	
@@ -155,57 +162,67 @@
 			<img src="/img/logo.png">
 		</div>
 		
-		<!-- 영상 -->
-		<div id="videos-container">
-			<!-- 메뉴 -->
-			<div id="menuDiv">
+		<!-- 메뉴 -->
+		<div id="menuDiv">
+			<div class="menuLineDiv">
+				<!-- 종료 -->
+				<button class="btn btn--xl btn--red btn--fab mdi md-call-end" id="btn-leave-room" data-value="false" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
+				</button>
 				
-				<div class="menuLineDiv">
-					<!-- 종료 -->
-					<button class="btn btn--xl btn--red btn--fab mdi md-call-end" id="btn-leave-room" data-value="false" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-						<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
-					</button>
-					
-					<!-- 초대 -->
-					<button class="btn btn--xl btn--pink btn--fab mdi md-quick-contacts-dialer" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-						<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
-					</button>
-					
-					<!-- 전체화면 -->
-					<!-- 
-					<button class="mobNone btn btn--xl btn--green btn--fab mdi md-fullscreen" onclick="goFullscreen(this)" title="Full screen" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-						<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
-					</button>
-					-->
-					
-					<!-- 볼륨 버튼 -->
-					<button class="btn btn--xl btn--blue btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
-						<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
-					</button>
-				</div>
+				<!-- 초대 -->
+				<button class="btn btn--xl btn--pink btn--fab mdi md-quick-contacts-dialer" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
+				</button>
 				
-				<div class="menuLineDiv">
-					<!-- 메뉴 -->
-					<button class="btn btn--xl btn--orange btn--fab mdi md-menu allManu" id="menuBtn" data-value="false" style="position: relative; font-size: 1.9rem;">
-						<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
-					</button>
-				</div>
+				<!-- 전체화면 -->
+				<!-- 
+				<button class="mobNone btn btn--xl btn--green btn--fab mdi md-fullscreen" onclick="goFullscreen(this)" title="Full screen" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
+				-->
 				
-				<div class="menuLineDiv">
-					<!-- 채팅 open/close -->
-					<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
-						<div class="msgCntDiv" style="display: none;">
-							<span>0</span>
-						</div>
-						<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
-					</button>
-				</div>
+				<!-- 볼륨 버튼 -->
+				<button class="btn btn--xl btn--green btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
+			</div>
+			
+			<div class="menuLineDiv">
+				<!-- 화이트보드 open/close -->
+				<button class="btn btn--xl btn--blue btn--fab mdi md-create boardBtn" title="화이트보드" style="position: relative; font-size: 1.9rem;">
+					<div class="msgCntDiv" style="display: none;">
+						<span>0</span>
+					</div>
+					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+				</button>
 				
+				<!-- 채팅 open/close -->
+				<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
+					<div class="msgCntDiv" style="display: none;">
+						<span>0</span>
+					</div>
+					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+				</button>
+				
+				<!-- 메뉴 -->
+				<button class="btn btn--xl btn--orange btn--fab mdi md-menu allManu" id="menuBtn" data-value="false" style="position: relative; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+				</button>
 			</div>
 		</div>
 		
+		<!-- 영상 -->
+		<div id="videos-container"></div>
 		
 		<div id="room-urls" style="text-align: center;display: none;background: #F1EDED;margin: 15px -10px;border: 1px solid rgb(189, 189, 189);border-left: 0;border-right: 0;"></div>
+		
+		<!-- 화이트보드 -->
+		<div id="whiteBoardDiv">
+			<div id="imgDiv"></div>
+			<div id="whiteBoardLayer"></div>
+		</div>
+		
 		
 		<!-- 채팅 -->
 		<div id="chat-container" data-value="false">
@@ -218,7 +235,6 @@
 			<!-- 파일 -->
 		    <div id="file-container"></div>
 		    
-		    
 		    <!-- 채팅내용 -->
 		    <ul class="chat-output"></ul>
 		    
@@ -229,12 +245,43 @@
 					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
 				</button>
 			</div>
-			
 		</div>
 		
 	</div>
 	
-	<!-- 초대 -->
+	<!-- 화이트보드 파일 업로드창 -->
+	<div class="frame">
+		<div class="center">
+			<div class="profile">
+				<div class="name">file upload</div>
+				<div class="job">업로드 파일 크기 < 10Mb</div>
+
+				<div class="actions">
+					<a href="javascript:;" class="btn file">파일선택
+						<input id='pdf' type='file' accept="application/pdf">
+					</a>
+					<!-- button class="btn" id="export">다운로드</button -->
+				</div>
+			</div>
+
+			<div class="stats">
+				<div class="box">
+					<span class="value">파일명</span>
+					<span class="parameter" id="pdfName"></span>
+				</div>
+				<div class="box">
+					<span class="value">크기</span>
+					<span class="parameter" id="sizeText"></span>
+				</div>
+				<div class="box">
+					<span class="value">총페이지수</span>
+					<span class="parameter" id="pagesText"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 초대창 -->
 	<div id="mask" style="display: none; opacity: .7; z-index: 5;">
 		<!-- <img alt="Loading" src="/img/spinner.gif"> -->
 	</div>
@@ -263,5 +310,11 @@
 	<script type="text/javascript" src="/js/index.js"></script>
 	<script type="text/javascript" src="/js/index_room_view.js"></script>
 	<script src="https://cdn.webrtc-experiment.com/common.js"></script>
+	
+	<script type="text/javascript" src="/js/jszip.min.js"></script>
+	<script type="text/javascript" src="/js/FileSaver.js"></script>
+	<script type="text/javascript" src="/js/pdf.js"></script>
+	<script type="text/javascript" src="/js/pdf.worker.js"></script>
+	<script type="text/javascript" src="/js/whiteboard.js"></script>
 </body>
 </html>

@@ -54,7 +54,8 @@ $(document).ready(function(){
 		if($(this).attr('alt') != 'Hamonikr') {
 			location.href='https://' + location.host + '/login/' + $(this).attr('alt');
 		} else {
-			location.href='http://localhost/hamoniRenewal/acountLogin.php';
+//			location.href='http://localhost/hamoniRenewal/acountLogin.php';
+			location.href='http://hamonikr.org/acountLogin.php';
 		}
 	});
 	

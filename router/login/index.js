@@ -185,7 +185,7 @@ app.use(bodyParser.urlencoded({extended : true}));
 
 router.post('/oauth/hamonikr/callback', passport.authenticate('login-hamonikr', {failureRedirect: '/', failureFlash: true}), // 인증 실패 시 401 리턴, {} -> 인증 스트레티지
 	function (req, res) {
-		res.redirect('/login');
+		res.redirect('/');
 	}
 );
 

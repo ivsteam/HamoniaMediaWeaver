@@ -34,7 +34,6 @@ function browserCheck(){
 
 
 $('.bottom_right').on('click', '#open-or-join-room', function(){
-	$('#userName').css('display', 'none');
 	
 	// 비회원 사용자 id 설정
 	if(!$('#userName').val()){

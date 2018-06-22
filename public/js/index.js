@@ -122,10 +122,10 @@ document.getElementById('input-text-chat').onkeyup = function(e) {
     // removing trailing/leading whitespace
     this.value = this.value.replace(/^\s+|\s+$/g, '');
     if (!this.value.length) return;
-    
-    connection.send(escape(userName) + messageSplit + escape(this.value));
-    createMeMsgDiv(this.value);
-    this.value = '';
+    sendMessageFnt();
+//    connection.send(escape(userName) + messageSplit + escape(this.value));
+//    createMeMsgDiv(this.value);
+//    this.value = '';
 };
 
 var chatContainer = document.querySelector('.chat-output');

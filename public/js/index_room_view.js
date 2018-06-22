@@ -351,14 +351,32 @@ function chattingDivFnt(){
 function sendMessageFnt(){
     // removing trailing/leading whitespace
 	$('#input-text-chat').val( $('#input-text-chat').val().replace(/^\s+|\s+$/g, '') );
-	
     if (!$('#input-text-chat').val().length) return;
 
-    connection.send(escape(userName) + messageSplit + escape($('#input-text-chat').val()));
-    createMeMsgDiv($('#input-text-chat').val());
-    $('#input-text-chat').val('');
-    
-    $('#input-text-chat').focus();
+// 번역 =====
+	$.ajax({
+		type: "POST",
+		url: "/translate",
+		data: {
+			textData : $('#input-text-chat').val(),
+			source : 'ko', //입력언어
+			target : 'en'  // 번역할 언어
+		},
+		success : function(data) {
+			connection.send(escape(userName) + messageSplit + escape(data.translateData));
+			createMeMsgDiv($('#input-text-chat').val() + "<br>" + data.translateData);
+			$('#input-text-chat').val('');
+			$('#input-text-chat').focus();
+		},
+		error : function(a, b, c){
+			console.log('ng:'+ a+'//'+b+'//'+c);
+		},
+	});
+
+//    connection.send(escape(userName) + messageSplit + escape($('#input-text-chat').val()));
+//    createMeMsgDiv($('#input-text-chat').val());
+//    $('#input-text-chat').val('');
+//    $('#input-text-chat').focus();
 }
 
 //new message count display

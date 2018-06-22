@@ -284,9 +284,15 @@
 		    <ul class="chat-output"></ul>
 		    
 		    <!-- 전송 -->
-			<div class="textInputDiv">
+			<div class="textInputDiv row">
+				<select id="transValue" class="form-control">
+					<option value="ko//en">한>영</option>
+					<option value="en//ko">En>Ko</option>
+				</select>
+				
 				<input type="text" id="input-text-chat" disabled autocomplete="off">
-				<button class="btn btn--xl btn--red btn--fab mdi md-send " id="messageSendBtn" title="전송" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				
+				<button class="btn btn--xl btn--red btn--fab mdi md-send" id="messageSendBtn" title="전송" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
 				</button>
 			</div>

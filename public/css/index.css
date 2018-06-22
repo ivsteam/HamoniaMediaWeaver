@@ -407,17 +407,26 @@ video {
 	overflow-y: scroll;
 	padding: 10px 5.5rem 10px 10px;
 }
-.textInputDiv {
+.textInputDiv.row {
 	bottom: 0;
+	margin: 0;
 	position: absolute;
 	width: 100%;
+}
+.textInputDiv .form-control {
+	flex: 0 0 16.666667%;
+	font-size: .75rem;
+	max-width: 16.666667%;
+	padding-left: 0;
+	padding-right: 0;
 }
 #input-text-chat {
 	border: 0;
 	border-top: 1px solid #ddd;
+	flex: 0 0 66.666667%;
 	height: 40px;
+	max-width: 66.666667%;
 	padding: 0 10px;
-	width: calc(100% - 60px);
 }
 #messageSendBtn {
 	background-color: #13AFA5;
@@ -425,11 +434,12 @@ video {
 	border-radius: 0;
 	color: white;
 	cursor: pointer;
+	flex: 0 0 16.666667%;
 	float: right;
 	font-weight: bold;
 	font-size: 0.8em;
 	height: 40px;
-	width: 60px;
+    max-width: 16.666667%;
 }
 .meMsgDiv {
 	margin-bottom: 10px;

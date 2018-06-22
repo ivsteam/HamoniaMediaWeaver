@@ -389,12 +389,33 @@ function sendMessageFnt(){
 	$('#input-text-chat').val( $('#input-text-chat').val().replace(/^\s+|\s+$/g, '') );
 	
     if (!$('#input-text-chat').val().length) return;
-
-    connection.send(escape(userName) + messageSplit + escape($('#input-text-chat').val()));
-    createMeMsgDiv($('#input-text-chat').val());
-    $('#input-text-chat').val('');
     
-    $('#input-text-chat').focus();
+    var tValue = $('#transValue option:selected').val().split('//');
+    
+    // 번역 =====
+	$.ajax({
+		type: "POST",
+		url: "/translate",
+		data: {
+			textData : $('#input-text-chat').val(),
+			source : tValue[0], //입력언어
+			target : tValue[1]  // 번역할 언어
+		},
+		success : function(data) {
+			connection.send(escape(userName) + messageSplit + escape(data.translateData));
+			createMeMsgDiv($('#input-text-chat').val() + messageSplit + data.translateData);
+			$('#input-text-chat').val('');
+			$('#input-text-chat').focus();
+		},
+		error : function(a, b, c){
+			console.log('ng:'+ a+'//'+b+'//'+c);
+		},
+	});
+
+//    connection.send(escape(userName) + messageSplit + escape($('#input-text-chat').val()));
+//    createMeMsgDiv($('#input-text-chat').val());
+//    $('#input-text-chat').val('');
+//    $('#input-text-chat').focus();
 }
 
 //new message count display
@@ -472,15 +493,33 @@ function boardDivFnt(){
 
 // 영상 버튼
 function videoBtnFnt(){
-	// 영상
-	$('#videos-container').css('width', '100%');
-	$('.media-container-boardview').removeClass('media-container-boardview');
+	var boardOpenCheck = $('#whiteBoardDiv').data('value');
+	var chatOpenCheck = $('#chat-container').data('value');
 	
-	// 화이트보드
-	$('#whiteBoardDiv').css('left', '100%').data('value', false);
+	if(navigator.platform){
+		if(checkmob){
+//			alert("Mobile");
+			// 채팅
+			$('#chat-container').css('min-width', '0').css('width', '0.001px');
+			
+			// 화이트보드
+			$('#whiteBoardDiv').css('min-width', '0').css('width', '0.001px').css('display', 'none');
+		}else{
+//			alert("PC");
+			// 영상
+			$('#videos-container').css('width', '100%');
+			$('.media-container-boardview').removeClass('media-container-boardview');
+			
+			// 화이트보드
+			$('#whiteBoardDiv').css('left', '100%').data('value', false);
+			
+			// 채팅
+			$('#chat-container').css('left', '100%').data('value', false);
+		}
+	}
 	
-	// 채팅
-	$('#chat-container').css('left', '100%').data('value', false);
+	$('#whiteBoardDiv').data('value', false);
+	$('#chat-container').data('value', false);
 	
 	refreshVideoView(false);
 }
@@ -641,7 +680,14 @@ function timeSetting(){
 function createMeMsgDiv(messageg){
 	var $li = $('<li></li>').attr('class','meMsgDiv');
 	var $span_time = $('<span></span>').attr('class','timeSpan').text(timeSetting());
-	var $div_message = $('<div></div>').attr('class','messageBox').text(messageg);
+	
+	var $oriMsg = $('<div></div>').text(messageg.split(messageSplit)[0]);
+	var $trnMsg = $('<div></div>').text(messageg.split(messageSplit)[1]);
+	
+	var $div_message = $('<div></div>').attr('class','messageBox');
+	
+	$div_message.append($oriMsg);
+	$div_message.append($trnMsg);
 	
 	$li.append($span_time);
 	$li.append($div_message);

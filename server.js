@@ -1,7 +1,3 @@
-// Muaz Khan      - www.MuazKhan.com
-// MIT License    - www.WebRTC-Experiment.com/licence
-// Documentation  - github.com/muaz-khan/RTCMultiConnection
-
 function resolveURL(url) {
     var isWin = !!process.platform.match(/^win/);
     if (!isWin) return url;
@@ -12,7 +8,6 @@ function resolveURL(url) {
 var isUseHTTPs = true;
 
 var port = 443;
-//var port = process.env.PORT || 9001;
 
 try {
     process.argv.forEach(function(val, index, array) {
@@ -27,8 +22,8 @@ try {
 var fs = require('fs');
 var path = require('path');
 
-var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/privatekey.pem')));
-var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/certificate.pem')));
+var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/sslkey.pem')));
+var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/ssl.pem')));
 var ssl_cabundle = null;
 
 // force auto reboot on failures
@@ -75,7 +70,7 @@ try {
 // https://github.com/muaz-khan/WebRTC-Experiment/issues/62
 var options = {
     key: ssl_key,
-    cert: ssl_cert,
+    cert: ssl_cert, passphrase : 'exitem08',
     ca: ssl_cabundle
 };
 
@@ -228,8 +223,6 @@ var bodyParser = require('body-parser');
 
 
 http_app.use(express.static(path.join(__dirname, 'public')));
-//http_app.use(bodyParser.json());
-//http_app.use(bodyParser.urlencoded({extended : true}));
 http_app.use(session({
 	secret: 'keyboard cat',
 	resave: false,
@@ -252,8 +245,8 @@ http_app.post('/cavasImgSave', function(req, res){
 //	console.log('query: ' + JSON.stringify(req.query));
 	
 	
-	req.session.user_id = req.body.user_id; // 아이디
-	req.session.name = req.body.room_name; // 이름
+	req.session.user_id = req.body.user_id;
+	req.session.name = req.body.room_name;
 	
 	var data_url = req.body.imgBase64;
 	var matches = data_url.match(/^data:.+\/(.+);base64,(.*)$/);	///data:(.*);base64,(.*)/
@@ -269,10 +262,6 @@ http_app.post('/cavasImgSave', function(req, res){
 	}catch(e){ 
 		if ( e.code != 'EEXIST' ) throw e; // 존재할경우 패스처리함. 
 	}
-	
-	console.log(' ---- req.body.user_id : ' + req.session.user_id);
-	console.log(' ---- req.body.room_name : ' + req.session.name);
-	console.log(' ---- req.body.user_id : ' + fileNm);
 
 	fs.writeFile(filedirectory +"/"+fileNm +'.png', buffer, function (err) {
 		var resData = {}
@@ -284,7 +273,10 @@ http_app.post('/cavasImgSave', function(req, res){
 	});
 
 });
+
+
 //화이트보드] 접속 페이지
+/*
 http_app.get('/test', function(req, res){
 
 	// 로그인에 상관없이 룸 생성자의 고유값을 세션에 저장한다.
@@ -299,6 +291,9 @@ http_app.get('/test', function(req, res){
 		}));  
 	});  
 });
+//*/
+
+
 //이미지 뷰어
 http_app.get('/img/:path/:imgnm', function(req, res){
 	console.log("path==="+  req.params.path +"=="+ req.params.imgnm);
@@ -309,8 +304,92 @@ http_app.get('/img/:path/:imgnm', function(req, res){
 	console.log('view PNG: '+filename+'.png');
 });
 
-http_app.get('/', function(req, res){
 
+// translation] naver
+var express = require('express');
+var client_id = 'lXcYqHZGWz8A0zEy5_00';
+var client_secret = '0HejW2Rynn';
+var request = require('request');
+http_app.post('/translate', function(req, res){
+
+//	var api_url = 'https://openapi.naver.com/v1/language/translate';	// papago SMT 
+	var api_url = 'https://openapi.naver.com/v1/papago/n2mt';
+	var queryText = req.body.textData;
+	var sourceLanguage = req.body.source;
+	var targetLanguage = req.body.target;
+	
+	var options = {
+		url: api_url,
+		form: {'source': sourceLanguage, 'target': targetLanguage, 'text': queryText},
+		headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
+	};
+
+	request.post(options, function (error, response, body) {
+
+		if (!error && response.statusCode == 200) {
+//			res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
+			var jsonData = JSON.parse(body);
+//			console.log("jsonData is " + body);
+//			console.log("jsonData==="+ jsonData.message.result.translatedText);
+//			res.end(body..toString('utf-8'));
+
+			var resData = {}
+			resData.success = 'Y';
+			resData.translateData = jsonData.message.result.translatedText;
+			res.send(resData);
+
+		} else {
+			res.status(response.statusCode).end();
+			console.log('error = ' + response.statusCode);
+		}
+	});
+});
+
+// translation] google
+//http_app.get('/translate', function(req, res){
+//	const logfile = require('log-to-file');
+//	const translate = require('google-translate-api');
+//	
+//	var textdata = '테스트';
+//	console.log("textdata is : " + textdata );
+//	translate(textdata, {from: 'ko', to: 'en'}).then(resp => {
+//		console.log("============]");
+//		console.log(resp);
+//		console.log("[============");
+//
+//		console.log(resp.text.toString('utf-8') );
+//		
+//		logfile(resp.text+"==="+ resp.text.toString('utf-8'));
+//
+//	}).catch(err => {
+//		console.error(err);
+//	});
+//	
+//	
+////	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
+////		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
+////		res.end(ejs.render(data, {  
+////			tmp : res.text
+////		}));  
+////	}); 
+//
+//});
+
+// translation] google - script in lng.ejs 
+//http_app.get('/translate', function(req, res){
+//
+////https://translation.googleapis.com/language/translate/v2?q=%ED%95%9C%EA%B8%80&source=en&target=ko&model=nmt&key=AIzaSyDbLHlxeb4XzDtSj_uPoFu4D1w1qPvPKEM
+//	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
+//		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
+//		res.end(ejs.render(data, {  
+//			tmp : res.text
+//		}));  
+//	});
+//});
+
+
+
+http_app.get('/', function(req, res){
 	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   
 		res.end(ejs.render(data, {  

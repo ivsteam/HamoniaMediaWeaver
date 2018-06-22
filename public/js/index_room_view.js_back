@@ -137,7 +137,13 @@ $(window).resize(function(){
 	windowReset();
 	if(navigator.platform){
 		if(!checkmob){	
-			videoBtnFnt();
+			var boardOpenCheck = $('#whiteBoardDiv').data('value');
+			var chatOpenCheck = $('#chat-container').data('value');
+			
+			if(boardOpenCheck) $('.boardBtn').data('value', !boardOpenCheck).trigger('click');
+			if(chatOpenCheck) $('.chatBtn').data('value', !chatOpenCheck).trigger('click');
+			
+			defaultUISet();
 		}
 	}
 });
@@ -362,17 +368,38 @@ function chattingDivFnt(){
 			
 		}else{
 //			alert("PC");
-			 videoBtnFnt();
-			
-			// 영상
-			$('#videos-container').css('width', $('#videos-container').width() - chatWidth + 'px');
-			
-			// 채팅
-			$('#chat-container').css('left', $(window).width() - chatWidth + 'px');
+			if(chatOpenCheck){
+				console.log(' ---- close chatting');
+				
+				// 영상
+				if(!boardOpenCheck) $('#videos-container').css('width', $(window).width() + 'px');
+				
+				// 화이트보드
+				if(boardOpenCheck) $('#whiteBoardDiv').css('width', $(window).width() - $('#videos-container').width() + 'px');
+				
+				// 채팅
+				$('#chat-container').css('left', $(window).width() + 40 + 'px');
+				
+			}else{
+				console.log(' ---- open chatting');
+				
+				// 영상
+				if(boardOpenCheck) {
+					$('#videos-container').css('width', '15%');
+					$('.media-container').css('height', '25%');
+				} else {
+					$('#videos-container').css('width', $('#videos-container').width() - chatWidth + 'px');
+				}
+				
+				// 화이트보드
+				if(boardOpenCheck) $('#whiteBoardDiv').css('width', $(window).width() - $('#videos-container').width() - chatWidth + 'px');
+				
+				// 채팅
+				$('#chat-container').css('left', $(window).width() - chatWidth + 'px');
+			}
 		}
+		$('#chat-container').data('value' , !chatOpenCheck);
 		$('#menuBtn').data('value', false);
-		$('#whiteBoardDiv').data('value', false);
-		$('#chat-container').data('value', true);
 	}
 	
 	// new message count remove
@@ -400,9 +427,8 @@ function sendMessageFnt(){
 //new message count display
 function newMsgCntFnc(){
 	var checkValue = !$('#chat-container').data('value');
-	var boardOpenCheck = !$('#whiteBoardDiv').data('value');
 	
-	if(checkValue && boardOpenCheck){
+	if(checkValue){
 		if(newMsgCnt == '99+') return;
 		
 		newMsgCnt += 1;
@@ -450,39 +476,45 @@ function boardDivFnt(){
 			if(chatOpenCheck) $('.chatBtn').trigger('click');
 		}else{
 //			alert("PC");
-			// 영상
-			$('#videos-container').css('width', '15%');
-			$('.media-container').addClass('media-container-boardview');
+			if(boardOpenCheck){
+				console.log(' ---- close board');
+				
+				// 영상
+				if(chatOpenCheck) $('#videos-container').css('width', ( $(window).width() - chatWidth ) +'px' );
+				else $('#videos-container').css('width', '100%');
+				
+				$('.media-container').css('height', '100%').removeClass('media-container-boardview');
+				 
+				// 화이트보드
+				$('#whiteBoardDiv').css('left', '105%');
+			}else{
+				console.log(' ---- open board');
+				
+				// 영상
+				$('#videos-container').css('width', '15%');
+				$('.media-container').addClass('media-container-boardview');
+				
+				// 화이트보드
+				if(chatOpenCheck) $('#whiteBoardDiv').css('left', '15%').css('width', ( $(window).width() - $('#videos-container').width() - chatWidth ) +'px' );
+				else $('#whiteBoardDiv').css('left', '15%').css('width', '85%');
+			}
 			
-			// 화이트보드
-			$('#whiteBoardDiv').css('left', '15%').css('width', ( $(window).width() - $('#videos-container').width() - chatWidth ) +'px' );
-			
-			// 채팅
-			$('#chat-container').css('left', $(window).width() - chatWidth + 'px');
-			
-			refreshVideoView(false);
-			
+			if(!boardOpenCheck) $('.media-container').css('width', '100%');
+			else refreshVideoView(false);
 		}
 	}
+	$('#whiteBoardDiv').data('value', !boardOpenCheck);
 	$('#menuBtn').data('value', false);
-	$('#whiteBoardDiv').data('value', true);
-	$('#chat-container').data('value', false);
 }
 
 
 // 영상 버튼
 function videoBtnFnt(){
-	// 영상
-	$('#videos-container').css('width', '100%');
-	$('.media-container-boardview').removeClass('media-container-boardview');
+	var boardOpenCheck = $('#whiteBoardDiv').data('value');
+	var chatOpenCheck = $('#chat-container').data('value');
 	
-	// 화이트보드
-	$('#whiteBoardDiv').css('left', '100%').data('value', false);
-	
-	// 채팅
-	$('#chat-container').css('left', '100%').data('value', false);
-	
-	refreshVideoView(false);
+	if(boardOpenCheck) $('.boardBtn').trigger('click');
+	if(chatOpenCheck) $('.chatBtn').trigger('click');
 }
 
 

@@ -1,6 +1,9 @@
 /**
  * http://usejsdoc.org/
  */
+
+var boardDomain = "https://192.168.0.80:3001";
+
 // iframe set
 function createBoard(){
 	var createTargetId = document.getElementById("whiteBoardLayer");
@@ -10,7 +13,7 @@ function createBoard(){
 	newFrame.id = 'whiteboard';
 	newFrame.name = 'whiteboard';
 	
-	newFrame.setAttribute("src", "https://192.168.0.80:3001/login?roomname="+roomName+"&username="+userName);
+	newFrame.setAttribute("src", boardDomain + "/login?roomname="+roomName+"&username="+userName);
 	createTargetId.appendChild(newFrame);
 }
 
@@ -20,6 +23,11 @@ function createBoard(){
 
 var pdfFile;
 $('#pdf').change(function() {
+	if(!$(this).data('value')) return;
+	
+	// progress start
+	$('#imgProgressDiv').css('display', 'block');
+	
 	var pdfFileURL = $('#pdf').val();
 	if(pdfFileURL) {
 		$("#imgDiv").empty();
@@ -29,7 +37,7 @@ $('#pdf').change(function() {
 		if(fileSize) {
 			mb = fileSize / 1048576;
 			if(mb > 10) {
-				alert("파일사이즈>10M");
+				alert("파일크기는 최대10Mb 입니다.");
 				return;
 			}
 		}
@@ -37,7 +45,10 @@ $('#pdf').change(function() {
 		$("#export").removeAttr("disabled", "disabled");
 		$("#pdfName").text(files[0].name).attr("title",files[0].name);
 		$("#sizeText").text(mb.toFixed(2) + "Mb");
-
+		
+		// 정보 전송
+		connection.send(fileSelectValue+'true&fileNm='+files[0].name);
+		
 		/*pdf.jsFileReader를 사용하여 변환*/
 		var reader = new FileReader();
 		reader.readAsArrayBuffer(files[0]);
@@ -46,9 +57,10 @@ $('#pdf').change(function() {
 			var docInitParams = {
 				data: myData
 			};
+			
 			var typedarray = new Uint8Array(this.result);
 			PDFJS.getDocument(typedarray).then(function(pdf) { //캔버스로 PDF 변환
-//								$("#imgDiv").css("border", "0"); 
+//				$("#imgDiv").css("border", "0"); 
 				if(pdf) {
 					var pageNum = pdf.numPages;
 					$("#pagesText").text(pageNum);
@@ -65,9 +77,12 @@ $('#pdf').change(function() {
 			});
 		};
 	}
+	
+	// progress end
+	$('#imgProgressDiv').css('display', 'none');
 });
 				
-$("#imgDiv").on("click",'.uploadImg', function() {
+$("#imgDiv").on("click",'canvas.uploadImg', function() {
 	var imgId = this.id;
 	var canvas = document.getElementById(imgId);
 	var dataURL = canvas.toDataURL();
@@ -76,23 +91,38 @@ $("#imgDiv").on("click",'.uploadImg', function() {
 	data.imgBase64 = 'dataURL';
 	data.message = "message";
 
-//					프로그레스바 추가..
+	// progress start
+	$('#imgProgressDiv').css('display', 'block');
+	
 	$.ajax({
 		type: "POST",
 		url: "/cavasImgSave",
 		data: {
-			imgBase64:dataURL,
-			fileNm : this.id
+			imgBase64 : dataURL,
+			fileNm : this.id,
+			user_id : userName,
+			room_name : roomName
 		},
 		success : function(data) {
-			var param = "roomname="+roomName+"&username="+userName+"&imgNm="+imgId+"&imgPath="+data.user_id;
-			console.log(param);
-			$('#whiteboard').attr('src', 'https://192.168.0.80:3001/login?'+param);
+			var param = boardDomain + "/login?roomname="+roomName+"&username="+userName+"&imgNm="+imgId+"&imgPath="+data.user_id;
+			$('#whiteboard').attr('src', param);
+			
+			connection.send(fileSelectValue + '/img/' + data.user_id + '/' + data.fileNm);
+			
+			// progress end
+			$('#imgProgressDiv').css('display', 'none');
 		},
-		error : function(a, b, c){
-//			console.log('ng:'+ a+'//'+b+'//'+c);
-		},
-//	}
+		error : function(result, status, error){
+			console.log(' ==== uploadImg error : ' + result + '\n' + status + '\n' + error);
+//			for(var key in result){
+//				console.log(' ---- key // result : ' + key + ' // ' + result[key]);
+//			}
+			
+			// progress end
+			$('#imgProgressDiv').css('display', 'none');
+			alert('전송에 실패하였습니다.\n잠시후 다시 시도해 주시기 바랍니다.');
+//		},
+	}
 //	).done(function(o) {
 //		alert("aaa=="+o);
 //		console.log('all_saved'); 

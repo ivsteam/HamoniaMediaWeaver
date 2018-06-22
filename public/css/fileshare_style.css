@@ -97,7 +97,9 @@
 }
 
 .profile .actions {
-	margin-top: 20px;
+	bottom: 0;
+	position: absolute;
+	width: 100%;
 }
 
 .profile .actions .btn {

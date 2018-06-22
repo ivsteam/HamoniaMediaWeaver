@@ -3,12 +3,15 @@
  */
 
 window.enableAdapter = true; // enable adapter.js
+var connectionCheck = false;
 
 var localStream;
 var roomName = '';
 var userName = '';
+var fileSelectValue = '::::f!le$electCheckV@lue::::';
 var messageSplit = "::::H@moni@::split::::";
 var newMsgCnt = 0;		// 새 메세지 수
+
 
 // 브라우저 체크
 function browserCheck(){
@@ -118,24 +121,42 @@ document.getElementById('share-file').onclick = function() {
 
 document.getElementById('input-text-chat').onkeyup = function(e) {
     if (e.keyCode != 13) return;
-
-    // removing trailing/leading whitespace
-    this.value = this.value.replace(/^\s+|\s+$/g, '');
-    if (!this.value.length) return;
-    
-    connection.send(escape(userName) + messageSplit + escape(this.value));
-    createMeMsgDiv(this.value);
-    this.value = '';
+    sendMessageFnt();
 };
 
 var chatContainer = document.querySelector('.chat-output');
 
 function appendDIV(event) {
 	console.log(' ------ event.data : ' + unescape(event.data) + ' // ' + event.userid);
-    if(event.data.indexOf(messageSplit) != -1){
+	
+	if(event.data.indexOf(messageSplit) != -1){
+		// 채팅 메세지를 받은 경우
 		createreceMsgDiv(unescape(event.data.split(messageSplit)[0]), unescape(event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]));
 		newMsgCntFnc();
-    }
+		return;
+	}
+	
+	if(event.data.indexOf(fileSelectValue) != -1){
+		var valueData = unescape(event.data.split(fileSelectValue)[1]);
+		var valueDataTrueCheck = valueData.indexOf('&fileNm=');
+		
+		if(valueDataTrueCheck != -1){
+			// board 파일선택 버튼 disabled
+			
+			valueDataTrueCheck = valueData.split('&fileNm=');
+			
+			if(valueDataTrueCheck[0] == 'true'){
+				$('#pdf').data('value', false).attr('disabled', valueDataTrueCheck[0]).parent('a.file').attr('disabled', valueDataTrueCheck[0]);
+				$('#pdfName').text(valueDataTrueCheck[1]);
+				$('#imgDiv').empty();
+			}
+		}else{
+			
+			// 선택된 board 파일 띄우기
+			$('#imgDiv').append('<img id="' + valueDataTrueCheck[1] + '" src="' + valueData + '" class="uploadImg">');
+		}
+		return;
+	}
 }
 
 // ......................................................
@@ -231,7 +252,8 @@ connection.onstream = function(event) {
         width: width,
         showOnMouseEnter: false
     });
-
+    
+    mediaElement.dataset.name = event.userid;
     connection.videosContainer.appendChild(mediaElement);
 
     setTimeout(function() {
@@ -241,6 +263,15 @@ connection.onstream = function(event) {
     mediaElement.id = event.streamid;
     
     $('body').css('overflow', 'hidden');
+    
+    // 방장표시
+   	var mContains = $('.media-container');
+   	for(var i=0; i<mContains.length ;++i){
+   		if(mContains.eq(i).data('name') == roomName){
+   			mContains.eq(i).css('border', '2px solid orange');
+   		}
+   	}
+    
     refreshVideoView(true);
 };
 
@@ -260,8 +291,25 @@ connection.onopen = function() {
     document.getElementById('share-file').disabled = false;
     document.getElementById('input-text-chat').disabled = false;
     document.getElementById('btn-leave-room').disabled = false;
-    document.getElementsByClassName('boardBtn')[0].disabled = false;
-
+    
+    if(roomName == $('#myVideo').parent('.media-box').parent('.media-container').data('name')){
+    	// 생성자
+    	$('.actions .btn.file').attr('disabled', false);
+    	$('#pdf').attr('disabled', false);
+    }else{
+    	// 접속자
+    	$('.actions').css('display', 'none');
+    	$('#imgDiv').css('height', '90%');
+    	$('.center').css('height', '10%');
+    }
+    
+//    document.getElementsByClassName('boardBtn')[0].disabled = false;
+//    document.getElementsByClassName('chatBtn')[0].disabled = false;
+//    document.getElementsByClassName('videoBtn')[0].disabled = false;
+    
+    connectionCheck = true;
+    
+    createBoard();
 //    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
 

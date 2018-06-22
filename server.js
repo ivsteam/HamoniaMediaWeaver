@@ -245,45 +245,51 @@ http_app.use(bodyParser.json({limit: '50mb'}));
 http_app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 
-// ȭ��Ʈ����] �̹��� ����
+//화이트보드] 이미지 저장
 http_app.post('/cavasImgSave', function(req, res){
 //	console.log('params: ' + JSON.stringify(req.params));
 //	console.log('body: ' + JSON.stringify(req.body));
 //	console.log('query: ' + JSON.stringify(req.query));
-
+	
+	
+	req.session.user_id = req.body.user_id; // 아이디
+	req.session.name = req.body.room_name; // 이름
+	
 	var data_url = req.body.imgBase64;
 	var matches = data_url.match(/^data:.+\/(.+);base64,(.*)$/);	///data:(.*);base64,(.*)/
 	var ext = matches[1];
 	var base64_data = matches[2];
 	var buffer = new Buffer(base64_data, 'base64');
-	
-	for(var key in req.session){
-		console.log(' ---- key // req.session : ' + key + ' // ' + req.session[key]);
-	}
+	var fileNm = req.body.fileNm;
 	
 	var filedirectory = __dirname + '/upload/' + req.session.user_id;
 	
 	try{ 
 		fs.mkdirSync(filedirectory);
 	}catch(e){ 
-		if ( e.code != 'EEXIST' ) throw e; // �����Ұ�� �н�ó����. 
+		if ( e.code != 'EEXIST' ) throw e; // 존재할경우 패스처리함. 
 	}
+	
+	console.log(' ---- req.body.user_id : ' + req.session.user_id);
+	console.log(' ---- req.body.room_name : ' + req.session.name);
+	console.log(' ---- req.body.user_id : ' + fileNm);
 
-	fs.writeFile(filedirectory +"/"+req.body.fileNm+'.png', buffer, function (err) {
+	fs.writeFile(filedirectory +"/"+fileNm +'.png', buffer, function (err) {
 		var resData = {}
 		resData.success = 'Y';
 		resData.user_id = req.session.user_id;
+		resData.fileNm = fileNm;
 		res.send(resData);
 		console.log(err);
 	});
 
 });
-// ȭ��Ʈ����] ���� ������
+//화이트보드] 접속 페이지
 http_app.get('/test', function(req, res){
 
-	// �α��ο� ������� �� �������� �������� ���ǿ� �����Ѵ�.
-	req.session.user_id = '1234', // ���̵�
-	req.session.name = 'chris' // �̸�
+	// 로그인에 상관없이 룸 생성자의 고유값을 세션에 저장한다.
+	req.session.user_id = '1234', // 아이디
+	req.session.name = 'chris' // 이름
 
 	fs.readFile(__dirname + '/views/test.html', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   
@@ -293,7 +299,7 @@ http_app.get('/test', function(req, res){
 		}));  
 	});  
 });
-// �̹��� ���
+//이미지 뷰어
 http_app.get('/img/:path/:imgnm', function(req, res){
 	console.log("path==="+  req.params.path +"=="+ req.params.imgnm);
 	var filename ='pageNum1';
@@ -317,7 +323,7 @@ http_app.get('/', function(req, res){
 });
 
 
-// �ɸ���� ���� URL
+//심리상담 접속 URL
 http_app.get('/psycare', function(req, res){
 	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
 		res.writeHead(200, {'content-type' : 'text/html'});   

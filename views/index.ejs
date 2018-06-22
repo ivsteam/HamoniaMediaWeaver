@@ -191,18 +191,18 @@
 			</div>
 			
 			<div class="menuLineDiv">
-				<!-- 화이트보드 open/close -->
-				<button class="btn btn--xl btn--blue btn--fab mdi md-create boardBtn" title="화이트보드" style="position: relative; font-size: 1.9rem;" data-value="true" disabled>
-					<div class="boardNewDiv" style="display: none;">
-						<span>N</span>
+				<!-- 채팅 open/close -->
+				<button class="btn btn--xl btn--blue btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
+					<div class="msgCntDiv" style="display: none;">
+						<span>0</span>
 					</div>
 					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
 				</button>
 				
-				<!-- 채팅 open/close -->
-				<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
-					<div class="msgCntDiv" style="display: none;">
-						<span>0</span>
+				<!-- 화이트보드 open/close -->
+				<button class="btn btn--xl btn--indigo btn--fab mdi md-create boardBtn" title="화이트보드" style="position: relative; font-size: 1.9rem;" data-value="true">
+					<div class="boardNewDiv" style="display: none;">
+						<span>N</span>
 					</div>
 					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
 				</button>
@@ -235,21 +235,35 @@
 				<!-- 화이트보드 파일 업로드창 -->
 				<div class="center">
 					<div class="profile">
-						<span class="parameter" id="pdfName"></span><br/>
+						<span class="parameter" id="pdfName"></span>
 						
 						<div class="actions">
-							<a href="javascript:;" class="btn file">파일선택
-								<input id='pdf' type='file' accept="application/pdf" style="width: 100%;">
+							<a href="javascript:;" class="btn file" disabled>파일선택
+								<input id='pdf' type='file' data-value="true" accept="application/pdf" style="height: 100%; width: 100%;" disabled>
 							</a>
+							<div class="job">파일 크기 제한 : <span class="parameter" id="sizeText">0</span> / 10Mb</div>
 						</div>
-						
-						<div class="job">파일 크기 제한 : <span class="parameter" id="sizeText">0</span> / 10Mb</div>
-						<br/>
 					</div>
 				</div>
 				
 				<div id="imgDiv"></div>
+				
+				<!-- progres -->
+				<div id="imgProgressDiv" style="display: none;">
+					<div class="row">
+			            <div id="loading">
+			                <ul class="bokeh">
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                </ul>
+						</div>
+					</div>
+				</div>
+				
 			</div>
+			
 			<div id="whiteBoardLayer"></div>
 		</div>
 		

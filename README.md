@@ -8,4 +8,4 @@
 
 ## License
 
-HamoniaMediaWeaver 는 [MIT 라이선스](https://github.com/ivsteam/HamoniaMediaWeaver/blob/master/LICENSE.md)로 배포 됩니다.
+HamoniaMediaWeaver 는 [MIT 라이선스](https://github.com/ivsteam/HamoniaMediaWeaver/blob/master/LICENSE.md)로 배포 됩니다. 

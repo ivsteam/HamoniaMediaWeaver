@@ -5,6 +5,7 @@ make-tar.sh
 
 *.tar.gz
 lib-cov
+v2.2.2
 
 .*.swp
 ._*

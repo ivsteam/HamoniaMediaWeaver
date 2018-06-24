@@ -75,7 +75,7 @@ body > div { min-width: 360px; }
 
 .bottom_right .box1 {
 	box-sizing: border-box;
-	padding: 10px 35px 0 35px;
+	padding: 5px 35px 0 35px;
 	width: 100%;
 }
 
@@ -115,12 +115,16 @@ body > div { min-width: 360px; }
 
 .bottom_right .box3 { 
 	font-size: .85rem;
-	padding: 15px 35px 0 35px;
+	padding: 15px 25px 0 25px;
 	text-align: center; 
 }
 .bottom_right .box4 {
+	bottom: 0;
+	margin-bottom: 25px;
 	padding-left: 25px; 
 	padding-right: 25px; 
+	position: absolute;
+	width: 100%;
 }
 
 .bottom_right .box3 img { 
@@ -128,6 +132,15 @@ body > div { min-width: 360px; }
 	margin-top: 15px;
 	width: 85px; 
 }
+
+.bottom_right .box3 p { 
+	margin-bottom: 5px;
+}
+
+#brmMsg { margin-bottom: 0px; }
+.brmMsgCreated {}
+.brmMsgNotCreated {}
+
 
 /* 
 .bottom_right .box3 input , 
@@ -176,7 +189,10 @@ body > div { min-width: 360px; }
 	border-color: #2BC1A4;
 }
 
-#open-or-join-room { padding: 1rem; }
+#open-or-join-room { 
+	margin-top: 10px;
+	padding: .5rem; 
+}
 
 
 

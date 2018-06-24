@@ -12,7 +12,7 @@ var path = require('path');
 //    password : '1234',
 //    database : 'test'
 //});
-const { Pool, Client } = require('pg')
+const { Pool, Client } = require('pg');
 
 const connection = new Pool({
   user: 'ivs',
@@ -20,7 +20,7 @@ const connection = new Pool({
   database: 'hamonia',
   password: 'exitem08',
   port: 5432,
-})
+});
 
 connection.connect();
 

@@ -564,6 +564,7 @@ video {
 
 #pdfName {
 	display: -webkit-box;
+	font-size: .85rem;
 	height: 3em;
 	line-height: 1.5;
 	overflow: hidden;
@@ -577,9 +578,19 @@ video {
 	background-color: aliceblue;
 	display: inline-block;
 	height: 100%;
+	position: relative;
 	vertical-align: top;
 	width: calc(100% - 205px);
 }
+
+#boardProgress {
+	height: 100%;
+	position: absolute;
+	vertical-align: middle;
+	width: 100%;
+	z-index: 1;
+}
+#boardProgress .row { height: 100%; }
 
 .profile .actions .btn.file {
 	background-color: #786450;
@@ -716,7 +727,9 @@ img.uploadImg {
 
 #whiteboard {
 	height: 100%;
+	position: absolute;
 	width: 100%;
+	z-index: 2;
 }
 /* boart end */
 

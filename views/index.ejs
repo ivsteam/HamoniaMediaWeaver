@@ -200,7 +200,7 @@
 				</button>
 				
 				<!-- 화이트보드 open/close -->
-				<button class="btn btn--xl btn--indigo btn--fab mdi md-create boardBtn" title="화이트보드" style="position: relative; font-size: 1.9rem;" data-value="true">
+				<button class="btn btn--xl btn--indigo btn--fab mdi md-create boardBtn" title="화이트보드" style="position: relative; font-size: 1.9rem;">
 					<div class="boardNewDiv" style="display: none;">
 						<span>N</span>
 					</div>
@@ -235,7 +235,7 @@
 				<!-- 화이트보드 파일 업로드창 -->
 				<div class="center">
 					<div class="profile">
-						<span class="parameter" id="pdfName"></span>
+						<span class="parameter" id="pdfName">선택된 파일이 없습니다.</span>
 						
 						<div class="actions">
 							<a href="javascript:;" class="btn file" disabled>파일선택
@@ -264,7 +264,20 @@
 				
 			</div>
 			
-			<div id="whiteBoardLayer"></div>
+			<div id="whiteBoardLayer">
+				<div id="boardProgress">
+					<div class="row">
+			            <div id="loading">
+			                <ul class="bokeh">
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                </ul>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		

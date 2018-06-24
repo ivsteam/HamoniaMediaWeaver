@@ -1,10 +1,5 @@
-<div class="box3">
-	<!-- <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p> -->
-	<img alt="" src="/img/hamonia-logo.png">
-</div>
-
 <% if (isLogin){ %>
-	<div class="box1" style="margin-top: -10px; padding-top: 0; padding-right: 25px;">
+	<div class="box1" style="padding-top: 0; padding-right: 25px;">
 		<div class='signup' style="position: static;">
 			<a href="/logout">LOGOUT</a>
 		</div>
@@ -20,21 +15,30 @@
 	</div>
 <% } %>
 
+<!-- UI 변경시 padding-top 제거 -->
+<div class="box3" style="padding-top: 40px;">
+	<h4 style="font-weight:  bold;">바로 개설/참여 하기</h4>
+	<p>방이름을 입력하여 개설 또는 참여하세요</p>
+</div>
 
-<div class="box4">
-	<input type="text" id="room-id" class="form-control" placeholder="방이름을 입력하세요." autocorrect=off autocapitalize=off size=20>
-	
+<div class="box2">
+	<p id="brmMsg">&nbsp;</p>
+</div>
+
+<!-- UI 변경시 margin-bottom 제거 -->
+<div class="box4" style="margin-bottom: 35px;">
 	<% if (isLogin){ %>
 		<!--<%=auth_type%>:-->
     	<input type="text" id="userName" value="<%= nickname %>" class="form-control" name="userName" required autocomplete="off" style="border: 0; font-weight: bold; text-align: center;" readonly>
 	<% }else{ %>
     	<input type="text" id="userName" class="form-control" name="userName" required placeholder="대화명을 입력하세요." autocomplete="off" style="display: none;">
 	<% } %>
-</div>
-
-<div class="row joinBtn">
+	
+	<input type="text" id="room-id" class="form-control" placeholder="방이름을 입력하세요." autocorrect=off autocapitalize=off size=20>
+	
 	<button id="open-or-join-room" class="btn btn-primary btn-block">접속하기</button>
 </div>
+
 
 <script>
 // 접속시 room 명칭 설정

@@ -16,7 +16,6 @@ $(document).ready(function(){
 	defaultUISet();
 	getIndexEjs();
 	
-	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	
@@ -97,8 +96,8 @@ $(document).ready(function(){
 		videoBtnFnt();
 	});
 	
-	// 볼륨 버튼
-	$('.md-volume-up').click(function(){
+	// 마이크 버튼
+	$('.md-mic').click(function(){
 		localStream.getAudioTracks()[0].enabled = !(localStream.getAudioTracks()[0].enabled);
 		
 		// 아이콘변경
@@ -535,12 +534,12 @@ function videoBtnFnt(){
 
 //볼륨 off 버튼 UI
 function volumeUIFnt(){
-	if($('.buttonVolume').hasClass('md-volume-up')){
-		$('.buttonVolume').removeClass('md-volume-up');
-		$('.buttonVolume').addClass('md-volume-off');
-	}else if($('.buttonVolume').hasClass('md-volume-off')){
-		$('.buttonVolume').removeClass('md-volume-off');
-		$('.buttonVolume').addClass('md-volume-up');
+	if($('.buttonVolume').hasClass('md-mic')){
+		$('.buttonVolume').removeClass('md-mic');
+		$('.buttonVolume').addClass('md-mic-off');
+	}else if($('.buttonVolume').hasClass('md-mic-off')){
+		$('.buttonVolume').removeClass('md-mic-off');
+		$('.buttonVolume').addClass('md-mic');
 	}
 }
 

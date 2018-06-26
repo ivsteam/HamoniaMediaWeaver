@@ -9,11 +9,11 @@ var customMaxParticipantsAllowed = 4;
 const { Pool, Client } = require('pg')
 
 const client = new Pool({
-  user: 'ivs',
-  host: '52.231.15.128',
-  database: 'hamonia',
-  password: 'exitem08',
-  port: 5432,
+	user: 'user',
+	host: 'localhost',
+	database: 'db',
+	password: 'pw',
+	port: 123,
 })
 
 module.exports = exports = function(app, socketCallback) {
@@ -351,14 +351,6 @@ module.exports = exports = function(app, socketCallback) {
         function joinARoom(message) {
         	console.log(' ---- joinARoom() : ' + message);
         	
-        	var userNum = 0;
-        	
-//        	for(var key in message){
-//        		++userNum;
-//    			console.log(' ---- joinARoom() key : ' + key + ' // message[key] : ' + message[key]);
-//        	}
-        	
-        	
 			roomList[message.sender] = {
 				userid: message.sender,
 				roomNm : message.remoteUserId
@@ -374,9 +366,12 @@ module.exports = exports = function(app, socketCallback) {
 
             var usersInARoom = roomInitiator.connectedWith;
             var maxParticipantsAllowed = roomInitiator.maxParticipantsAllowed;
-
+            
+            // 인원수
+            roomMemberCnt = Object.keys(usersInARoom).length+1;
+            
             if (Object.keys(usersInARoom).length >= maxParticipantsAllowed) {
-            	var memCnt = ( Object.keys(usersInARoom).length+1 ) + '/' + ( customMaxParticipantsAllowed );
+            	var memCnt = roomMemberCnt + '/' + ( customMaxParticipantsAllowed );
 				
 				socket.emit('room-full', message.remoteUserId, memCnt);
 

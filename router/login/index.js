@@ -24,11 +24,11 @@ var logger = require('../../log4js-utils').logger();
 const { Pool, Client } = require('pg')
 
 const connection = new Pool({
-  user: 'ivs',
-  host: '52.231.15.128',
-  database: 'hamonia',
-  password: 'exitem08',
-  port: 5432,
+	user: 'user',
+	host: 'localhost',
+	database: 'db',
+	password: 'pw',
+	port: 123,
 })
 
 

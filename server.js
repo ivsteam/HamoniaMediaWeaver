@@ -19,6 +19,7 @@ try {
     });
 } catch (e) { console.log(' ==== error : ' + e); }
 
+var rimraf = require('rimraf');
 var fs = require('fs');
 var path = require('path');
 
@@ -257,7 +258,19 @@ http_app.post('/cavasImgSave', function(req, res){
 	
 	var filedirectory = __dirname + '/upload/' + req.session.user_id;
 	
-	try{ 
+//	try{
+//		console.log('1111');
+//		fs.unlink(filedirectory +"/"+fileNm +'.png', function(){
+//			
+//		});
+//		console.log('2222');
+//	}catch(e){ 
+//		console.log('3333');
+//		if ( e.code == 'EEXIST' ) throw e; 
+//		console.log('4444');
+//	}
+	
+	try{
 		fs.mkdirSync(filedirectory);
 	}catch(e){ 
 		if ( e.code != 'EEXIST' ) throw e; // 존재할경우 패스처리함. 

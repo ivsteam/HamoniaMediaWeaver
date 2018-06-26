@@ -50,11 +50,11 @@ $('.bottom_right').on('click', '#open-or-join-room', function(){
 	
 	var text = browserCheck();
 	
-	 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    	// iOS safari 인 경우
-		alert('아이폰에서 이용하실 수 없습니다.');
+//	 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+//    	// iOS safari 인 경우
+//		alert('아이폰에서 이용하실 수 없습니다.');
 //		return;
-	}
+//	}
 	
 //	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
 //		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
@@ -151,9 +151,17 @@ function appendDIV(event) {
 				$('#imgDiv').empty();
 			}
 		}else{
-			
-			// 선택된 board 파일 띄우기
-			$('#imgDiv').append('<img id="' + valueDataTrueCheck[1] + '" src="' + valueData + '" class="uploadImg">');
+			// 선택된 board 파일 띄우기 - 중복체크
+//			var sameCheck = false;
+//			for(var i=0; i<$('#imgDiv .uploadImg').length ;++i){
+//				if($('#imgDiv .uploadImg').eq(i).attr('src') == valueData){
+//					sameCheck = true;
+//					break;
+//				}
+//			}
+//			if( !sameCheck ) {
+				$('#imgDiv').append('<img id="' + valueDataTrueCheck[1] + '" src="' + valueData + '" class="uploadImg">');
+//			}
 		}
 		return;
 	}
@@ -188,91 +196,138 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
-	var existing = document.getElementById(event.streamid);
-	if(existing && existing.parentNode) {
-		existing.parentNode.removeChild(existing);
+	function onAllVolume(){
+		return new Promise(function(resolve, reject){
+	
+			// 음소거
+			$('#videos-container video').attr('muted', true).prop('muted', true).prop('volume', 0);
+			
+			
+			var existing = document.getElementById(event.streamid);
+			if(existing && existing.parentNode) {
+				existing.parentNode.removeChild(existing);
+			}
+		
+		    event.mediaElement.removeAttribute('src');
+		    event.mediaElement.removeAttribute('srcObject');
+		
+		    var width;
+		    var video = document.createElement('video');
+		    var text = browserCheck();
+		    
+		    
+		    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
+		    	// iOS safari 인 경우
+				video.controls = true;
+			}
+		
+			
+			try {
+				video.setAttributeNode(document.createAttribute('autoplay'));
+			    video.setAttributeNode(document.createAttribute('playsinline'));
+			} catch (e) {
+				video.setAttribute('autoplay', true);
+			    video.setAttribute('playsinline', true);
+			}
+		    
+		    if(event.type === 'local') {
+		    	// 내 영상
+		        video.id = "myVideo";
+		    	
+				localStream = event.stream;
+		        
+				try {
+		            video.setAttributeNode(document.createAttribute('muted'));
+		        } catch (e) {
+		            video.setAttribute('muted', true);
+		        }
+		        
+		        roomName = $('#room-id').val();
+		        userName = $('#userName').val();
+		        
+		        if(userName.indexOf(messageSplit) != -1){
+		        	userName = 'Guest-' + userName.split(messageSplit)[1];
+		        }
+		        
+		        $('#joinRoom').css('display', 'block');
+		        $('#createRoom').remove();
+		        
+//		        width = 100;
+		    }else{
+		    	// 그 외
+		    	video.id = event.userid;
+		    	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
+//		    	width = 15;
+		    }
+		    
+		    video.srcObject = event.stream;
+		
+		    var mediaElement = getHTMLMediaElement(video, {
+		        //title: event.userid, // 영상 상단 text
+		        buttons: ['full-screen'],
+		        width: width,
+		        showOnMouseEnter: false
+		    });
+		    
+		    mediaElement.dataset.name = event.userid;
+		    connection.videosContainer.appendChild(mediaElement);
+		
+//		    setTimeout(function() {
+//		        mediaElement.media.play();
+//		    }, 5000);
+		    
+		    mediaElement.id = event.streamid;
+		    
+		    $('body').css('overflow', 'hidden');
+		    
+		    // 방장표시
+		   	var mContains = $('.media-container');
+		   	for(var i=0; i<mContains.length ;++i){
+		   		if(mContains.eq(i).data('name') == roomName){
+		   			mContains.eq(i).css('border', '2px solid orange');
+		   		}
+		   	}
+		   	
+		    refreshVideoView(true);
+    
+	
+	
+			var videos = $('#videos-container video');
+			
+			// volume-off
+			videos.attr('muted', true).prop('muted', true).prop('volume', 0);
+			
+			console.log(' ---- videos.length : ' + videos.length);
+			
+			for(var i=0; i<videos.length ;++i){
+				// video-play
+				videos[i].play();
+			}
+			
+			playCheckItv = setInterval(function(){
+				var cnt = 0;
+				
+				for(var i=0; i<videos.length ;++i){
+					// video-play-count
+					if( !videos[i].paused ) {
+						cnt += 1;
+					}
+				}
+				
+				if(cnt == videos.length){
+					clearInterval(playCheckItv);	// 반복종료
+					resolve();
+				}
+			}, 450);
+		});
 	}
-
-    event.mediaElement.removeAttribute('src');
-    event.mediaElement.removeAttribute('srcObject');
-
-    var width;
-    var video = document.createElement('video');
-    var text = browserCheck();
-    
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
-    	// iOS safari 인 경우
-		video.controls = true;
-	}
-
-	try {
-		video.setAttributeNode(document.createAttribute('autoplay'));
-	    video.setAttributeNode(document.createAttribute('playsinline'));
-	} catch (e) {
-		video.setAttribute('autoplay', true);
-	    video.setAttribute('playsinline', true);
-	}
-    
-    if(event.type === 'local') {
-    	// 내 영상
-        video.muted = true;
-        video.id = "myVideo";
-    	
-		localStream = event.stream;
-        
-		try {
-            video.setAttributeNode(document.createAttribute('muted'));
-        } catch (e) {
-            video.setAttribute('muted', true);
-        }
-        
-        roomName = $('#room-id').val();
-        userName = $('#userName').val();
-        
-        if(userName.indexOf(messageSplit) != -1){
-        	userName = 'Guest-' + userName.split(messageSplit)[1];
-        }
-        
-        $('#joinRoom').css('display', 'block');
-        $('#createRoom').remove();
-        
-//        width = 100;
-    }else{
-    	// 그 외
-    	video.id = event.userid;
-    	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
-//    	width = 15;
-    }
-    
-    video.srcObject = event.stream;
-
-    var mediaElement = getHTMLMediaElement(video, {
-        //title: event.userid, // 영상 상단 text
-        buttons: ['full-screen'],
-        width: width,
-        showOnMouseEnter: false
-    });
-    
-    mediaElement.dataset.name = event.userid;
-    connection.videosContainer.appendChild(mediaElement);
-
-    setTimeout(function() {
-        mediaElement.media.play();
-    }, 5000);
-    
-    mediaElement.id = event.streamid;
-    
-    $('body').css('overflow', 'hidden');
-    
-    // 방장표시
-   	var mContains = $('.media-container');
-   	for(var i=0; i<mContains.length ;++i){
-   		if(mContains.eq(i).data('name') == roomName){
-   			mContains.eq(i).css('border', '2px solid orange');
-   		}
-   	}
-    
-    refreshVideoView(true);
+	
+	
+	// 음소거 해제
+	onAllVolume().then(function(){
+		$('#videos-container video').prop('volume', '1').prop('muted', false).attr('muted', false);
+		$('#myVideo').attr('muted', true).prop('muted', true).prop('volume', 0);
+	});
 };
 
 connection.onstreamended = function(event) {

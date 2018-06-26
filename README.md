@@ -6,6 +6,7 @@
 
 웹브라우저에서 [hamonia.kr](https://hamonia.kr) 접속하여 사용할 수 있습니다. 그룹웨어, 사내 포털 시스템 등에 Hamonia 배너를 삽입하여 영상커뮤니케이션을 할 수 있습니다.
 
+
 ## License
 
 HamoniaMediaWeaver 는 [MIT 라이선스](https://github.com/ivsteam/HamoniaMediaWeaver/blob/master/LICENSE.md)로 배포 됩니다. 

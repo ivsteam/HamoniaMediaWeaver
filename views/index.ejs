@@ -6,6 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="description" content="PDF Viewer" />
 	
+	<preference name="MediaPlaybackRequiresUserAction" value="true"/>
+	
 	<link rel="shortcut icon" href="/views/logo.png">
 	<!-- <link rel="stylesheet" href="/views/stylesheet.css"> -->
 	
@@ -184,10 +186,17 @@
 				</button>
 				-->
 				
-				<!-- 볼륨 버튼 -->
-				<button class="btn btn--xl btn--green btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				<!-- 마이크 버튼 -->
+				<button class="btn btn--xl btn--green btn--fab mdi md-mic buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
 				</button>
+				
+				<!-- 음소거 버튼 -->
+				<!-- 임시 -->
+				<!--
+				<button id="testbtn" onclick="javascript:$('#videos-container video').prop('muted', false).prop('volume', 1);">btn</button>
+				<button id="testbtn1" onclick="javascript:$('#videos-container video').attr('muted', true).prop('muted', true).prop('volume', 0);">btn</button>
+				-->
 			</div>
 			
 			<div class="menuLineDiv">

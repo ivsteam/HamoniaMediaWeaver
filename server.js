@@ -1,3 +1,7 @@
+// Muaz Khan      - www.MuazKhan.com
+// MIT License    - www.WebRTC-Experiment.com/licence
+// Documentation  - github.com/muaz-khan/RTCMultiConnection
+
 function resolveURL(url) {
     var isWin = !!process.platform.match(/^win/);
     if (!isWin) return url;
@@ -8,6 +12,7 @@ function resolveURL(url) {
 var isUseHTTPs = true;
 
 var port = 443;
+//var port = process.env.PORT || 9001;
 
 try {
     process.argv.forEach(function(val, index, array) {
@@ -17,54 +22,87 @@ try {
             isUseHTTPs = true;
         }
     });
-} catch (e) { console.log(' ==== error : ' + e); }
+} catch (e) {}
 
 var fs = require('fs');
 var path = require('path');
 
-var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/sslkey.pem')));
-var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/ssl.pem')));
+var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/privatekey.pem')));
+var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/certificate.pem')));
 var ssl_cabundle = null;
 
 // force auto reboot on failures
 var autoRebootServerOnFailure = false;
 
+// skip/remove this try-catch block if you're NOT using "config.json"
+try {
+    var config = require('./config.json');
+
+    if ((config.port || '').toString() !== '9001') {
+        port = parseInt(config.port);
+    }
+
+    if ((config.autoRebootServerOnFailure || '').toString() === 'true') {
+        autoRebootServerOnFailure = true;
+    }
+
+    if ((config.isUseHTTPs || '').toString() === 'true') {
+        isUseHTTPs = true;
+    }
+
+    ['ssl_key', 'ssl_cert', 'ssl_cabundle'].forEach(function(key) {
+        if (!config['key'] || config['key'].toString().length) {
+            return;
+        }
+
+        if (config['key'].indexOf('/path/to/') === -1) {
+            if (key === 'ssl_key') {
+                ssl_key = fs.readFileSync(path.join(__dirname, config['ssl_key']));
+            }
+
+            if (key === 'ssl_cert') {
+                ssl_cert = fs.readFileSync(path.join(__dirname, config['ssl_cert']));
+            }
+
+            if (key === 'ssl_cabundle') {
+                ssl_cabundle = fs.readFileSync(path.join(__dirname, config['ssl_cabundle']));
+            }
+        }
+    });
+} catch (e) {}
 
 // see how to use a valid certificate:
 // https://github.com/muaz-khan/WebRTC-Experiment/issues/62
 var options = {
     key: ssl_key,
-    cert: ssl_cert, passphrase : 'exitem08',
+    cert: ssl_cert,
     ca: ssl_cabundle
 };
 
 // You don't need to change anything below
 
-//var server = require(isUseHTTPs ? 'https' : 'http');
-var server = require('https');
+var server = require(isUseHTTPs ? 'https' : 'http');
 var url = require('url');
-//var ip;
+
 function serverHandler(request, response) {
-
-
     try {
         var uri = url.parse(request.url).pathname,
             filename = path.join(process.cwd(), uri);
 
-//        if (request.method !== 'GET' || path.join('/', uri).indexOf('../') !== -1) {
-//            response.writeHead(401, {
-//                'Content-Type': 'text/plain'
-//            });
-//            response.write('401 Unauthorized: ' + path.join('/', uri) + '\n');
-//            response.end();
-//            return;
-//        }
+        if (request.method !== 'GET' || path.join('/', uri).indexOf('../') !== -1) {
+            response.writeHead(401, {
+                'Content-Type': 'text/plain'
+            });
+            response.write('401 Unauthorized: ' + path.join('/', uri) + '\n');
+            response.end();
+            return;
+        }
 
         if (filename && filename.search(/server.js|Scalable-Broadcast.js|Signaling-Server.js/g) !== -1) {
             response.writeHead(404, {
                 'Content-Type': 'text/plain'
             });
-            response.write('404 Not Found 2---------------------: ' + path.join('/', uri) + '\n');
+            response.write('404 Not Found: ' + path.join('/', uri) + '\n');
             response.end();
             return;
         }
@@ -72,11 +110,11 @@ function serverHandler(request, response) {
         ['Video-Broadcasting', 'Screen-Sharing', 'Switch-Cameras'].forEach(function(fname) {
             if (filename && filename.indexOf(fname + '.html') !== -1) {
                 filename = filename.replace(fname + '.html', fname.toLowerCase() + '.html');
-				console.log("filename="+filename);
             }
         });
 
         var stats;
+
         try {
             stats = fs.lstatSync(filename);
 
@@ -95,7 +133,7 @@ function serverHandler(request, response) {
             response.writeHead(404, {
                 'Content-Type': 'text/plain'
             });
-            response.write('404 Not Found 1----------------: ' + e.message+ '\n');
+            response.write('404 Not Found: ' + path.join('/', uri) + '\n');
             response.end();
             return;
         }
@@ -134,11 +172,48 @@ function serverHandler(request, response) {
                 response.writeHead(500, {
                     'Content-Type': 'text/plain'
                 });
-                response.write('404 Not Found 3 -----------------: ' + path.join('/', uri) + '\n');
+                response.write('404 Not Found: ' + path.join('/', uri) + '\n');
                 response.end();
                 return;
             }
 
+            try {
+                var views = (fs.readdirSync('views') || []);
+
+                if (views.length) {
+                    var h2 = '<h2 style="text-align:center;display:block;"><a href="https://www.npmjs.com/package/rtcmulticonnection-v3"><img src="https://img.shields.io/npm/v/rtcmulticonnection-v3.svg"></a><a href="https://www.npmjs.com/package/rtcmulticonnection-v3"><img src="https://img.shields.io/npm/dm/rtcmulticonnection-v3.svg"></a><a href="https://travis-ci.org/muaz-khan/RTCMultiConnection"><img src="https://travis-ci.org/muaz-khan/RTCMultiConnection.png?branch=master"></a></h2>';
+                    var otherDemos = '<section class="experiment" id="demos"><details><summary style="text-align:center;">Check ' + (views.length - 1) + ' other RTCMultiConnection-v3 demos</summary>' + h2 + '<ol>';
+                    views.forEach(function(f) {
+                        if (f && f !== 'index.html' && f.indexOf('.html') !== -1) {
+                            otherDemos += '<li><a href="/views/' + f + '">' + f + '</a> (<a href="https://github.com/muaz-khan/RTCMultiConnection/tree/master/views/' + f + '">Source</a>)</li>';
+                        }
+                    });
+                    otherDemos += '<ol></details></section><section class="experiment own-widgets latest-commits">';
+
+                    file = file.replace('<section class="experiment own-widgets latest-commits">', otherDemos);
+                }
+            } catch (e) {}
+
+            try {
+                var docs = (fs.readdirSync('docs') || []);
+
+                if (docs.length) {
+                    var html = '<section class="experiment" id="docs">';
+                    html += '<details><summary style="text-align:center;">RTCMultiConnection Docs</summary>';
+                    html += '<h2 style="text-align:center;display:block;"><a href="http://www.rtcmulticonnection.org/docs/">http://www.rtcmulticonnection.org/docs/</a></h2>';
+                    html += '<ol>';
+
+                    docs.forEach(function(f) {
+                        if (f.indexOf('DS_Store') == -1) {
+                            html += '<li><a href="https://github.com/muaz-khan/RTCMultiConnection/tree/master/docs/' + f + '">' + f + '</a></li>';
+                        }
+                    });
+
+                    html += '</ol></details></section><section class="experiment own-widgets latest-commits">';
+
+                    file = file.replace('<section class="experiment own-widgets latest-commits">', html);
+                }
+            } catch (e) {}
 
             response.writeHead(200, {
                 'Content-Type': contentType
@@ -155,273 +230,13 @@ function serverHandler(request, response) {
     }
 }
 
-
-// http -> https porwording start
-var express = require('express');
-var app= express();
-var http_app;
-var http = require('http');
-var HTTP_PORT = 80;
-
-http_app = express();
-http_app.set('port', port);
-var router = require('./router/index');
+var app;
 
 if (isUseHTTPs) {
-    app = server.createServer(options, http_app);
-
-//} else {
-//	http_app = server.createServer(serverHandler);
-    
-//    http_app = express();
-//    http_app.set('port', port);
+    app = server.createServer(options, serverHandler);
+} else {
+    app = server.createServer(serverHandler);
 }
-// http -> https porwording end
-
-var bodyParser = require('body-parser'); 
-var passport = require('passport');
-var session = require('express-session');
-var flash = require('connect-flash');
-var ejs = require('ejs');
-var path = require('path');
-
-
-
-http_app.use(express.static(path.join(__dirname, 'public')));
-http_app.use(session({
-	secret: 'keyboard cat',
-	resave: false,
-	saveUninitialized: true
-}));
-http_app.use(bodyParser.json({limit: '50mb'}));
-http_app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-http_app.set('view engine', 'ejs'); 
-http_app.use(passport.initialize());
-http_app.use(passport.session());
-http_app.use(flash());
-http_app.use(router);
-
-
-
-
-//화이트보드] 이미지 저장
-http_app.post('/cavasImgSave', function(req, res){
-//	console.log('params: ' + JSON.stringify(req.params));
-//	console.log('body: ' + JSON.stringify(req.body));
-//	console.log('query: ' + JSON.stringify(req.query));
-	
-	
-	req.session.user_id = req.body.user_id;
-	req.session.name = req.body.room_name;
-	
-	var data_url = req.body.imgBase64;
-	var matches = data_url.match(/^data:.+\/(.+);base64,(.*)$/);	///data:(.*);base64,(.*)/
-	var ext = matches[1];
-	var base64_data = matches[2];
-	var buffer = new Buffer(base64_data, 'base64');
-	var fileNm = req.body.fileNm;
-	
-	var filedirectory = __dirname + '/upload/' + req.session.user_id;
-	
-//	try{
-//		console.log('1111');
-//		fs.unlink(filedirectory +"/"+fileNm +'.png', function(){
-//			
-//		});
-//		console.log('2222');
-//	}catch(e){ 
-//		console.log('3333');
-//		if ( e.code == 'EEXIST' ) throw e; 
-//		console.log('4444');
-//	}
-	
-	try{
-		fs.mkdirSync(filedirectory);
-	}catch(e){ 
-		if ( e.code != 'EEXIST' ) throw e; // 존재할경우 패스처리함. 
-	}
-
-	fs.writeFile(filedirectory +"/"+fileNm +'.png', buffer, function (err) {
-		var resData = {}
-		resData.success = 'Y';
-		resData.user_id = req.session.user_id;
-		resData.fileNm = fileNm;
-		res.send(resData);
-		console.log(err);
-	});
-
-});
-
-
-//화이트보드] 접속 페이지
-/*
-http_app.get('/test', function(req, res){
-
-	// 로그인에 상관없이 룸 생성자의 고유값을 세션에 저장한다.
-	req.session.user_id = '1234', // 아이디
-	req.session.name = 'chris' // 이름
-
-	fs.readFile(__dirname + '/views/test.html', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-//			isLogin : isLogin,
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-//*/
-
-
-//이미지 뷰어
-http_app.get('/img/:path/:imgnm', function(req, res){
-	console.log("path==="+  req.params.path +"=="+ req.params.imgnm);
-	var filename ='pageNum1';
-	var img = fs.readFileSync('./upload/' + req.params.path + '/' + req.params.imgnm +'.png');
-	res.writeHead(200, {'Content-Type': 'image/png' });
-	res.end(img, 'binary');
-	console.log('view PNG: '+filename+'.png');
-});
-
-
-// translation] naver
-var express = require('express');
-var client_id = 'lXcYqHZGWz8A0zEy5_00';
-var client_secret = '0HejW2Rynn';
-var request = require('request');
-http_app.post('/translate', function(req, res){
-
-//	var api_url = 'https://openapi.naver.com/v1/language/translate';	// papago SMT 
-	var api_url = 'https://openapi.naver.com/v1/papago/n2mt';
-	var queryText = req.body.textData;
-	var sourceLanguage = req.body.source;
-	var targetLanguage = req.body.target;
-	
-	var options = {
-		url: api_url,
-		form: {'source': sourceLanguage, 'target': targetLanguage, 'text': queryText},
-		headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
-	};
-
-	request.post(options, function (error, response, body) {
-
-		if (!error && response.statusCode == 200) {
-//			res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
-			var jsonData = JSON.parse(body);
-//			console.log("jsonData is " + body);
-//			console.log("jsonData==="+ jsonData.message.result.translatedText);
-//			res.end(body..toString('utf-8'));
-
-			var resData = {}
-			resData.success = 'Y';
-			resData.translateData = jsonData.message.result.translatedText;
-			res.send(resData);
-
-		} else {
-			res.status(response.statusCode).end();
-			console.log('error = ' + response.statusCode);
-		}
-	});
-});
-
-// translation] google
-//http_app.get('/translate', function(req, res){
-//	const logfile = require('log-to-file');
-//	const translate = require('google-translate-api');
-//	
-//	var textdata = '테스트';
-//	console.log("textdata is : " + textdata );
-//	translate(textdata, {from: 'ko', to: 'en'}).then(resp => {
-//		console.log("============]");
-//		console.log(resp);
-//		console.log("[============");
-//
-//		console.log(resp.text.toString('utf-8') );
-//		
-//		logfile(resp.text+"==="+ resp.text.toString('utf-8'));
-//
-//	}).catch(err => {
-//		console.error(err);
-//	});
-//	
-//	
-////	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
-////		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
-////		res.end(ejs.render(data, {  
-////			tmp : res.text
-////		}));  
-////	}); 
-//
-//});
-
-// translation] google - script in lng.ejs 
-//http_app.get('/translate', function(req, res){
-//
-////https://translation.googleapis.com/language/translate/v2?q=%ED%95%9C%EA%B8%80&source=en&target=ko&model=nmt&key=AIzaSyDbLHlxeb4XzDtSj_uPoFu4D1w1qPvPKEM
-//	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
-//		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
-//		res.end(ejs.render(data, {  
-//			tmp : res.text
-//		}));  
-//	});
-//});
-
-
-
-http_app.get('/privacy', function(req, res){
-
-	fs.readFile(__dirname + '/views/privacy.html', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-			roomID : '',  
-			userName : '',  
-			psycare : '',
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-
-
-
-http_app.get('/', function(req, res){
-
-
-	if (/^http$/.test(req.protocol)) {
-		var host = req.headers.host.replace(/:[0-9]+$/g, "");
-
-		if ((port != null) && port !== port) {
-			return res.redirect("https://" + host + ":" + port + req.url, 301);
-		} else {
-			return res.redirect("https://" + host + req.url, 301);
-		}
-	} 
-
-
-	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-			roomID : '',  
-			userName : '',  
-			psycare : '',
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-
-
-//심리상담 접속 URL
-http_app.get('/psycare', function(req, res){
-	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-			roomID : req.query.roomID,  
-			userName : req.query.name,  
-			psycare : "psycare",
-//			isLogin : isLogin,
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-
 
 function cmd_exec(cmd, args, cb_stdout, cb_end) {
     var spawn = require('child_process').spawn,
@@ -460,7 +275,7 @@ function runServer() {
 
             var socketURL = (isUseHTTPs ? 'https' : 'http') + '://' + e.address + ':' + e.port + '/';
 
-            console.log('------------------------------ socketURL : ' + socketURL);
+            console.log('------------------------------');
             console.log('\x1b[31m%s\x1b[0m ', 'Unable to listen on port: ' + e.port);
             console.log('\x1b[31m%s\x1b[0m ', socketURL + ' is already in use. Please kill below processes using "kill PID".');
             console.log('------------------------------');
@@ -487,7 +302,7 @@ function runServer() {
 
         var domainURL = (isUseHTTPs ? 'https' : 'http') + '://' + addr.address + ':' + addr.port + '/';
 
-        console.log('------------------------------ domainURL : ' + domainURL);
+        console.log('------------------------------');
 
         console.log('socket.io is listening at:');
         console.log('\x1b[31m%s\x1b[0m ', '\t' + domainURL);
@@ -506,8 +321,9 @@ function runServer() {
         }
 
         console.log('------------------------------');
+        console.log('Need help? http://bit.ly/2ff7QGk');
     });
-    
+
     require('./Signaling-Server.js')(app, function(socket) {
         try {
             var params = socket.handshake.query;
@@ -519,41 +335,18 @@ function runServer() {
             // connection.socketCustomEvent = 'custom-message';
             // var socket = connection.getSocket();
             // socket.emit(connection.socketCustomEvent, { test: true });
-            
+
             if (!params.socketCustomEvent) {
                 params.socketCustomEvent = 'custom-message';
             }
-            
+
             socket.on(params.socketCustomEvent, function(message) {
                 try {
                     socket.broadcast.emit(params.socketCustomEvent, message);
-                } catch (e) { console.log(' ==== error : ' + e); }
+                } catch (e) {}
             });
-        } catch (e) { console.log(' ==== error : ' + e); }
+        } catch (e) {}
     });
-    
-    
-    // http -> https porwording start
-    http_app.all('/*', function(req, res, next) {
-    	if (/^http$/.test(req.protocol)) {
-    		var host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
-
-    		if ((port != null) && port !== port) {
-//    			console.log(' -- 1111');
-    			return res.redirect("https://" + host + ":" + port + req.url, 301);
-    		} else {
-//    			console.log(' -- 2222');
-    			return res.redirect("https://" + host + req.url, 301);
-    		}
-    	} else {
-    		return next();
-    	}
-    });
-
-    http.createServer(http_app).listen(HTTP_PORT).on('listening', function() {
-    	return console.log("HTTP to HTTPS redirect app launched.");
-    });
-    // http -> https porwording end
 }
 
 if (autoRebootServerOnFailure) {

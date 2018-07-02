@@ -388,7 +388,7 @@ connection.onopen = function() {
     
     connectionCheck = true;
     
-    createBoard();
+//    createBoard();
 //    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
 

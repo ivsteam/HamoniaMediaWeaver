@@ -16,7 +16,7 @@ $(document).ready(function(){
 	windowReset();
 	defaultUISet();
 	getIndexEjs();
-	
+	createBoard();
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	

@@ -6,8 +6,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="description" content="PDF Viewer" />
 	
+	<!-- <preference name="MediaPlaybackRequiresUserAction" value="true"/> -->
+	
 	<link rel="shortcut icon" href="/views/logo.png">
-	<!-- <link rel="stylesheet" href="/views/stylesheet.css"> -->
+	<link rel="shortcut icon" href="/img/favicon.ico">
 	
 	<!-- Bootstrap core CSS-->
 	<link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
@@ -93,7 +95,7 @@
 			
 			<div class="contentBody row" style="overflow: visible;">
 				
-				<div class="bottom_left" style="overflow: visible;">
+				<div class="bottom_left miniSize" style="overflow: hidden;">
 					<h3>Hamonia Media<br>Weaver</h3>
 					<img alt="" src="/img/camera_bg.png">
 					<p>하모니위버로<br> 전 세계와 소통해 보세요.</p>
@@ -184,10 +186,17 @@
 				</button>
 				-->
 				
-				<!-- 볼륨 버튼 -->
-				<button class="btn btn--xl btn--green btn--fab mdi md-volume-up buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				<!-- 마이크 버튼 -->
+				<button class="btn btn--xl btn--green btn--fab mdi md-mic buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
 				</button>
+				
+				<!-- 음소거 버튼 -->
+				<!-- 임시 -->
+				<!--
+				<button id="testbtn" onclick="javascript:$('#videos-container video').prop('muted', false).prop('volume', 1);">btn</button>
+				<button id="testbtn1" onclick="javascript:$('#videos-container video').attr('muted', true).prop('muted', true).prop('volume', 0);">btn</button>
+				-->
 			</div>
 			
 			<div class="menuLineDiv">
@@ -235,13 +244,13 @@
 				<!-- 화이트보드 파일 업로드창 -->
 				<div class="center">
 					<div class="profile">
-						<span class="parameter" id="pdfName">선택된 파일이 없습니다.</span>
+						<span class="parameter" id="pdfName">선택된 파일이<br/>없습니다.</span>
 						
 						<div class="actions">
 							<a href="javascript:;" class="btn file" disabled>파일선택
 								<input id='pdf' type='file' data-value="true" accept="application/pdf" style="height: 100%; width: 100%;" disabled>
 							</a>
-							<div class="job">파일 크기 제한 : <span class="parameter" id="sizeText">0</span> / 10Mb</div>
+							<div class="job">파일 크기 : <span class="parameter" id="sizeText">0</span> / 10Mb</div>
 						</div>
 					</div>
 				</div>
@@ -264,7 +273,20 @@
 				
 			</div>
 			
-			<div id="whiteBoardLayer"></div>
+			<div id="whiteBoardLayer">
+				<div id="boardProgress">
+					<div class="row">
+			            <div id="loading">
+			                <ul class="bokeh">
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                    <li></li>
+			                </ul>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		
@@ -286,6 +308,7 @@
 		    <!-- 전송 -->
 			<div class="textInputDiv row">
 				<select id="transValue" class="form-control">
+					<option value="nonTrans">선택</option>
 					<option value="ko//en">한>영</option>
 					<option value="en//ko">En>Ko</option>
 				</select>

@@ -1,0 +1,131 @@
+<% if (!isLogin) { %>
+	<!-- not login -->
+	<!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="/login">LOGIN</a>-->
+	
+	<div class="box1">
+		<p>Hamonia</p>
+	
+		<div class='signup'>
+			<a id="notLoginDiv" href='javascript:;'>비회원</a>
+			<span> / </span>
+			<a id="signupDiv" href='javascript:;'>회원가입</a>
+		</div>
+		
+		<form method="post">
+    	    <label for="email" class="sr-only">Email</label>
+	        <input type="email" name="email" class="form-control" placeholder="Email" required autofocus>
+	        <label for="password" class="sr-only">Password</label>
+	        <input type="password" name="password" class="form-control" placeholder="Password" required>
+		    <button class="btn btn-lg btn-default btn-block btn-login-local">로그인</button>
+	    </form>
+		
+		<!--<button id="open-or-join-room" class="btn btn-lg btn-default btn-block btn-login-local">로그인</button>-->
+		
+	    <div class="showResult"></div>
+	</div>
+
+	<!-- sosial -->
+	<div class="box2">
+		<hr style=" margin-top:  8px; margin-bottom:  10px;">
+		
+		<b>SNS 계정으로 로그인</b>
+		
+		<div class="loginBtnDiv">
+			
+			<div class="btn-login">
+				<img alt="kakao" src="/img/kakaolink_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="naver" src="/img/naver_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="google" src="/img/google+_icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="facebook" src="/img/facebook-icon.png">
+			</div>
+			
+			<div class="btn-login">
+				<img alt="Hamonikr" src="/img/hamonikr-icon.png">
+			</div>
+		</div>
+	</div>
+<% } %>
+
+<script>
+$('.bottom_left').removeClass('miniSize');
+
+// signup button
+$('#signupDiv').click(function(){
+	$.ajax({
+		url : 'join',
+		success : function(data){
+			$('.bottom_right').empty().append(data);
+		},
+		error : function(request, status, error){
+			console.log('status : ' + status + '\nrequest : ' + request + '\nerror : ' + error);
+		}
+	});
+});
+
+
+$('.btn-login-local').click(function(){
+	var email = document.getElementsByName('email')[0].value;
+	var password = document.getElementsByName('password')[0].value;
+	sendAjax('/login', email, password);
+	return false;
+});
+	
+
+function sendKakaoAjax(url) {
+    console.log("sendKakaoAjax : " + url);
+    
+    $.ajax({
+        type: 'post',
+        url: url,
+        success: function (args) {
+            console.log("success");
+        },
+        error: function (err) {
+            console.log("error", err);
+        }
+    });
+}
+
+
+// Ajax로 전달
+function sendAjax(url, email, password) {
+    var data = { 'email' : email, 'password' : password };
+
+    data = JSON.stringify(data);
+    var xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open('POST', url); // POST로 보냄
+    xmlHttpRequest.setRequestHeader('Content-Type', 'application/json');
+    xmlHttpRequest.send(data);
+
+    xmlHttpRequest.addEventListener('load', function() {
+        var result = JSON.parse(xmlHttpRequest.responseText);
+        var resultDiv = document.querySelector(".showResult");
+		var reText = '';
+		
+		resultDiv.innerHTML = reText;
+		
+        console.log("xmlHttpRequest.status : " + xmlHttpRequest.status);
+        console.log("xmlHttpRequest.status of result : " + result);
+		
+        if (result.nickname) {
+            window.location.href="/";
+        }
+        else {
+        	if(result == "Missing credentials") reText = "유효한 입력이 아닙니다.";
+        	if(result == "Your login info is not found") reText = "로그인 정보를 찾을 수 없습니다.";
+        	if(result == "Your password is incorrect") reText = "비밀번호가 일치하지 않습니다.";
+        	resultDiv.innerHTML = reText;
+            if(reText == '') resultDiv.innerHTML = result;
+        }
+    });
+}
+</script>

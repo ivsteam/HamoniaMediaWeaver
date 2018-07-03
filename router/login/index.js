@@ -29,7 +29,7 @@ router.get('/', function(req, res) {
 		isLogin = true;
     }
     
-    res.render('./member/login.ejs', {'message' : msg, 'isLogin' : isLogin}); // login.ejs 호출
+    res.render('./member/login.ejs', {'message' : msg, 'isLogin' : isLogin});
 });
 
 passport.serializeUser(function(user, done) {
@@ -52,7 +52,6 @@ function loginByThirdparty(info, done) {
 			return done(err);
 		} else {
 
-//			logger.info("result.length ==="+ JSON.stringify(result) );
 			if (result.rowCount === 0) {
 				// 신규 유저는 회원 가입 이후 로그인 처리
 				var query = 'insert into tbl_user ( user_id, nickname, auth_type, email) values($1, $2, $3, $4) ' ;
@@ -136,8 +135,8 @@ passport.use('login-local', new LocalStrategy({
 //https://developers.kakao.com/apps/201830/settings/general
 // for Kakao Auth
 passport.use('login-kakao', new KakaoStrategy({
-        clientID : '221ab97e8df21111185a122fbc0a440f',
-		clientSecret : 'DwYk6hkJB5ikTkpLgw2RNgW1bvYjzF37',
+        clientID : '************',
+		clientSecret : '******************',
         callbackURL : '/login/oauth/kakao/callback'
     },
     function(accessToken, refreshToken, profile, done) {
@@ -165,7 +164,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-router.post('/oauth/hamonikr/callback', passport.authenticate('login-hamonikr', {failureRedirect: '/', failureFlash: true}), // 인증 실패 시 401 리턴, {} -> 인증 스트레티지
+router.post('/oauth/hamonikr/callback', passport.authenticate('login-hamonikr', {failureRedirect: '/', failureFlash: true}), 
 	function (req, res) {
 		res.redirect('/');
 	}
@@ -218,34 +217,20 @@ passport.use('login-hamonikr', new LocalStrategy({
 ));
 
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://developers.naver.com/apps
 // for Naver Auth
 passport.use('login-naver', new NaverStrategy({
-//		clientID : 'lXcYqHZGWz8A0zEy5_00',
-//		clientSecret : '0HejW2Rynn',
-        clientID : '3waik800SSUnar7dVamk',
-		clientSecret : 'wG1_yTjwQU',
+        clientID : '********',
+		clientSecret : '***************',
         callbackURL : '/login/oauth/naver/callback'
     },
     function(accessToken, refreshToken, profile, done) {
 		process.nextTick(function () {
-			// data to be saved in DB
 	
 			console.log("profile.displayName=="+ profile.displayName);
 			console.log("profile.emails[0].value==="+ profile.emails[0].value);
 			console.log("profile._json==="+ profile._json);
-	
-//			user = {
-//				name: profile.displayName,
-//				email: profile.emails[0].value,
-//				username: profile.displayName,
-//				provider: 'naver',
-//				naver: profile._json
-//			};
-//			return done(null, profile);
 	
 			var _profile = profile._json;
 			loginByThirdparty({
@@ -273,11 +258,9 @@ router.get('/oauth/naver/callback', passport.authenticate('login-naver', {
 //https://developers.facebook.com/apps
 // for facebook Auth
 passport.use('login-facebook', new FacebookStrategy({
-//		clientID : '244239102977944',
-//		clientSecret : '5525a20d2764a6f5181086f84e000249',
-        clientID : '192538538067835',
-		clientSecret : 'd092ebeefcf9f08068eab400bbebc0c3',
-        callbackURL : 'https://localhost/login/oauth/facebook/callback'
+        clientID : '***************',
+		clientSecret : '******************',
+        callbackURL : '/login/oauth/facebook/callback'
     },
     function(accessToken, refreshToken, profile, done) {
 		process.nextTick(function () {
@@ -314,8 +297,8 @@ router.get('/oauth/facebook/callback', passport.authenticate('login-facebook', {
 //https://console.developers.google.com/apis
 // for google Auth
 passport.use('login-google', new GoogleStrategy({
-        clientID : '1032950526761-m7sg19smer4ea3gd2k83ok63j6q9s56q.apps.googleusercontent.com',
-		clientSecret : 'EtYuXGTnS7mUQ8cf9W-aFZi-',
+        clientID : '**************',
+		clientSecret : '*******************',
         callbackURL : '/login/oauth/google/callback',
 		scope: ['https://www.googleapis.com/auth/plus.me']
 
@@ -323,17 +306,12 @@ passport.use('login-google', new GoogleStrategy({
     function(accessToken, refreshToken, profile, done) {
 		process.nextTick(function () {
 			// data to be saved in DB
-	
-			console.log("profile.displayName=="+ profile.displayName);
-			console.log("profile.id==="+ profile.id);
-			console.log("profile.username==="+ profile.username);
 			
 			var _profile = profile._json;
 			loginByThirdparty({
 				'auth_type': 'google',
 				'auth_id': _profile.id,
 				'auth_name': _profile.displayName
-//				'auth_email': _profile.email
 			}, done);
 		});
 	}
@@ -344,7 +322,6 @@ router.get('/google', passport.authenticate('login-google'));
 router.get('/oauth/google/callback', passport.authenticate('login-google', {
     successRedirect: '/',
     failureRedirect: '/'
-//	failureRedirect: '/'
 }));
 
 

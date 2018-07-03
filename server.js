@@ -22,8 +22,8 @@ try {
 var fs = require('fs');
 var path = require('path');
 
-var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/sslkey.pem')));
-var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/ssl.pem')));
+var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/privatekey.pem')));
+var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/certificate.pem')));
 var ssl_cabundle = null;
 
 // force auto reboot on failures
@@ -31,10 +31,9 @@ var autoRebootServerOnFailure = false;
 
 
 // see how to use a valid certificate:
-// https://github.com/muaz-khan/WebRTC-Experiment/issues/62
 var options = {
     key: ssl_key,
-    cert: ssl_cert, passphrase : 'exitem08',
+    cert: ssl_cert, passphrase : '******',
     ca: ssl_cabundle
 };
 
@@ -50,15 +49,6 @@ function serverHandler(request, response) {
     try {
         var uri = url.parse(request.url).pathname,
             filename = path.join(process.cwd(), uri);
-
-//        if (request.method !== 'GET' || path.join('/', uri).indexOf('../') !== -1) {
-//            response.writeHead(401, {
-//                'Content-Type': 'text/plain'
-//            });
-//            response.write('401 Unauthorized: ' + path.join('/', uri) + '\n');
-//            response.end();
-//            return;
-//        }
 
         if (filename && filename.search(/server.js|Scalable-Broadcast.js|Signaling-Server.js/g) !== -1) {
             response.writeHead(404, {
@@ -104,11 +94,6 @@ function serverHandler(request, response) {
             response.writeHead(404, {
                 'Content-Type': 'text/html'
             });
-/*
-            if (filename.indexOf(resolveURL('/views/MultiRTC/')) !== -1) {
-                filename = filename.replace(resolveURL('/views/MultiRTC/'), '');
-                filename += resolveURL('/views/MultiRTC/index.html');
-            } else*/ 
             if (filename.indexOf(resolveURL('/views')) !== -1) {
                 filename = filename.replace(resolveURL('/views/'), '');
                 filename = filename.replace(resolveURL('/views'), '');
@@ -169,15 +154,7 @@ var router = require('./router/index');
 
 if (isUseHTTPs) {
     app = server.createServer(options, http_app);
-
-//} else {
-//	http_app = server.createServer(serverHandler);
-    
-//    http_app = express();
-//    http_app.set('port', port);
 }
-// http -> https porwording end
-
 var bodyParser = require('body-parser'); 
 var passport = require('passport');
 var session = require('express-session');
@@ -206,10 +183,6 @@ http_app.use(router);
 
 //화이트보드] 이미지 저장
 http_app.post('/cavasImgSave', function(req, res){
-//	console.log('params: ' + JSON.stringify(req.params));
-//	console.log('body: ' + JSON.stringify(req.body));
-//	console.log('query: ' + JSON.stringify(req.query));
-	
 	
 	req.session.user_id = req.body.user_id;
 	req.session.name = req.body.room_name;
@@ -223,17 +196,6 @@ http_app.post('/cavasImgSave', function(req, res){
 	
 	var filedirectory = __dirname + '/upload/' + req.session.user_id;
 	
-//	try{
-//		console.log('1111');
-//		fs.unlink(filedirectory +"/"+fileNm +'.png', function(){
-//			
-//		});
-//		console.log('2222');
-//	}catch(e){ 
-//		console.log('3333');
-//		if ( e.code == 'EEXIST' ) throw e; 
-//		console.log('4444');
-//	}
 	
 	try{
 		fs.mkdirSync(filedirectory);
@@ -253,23 +215,6 @@ http_app.post('/cavasImgSave', function(req, res){
 });
 
 
-//화이트보드] 접속 페이지
-/*
-http_app.get('/test', function(req, res){
-
-	// 로그인에 상관없이 룸 생성자의 고유값을 세션에 저장한다.
-	req.session.user_id = '1234', // 아이디
-	req.session.name = 'chris' // 이름
-
-	fs.readFile(__dirname + '/views/test.html', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-//			isLogin : isLogin,
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-//*/
 
 
 //이미지 뷰어
@@ -285,12 +230,11 @@ http_app.get('/img/:path/:imgnm', function(req, res){
 
 // translation] naver
 var express = require('express');
-var client_id = 'lXcYqHZGWz8A0zEy5_00';
-var client_secret = '0HejW2Rynn';
+var client_id = '*******';
+var client_secret = '***************';
 var request = require('request');
 http_app.post('/translate', function(req, res){
 
-//	var api_url = 'https://openapi.naver.com/v1/language/translate';	// papago SMT 
 	var api_url = 'https://openapi.naver.com/v1/papago/n2mt';
 	var queryText = req.body.textData;
 	var sourceLanguage = req.body.source;
@@ -305,11 +249,7 @@ http_app.post('/translate', function(req, res){
 	request.post(options, function (error, response, body) {
 
 		if (!error && response.statusCode == 200) {
-//			res.writeHead(200, {'Content-Type': 'text/json;charset=utf-8'});
 			var jsonData = JSON.parse(body);
-//			console.log("jsonData is " + body);
-//			console.log("jsonData==="+ jsonData.message.result.translatedText);
-//			res.end(body..toString('utf-8'));
 
 			var resData = {}
 			resData.success = 'Y';
@@ -322,49 +262,6 @@ http_app.post('/translate', function(req, res){
 		}
 	});
 });
-
-// translation] google
-//http_app.get('/translate', function(req, res){
-//	const logfile = require('log-to-file');
-//	const translate = require('google-translate-api');
-//	
-//	var textdata = '테스트';
-//	console.log("textdata is : " + textdata );
-//	translate(textdata, {from: 'ko', to: 'en'}).then(resp => {
-//		console.log("============]");
-//		console.log(resp);
-//		console.log("[============");
-//
-//		console.log(resp.text.toString('utf-8') );
-//		
-//		logfile(resp.text+"==="+ resp.text.toString('utf-8'));
-//
-//	}).catch(err => {
-//		console.error(err);
-//	});
-//	
-//	
-////	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
-////		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
-////		res.end(ejs.render(data, {  
-////			tmp : res.text
-////		}));  
-////	}); 
-//
-//});
-
-// translation] google - script in lng.ejs 
-//http_app.get('/translate', function(req, res){
-//
-////https://translation.googleapis.com/language/translate/v2?q=%ED%95%9C%EA%B8%80&source=en&target=ko&model=nmt&key=AIzaSyDbLHlxeb4XzDtSj_uPoFu4D1w1qPvPKEM
-//	fs.readFile(__dirname + '/views/lng.ejs', 'utf8', function(error, data) {  
-//		res.writeHead(200, {'content-type' : 'text/html; charset=utf-8'});   
-//		res.end(ejs.render(data, {  
-//			tmp : res.text
-//		}));  
-//	});
-//});
-
 
 
 http_app.get('/privacy', function(req, res){
@@ -511,14 +408,6 @@ function runServer() {
     require('./Signaling-Server.js')(app, function(socket) {
         try {
             var params = socket.handshake.query;
-
-            // "socket" object is totally in your own hands!
-            // do whatever you want!
-
-            // in your HTML page, you can access socket as following:
-            // connection.socketCustomEvent = 'custom-message';
-            // var socket = connection.getSocket();
-            // socket.emit(connection.socketCustomEvent, { test: true });
             
             if (!params.socketCustomEvent) {
                 params.socketCustomEvent = 'custom-message';
@@ -539,10 +428,8 @@ function runServer() {
     		var host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
 
     		if ((port != null) && port !== port) {
-//    			console.log(' -- 1111');
     			return res.redirect("https://" + host + ":" + port + req.url, 301);
     		} else {
-//    			console.log(' -- 2222');
     			return res.redirect("https://" + host + req.url, 301);
     		}
     	} else {
@@ -553,7 +440,6 @@ function runServer() {
     http.createServer(http_app).listen(HTTP_PORT).on('listening', function() {
     	return console.log("HTTP to HTTPS redirect app launched.");
     });
-    // http -> https porwording end
 }
 
 if (autoRebootServerOnFailure) {

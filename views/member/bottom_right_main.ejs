@@ -1,17 +1,18 @@
+
 <% if (isLogin){ %>
-	<div class="box5">
-		<div class='signup' style="position: static;">
-			<a href="/logout" class="btn miniBtn">LOGOUT</a>
-		</div>
-	</div>
+        <div class="box5">
+                <div class='signup' style="position: static;">
+                        <p class="btn miniBtn"><%= nickname %>님 방갑습니다. </p><a href="/logout" class="btn miniBtn">LOGOUT</a>
+                </div>
+        </div>
 <% }else{ %>
-	<div class="box5">
-		<!-- <p>Hamonia</p> -->
-		<div class='signup' style="position: static;">
-			<a href='javascript:;' id="openLoginDiv" class="btn miniBtn">로그인</a>
-			<a href='javascript:;' id="openSignupDiv" class="btn miniBtn">회원가입</a>
-		</div>
-	</div>
+        <div class="box5">
+                <!-- <p>Hamonia</p> -->
+                <div class='signup' style="position: static;">
+                        <a href='javascript:;' id="openLoginDiv" class="btn miniBtn">로그인</a>
+                        <a href='javascript:;' id="openSignupDiv" class="btn miniBtn">회원가입</a>
+                </div>
+        </div>
 <% } %>
 
 

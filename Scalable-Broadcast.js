@@ -1,7 +1,4 @@
-// Muaz Khan      - www.MuazKhan.com
-// MIT License    - www.WebRTC-Experiment.com/licence
-// Documentation  - github.com/muaz-khan/RTCMultiConnection
-
+var logger = require('./log4js-utils').logger();
 var users = {};
 
 module.exports = exports = function(socket, maxRelayLimitPerUser) {
@@ -67,7 +64,7 @@ module.exports = exports = function(socket, maxRelayLimitPerUser) {
                 socket.emit('logs', 'You <' + user.userid + '> are now serving the broadcast.');
             }
         } catch (e) {
-            consoleLog(e);
+            logger.info(e);
         }
     });
 
@@ -93,7 +90,7 @@ module.exports = exports = function(socket, maxRelayLimitPerUser) {
             callback(!!users[userid] && users[userid].isBroadcastInitiator === true);
         }
         catch(e) {
-            consoleLog(e);
+            logger.info(e);
         }
     });
 
@@ -157,7 +154,7 @@ module.exports = exports = function(socket, maxRelayLimitPerUser) {
             }
 
             if(user.isBroadcastInitiator === true) {
-                consoleLog({
+                logger.info({
                     'initiator-left': true,
                     'userid': user.userid,
                     'broadcastId': user.broadcastId,
@@ -198,7 +195,7 @@ module.exports = exports = function(socket, maxRelayLimitPerUser) {
 
             delete users[socket.userid];
         } catch (e) {
-            consoleLog(e);
+            logger.info(e);
         }
     });
 };
@@ -217,7 +214,7 @@ function askNestedUsersToRejoin(relayReceivers) {
         });
     }
     catch(e) {
-        consoleLog(e);
+        logger.info(e);
     }
 }
 
@@ -261,12 +258,7 @@ function getFirstAvailableBraodcater(broadcastId, maxRelayLimitPerUser) {
         // so that each relaying user can distribute the bandwidth
         return broadcastInitiator;
     } catch (e) {
-        consoleLog(e);
+        logger.info(e);
     }
 }
 
-function consoleLog() {
-    // return; // comment this line for development testings
-
-    // console.log(arguments);
-}

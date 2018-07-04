@@ -46,25 +46,8 @@ $('.bottom_right').on('click', '#open-or-join-room', function(){
 	}
 	
 	
-	// os 및 browser 체크
 	
 	var text = browserCheck();
-	
-//	 if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-//    	// iOS safari 인 경우
-//		alert('아이폰에서 이용하실 수 없습니다.');
-//		return;
-//	}
-	
-//	if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
-//		alert('모바일은 지원 예정입니다. PC를 이용해 주시기 바랍니다.');
-//		return;
-//	}
-	
-	if(text != 'Chrome' && text != 'Firefox' && text != 'Safari'){
-		alert('하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.');
-		return;
-	}
 	
 	
 	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
@@ -155,24 +138,9 @@ function appendDIV(event) {
 			whiteboardTrueCheck = valueData.split('&param=');
 			$('#whiteboard').attr('src', whiteboardTrueCheck[1] + userName);
 		}else if ( whiteboardClickCheck != -1 ){
-//			whiteboardClickCheck = valueData.split('&whiteBoard=');
-//			var result = window.confirm('룸 참여자가 화이트보드 페이지로 접속하셨습니다. \n 해당 페이지로 이동하시겠습니까?');
-//			if(result) {
-//				boardDivFnt();	
-//			};
 		}
 		else{
-			// 선택된 board 파일 띄우기 - 중복체크
-//			var sameCheck = false;
-//			for(var i=0; i<$('#imgDiv .uploadImg').length ;++i){
-//				if($('#imgDiv .uploadImg').eq(i).attr('src') == valueData){
-//					sameCheck = true;
-//					break;
-//				}
-//			}
-//			if( !sameCheck ) {
-				$('#imgDiv').append('<img id="' + valueDataTrueCheck[1] + '" src="' + valueData + '" class="uploadImg">');
-//			}
+			$('#imgDiv').append('<img id="' + valueDataTrueCheck[1] + '" src="' + valueData + '" class="uploadImg">');
 		}
 		return;
 	}
@@ -382,18 +350,12 @@ connection.onopen = function() {
     	$('.center').css('height', '10%');
     }
     
-//    document.getElementsByClassName('boardBtn')[0].disabled = false;
-//    document.getElementsByClassName('chatBtn')[0].disabled = false;
-//    document.getElementsByClassName('videoBtn')[0].disabled = false;
     
     connectionCheck = true;
     
-//    createBoard();
-//    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
 
 connection.onclose = function(event) {
-//	console.log(' ---- onclose : ' + connection.userid + ' // ' + event.userid);
     if (connection.getAllParticipants().length) {
         console.log('You are still connected with: ' + connection.getAllParticipants().join(', '));
     } else {
@@ -406,7 +368,6 @@ connection.onclose = function(event) {
 };
 
 connection.onEntireSessionClosed = function(event) {
-	console.log(' ---- onEntireSessionClosed : ');
     document.getElementById('share-file').disabled = true;
     document.getElementById('input-text-chat').disabled = true;
 

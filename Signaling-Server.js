@@ -2,14 +2,12 @@ var listOfUsers = {};
 var roomList = {};
 var shiftedModerationControls = {};
 var ScalableBroadcast;
+var logger = require('./log4js-utils').logger();
 
 //maximum member of users = customMaxParticipantsAllowed
 var customMaxParticipantsAllowed = 4;
 
 
-const pg = require('pg');
-var config = require('./db_info').local;
-var connection = new pg.Pool(config);
 
 
 module.exports = exports = function(app, socketCallback) {
@@ -78,18 +76,9 @@ module.exports = exports = function(app, socketCallback) {
     }
 	
 
-	function insVendorUsage(data, callback){
-		connection.query('insert into tbl_auth_vendor_usage_history ( vendor,room_nm, room_user_session_id, first_date,last_date, ipaddress ) values($1, $2, $3, $4, $5, $6) RETURNING id',data, function(error, result2){ 
-			if(error) {
-				console.log("insVendorUsage error === "+ error);
-				throw error; 
-			}
-			callback(null, result2);
-		});
-	}
 
     function onConnection(socket) {
-    	console.log(' ---- onConnection() ');
+
         var params = socket.handshake.query;
         var socketMessageEvent = params.msgEvent || 'RTCMultiConnection-Message';
 
@@ -123,12 +112,10 @@ module.exports = exports = function(app, socketCallback) {
         }
 
         socket.on('shift-moderator-control-on-disconnect', function() {
-        	console.log(' ---- shift-moderator-control-on-disconnect ');
             socket.shiftModerationControlBeforeLeaving = true;
         });
 
         socket.on('extra-data-updated', function(extra) {
-        	console.log(' ---- extra-data-updated ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].extra = extra;
@@ -137,12 +124,11 @@ module.exports = exports = function(app, socketCallback) {
                     listOfUsers[user].socket.emit('extra-data-updated', socket.userid, extra);
                 }
             } catch (e) {
-                pushLogs('extra-data-updated', e);
+                logger.ingo('extra-data-updated is :: ' +  e);
             }
         });
 
         socket.on('get-remote-user-extra-data', function(remoteUserId, callback) {
-        	console.log(' ---- get-remote-user-extra-data ');
             callback = callback || function() {};
             if (!remoteUserId || !listOfUsers[remoteUserId]) {
                 callback('remoteUserId (' + remoteUserId + ') does NOT exist.');
@@ -152,18 +138,16 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('become-a-public-moderator', function() {
-        	console.log(' ---- become-a-public-moderator ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = true;
             } catch (e) {
-                pushLogs('become-a-public-moderator', e);
+                logger.ingo('become-a-public-moderator is :: '+ e);
             }
         });
 
         var dontDuplicateListeners = {};
         socket.on('set-custom-socket-event-listener', function(customEvent) {
-        	console.log(' ---- set-custom-socket-event-listener ');
             if (dontDuplicateListeners[customEvent]) return;
             dontDuplicateListeners[customEvent] = customEvent;
 
@@ -175,17 +159,15 @@ module.exports = exports = function(app, socketCallback) {
         });
 
         socket.on('dont-make-me-moderator', function() {
-        	console.log(' ---- dont-make-me-moderator ');
             try {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = false;
             } catch (e) {
-                pushLogs('dont-make-me-moderator', e);
+                logger.ingo('dont-make-me-moderator is :: '+ e);
             }
         });
 
         socket.on('get-public-moderators', function(userIdStartsWith, callback) {
-        	console.log(' ---- get-public-moderators ');
             try {
                 userIdStartsWith = userIdStartsWith || '';
                 var allPublicModerators = [];
@@ -201,26 +183,17 @@ module.exports = exports = function(app, socketCallback) {
 
                 callback(allPublicModerators);
             } catch (e) {
-                pushLogs('get-public-moderators', e);
+                logger.ingo('get-public-moderators is :: ' + e);
             }
         });
 	
 
         socket.on('changed-uuid', function(newUserId, callback) {
-        	console.log(' ---- changed-uuid ' + newUserId);
 			roomList[newUserId] = {
 				userid: socket.userid,
 				roomNm : newUserId
 			};
-			console.log("---roomList--- " + JSON.stringify(roomList));
-			var ip = require("ip");
-			var data = ['public', newUserId, socket.userid, new Date(), new Date(),ip.address() ]; 
-
-			insVendorUsage( data,function(err, content2) {
-				console.log("-chk---------------"+ JSON.stringify(content2));
-			});
-
-
+			logger.info("changed-uuid is :: "+ JSON.stringify(roomList[newUserId]));
             callback = callback || function() {};
 
             if (params.dontUpdateUserId) {
@@ -245,23 +218,21 @@ module.exports = exports = function(app, socketCallback) {
 
                 callback();
             } catch (e) {
-                pushLogs('changed-uuid', e);
+                logger.ingo('changed-uuidis :: '+ e);
             }
         });
 
         socket.on('set-password', function(password) {
-//        	console.log(' ---- set-password ');
             try {
                 if (listOfUsers[socket.userid]) {
                     listOfUsers[socket.userid].password = password;
                 }
             } catch (e) {
-                pushLogs('set-password', e);
+                logger.ingo('set-password is :: '+ e);
             }
         });
 
         socket.on('disconnect-with', function(remoteUserId, callback) {
-        	console.log(' ---- disconnect-with ');
             try {
                 if (listOfUsers[socket.userid] && listOfUsers[socket.userid].connectedWith[remoteUserId]) {
                     delete listOfUsers[socket.userid].connectedWith[remoteUserId];
@@ -276,12 +247,11 @@ module.exports = exports = function(app, socketCallback) {
                 }
                 callback();
             } catch (e) {
-                pushLogs('disconnect-with', e);
+                logger.ingo('disconnect-with is :: '+ e);
             }
         });
 
         socket.on('close-entire-session', function(callback) {
-        	console.log(' ---- close-entire-session ');
             try {
                 var connectedWith = listOfUsers[socket.userid].connectedWith;
                 Object.keys(connectedWith).forEach(function(key) {
@@ -295,12 +265,11 @@ module.exports = exports = function(app, socketCallback) {
                 delete shiftedModerationControls[socket.userid];
                 callback();
             } catch (e) {
-                pushLogs('close-entire-session', e);
+                logger.ingo('close-entire-session is :: ' + e);
             }
         });
 
         socket.on('check-presence', function(userid, callback) {
-        	console.log(' ---- check-presence ');
             if (!listOfUsers[userid]) {
                 callback(false, userid, {});
             } else {
@@ -341,20 +310,17 @@ module.exports = exports = function(app, socketCallback) {
                     listOfUsers[message.sender].connectedWith[message.remoteUserId].emit(socketMessageEvent, message);
                 }
             } catch (e) {
-                pushLogs('onMessageCallback', e);
+                logger.ingo('onMessageCallback is ::' + e);
             }
         }
 
         function joinARoom(message) {
-        	console.log(' ---- joinARoom() : ' + message);
         	
 			roomList[message.sender] = {
 				userid: message.sender,
 				roomNm : message.remoteUserId
 			};
 			
-//			console.log("roomList====="+ JSON.stringify(roomList));
-
             var roomInitiator = listOfUsers[message.remoteUserId];
 
             if (!roomInitiator) {
@@ -396,26 +362,6 @@ module.exports = exports = function(app, socketCallback) {
                 message.remoteUserId = userSocket.userid;
                 userSocket.emit(socketMessageEvent, message);
             });
-			var ip = require("ip");
-			var data = ['public', message.remoteUserId, message.sender, new Date(), new Date(), ip.address()]; 
-			insVendorUsage( data,function(err, content3) {
-
-				for (let roomId in roomList) {
-					if( roomList[message.remoteUserId].roomNm == roomList[roomId].roomNm ){
-						var query_stop = "update tbl_auth_vendor_usage_history set start_time = now()";
-						query_stop += ", last_date = now()";
-						query_stop += " where room_user_session_id = '" +roomList[roomId].userid+"'";
-						
-//						console.log("query stop is : " + query_stop);
-						connection.query(query_stop, function(error, result3){ 
-//							console.log(result3); 
-							if(!error){ 
-//								console.log(result3); 
-							} 
-						});
-					}
-				}
-			});
         }
 		
 
@@ -515,7 +461,7 @@ module.exports = exports = function(app, socketCallback) {
 
                 onMessageCallback(message);
             } catch (e) {
-                pushLogs('on-socketMessageEvent', e);
+                logger.ingo('on-socketMessageEvent is ::' + e);
             }
         });
 
@@ -528,7 +474,7 @@ module.exports = exports = function(app, socketCallback) {
                 }
 				
             } catch (e) {
-                pushLogs('disconnect', e);
+                logger.ingo('disconnect is ::' + e);
             }
 
             try {
@@ -539,22 +485,10 @@ module.exports = exports = function(app, socketCallback) {
                     onMessageCallback(message);
                 }
             } catch (e) {
-                pushLogs('disconnect', e);
+                logger.ingo('disconnect is :: ' + e);
             }
 
             try {
-				
-				for (let roomId in roomList) {
-					var query_stop = "update tbl_auth_vendor_usage_history set stop_time = now()";
-						query_stop += ", last_date = now()";
-						query_stop += " where room_user_session_id = '" +roomList[roomId].userid+"'";
-					connection.query(query_stop, function(error, result3){ 
-						if(error){ 
-							console.log(result3); 
-						} 
-					});
-				}
-
 				
 				delete roomList[socket.userid];
 
@@ -574,8 +508,6 @@ module.exports = exports = function(app, socketCallback) {
                             delete listOfUsers[s].connectedWith[socket.userid];
                             listOfUsers[s].socket.emit('user-disconnected', socket.userid);
 
-							
-
                         }
                     }
 
@@ -584,7 +516,7 @@ module.exports = exports = function(app, socketCallback) {
                     }
                 }
             } catch (e) {
-                pushLogs('disconnect', e);
+                logger.ingo('disconnect is :: ' +  e);
             }
 
             delete listOfUsers[socket.userid];
@@ -599,47 +531,6 @@ module.exports = exports = function(app, socketCallback) {
 
 };
 
-var enableLogs = false;
-
-try {
-    var _enableLogs = require('./config.json').enableLogs;
-
-    if (_enableLogs) {
-        enableLogs = true;
-    }
-} catch (e) {
-    enableLogs = false;
-}
-
-var fs = require('fs');
-
-function pushLogs() {
-    if (!enableLogs) return;
-
-    var logsFile = process.cwd() + '/logs.json';
-
-    var utcDateString = (new Date).toUTCString().replace(/ |-|,|:|\./g, '');
-
-    // uncache to fetch recent (up-to-dated)
-    uncache(logsFile);
-
-    var logs = {};
-
-    try {
-        logs = require(logsFile);
-    } catch (e) {}
-
-    if (arguments[1] && arguments[1].stack) {
-        arguments[1] = arguments[1].stack;
-    }
-
-    try {
-        logs[utcDateString] = JSON.stringify(arguments, null, '\t');
-        fs.writeFileSync(logsFile, JSON.stringify(logs, null, '\t'));
-    } catch (e) {
-        logs[utcDateString] = arguments.toString();
-    }
-}
 
 // removing JSON from cache
 function uncache(jsonFile) {

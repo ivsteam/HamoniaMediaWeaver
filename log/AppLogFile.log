@@ -1,0 +1,8 @@
+[2018-07-04T16:48:07.218] [INFO] normal - HTTP to HTTPS redirect app launched.
+[2018-07-04T16:48:07.222] [INFO] normal - ------------------------------ domainURL : https://localhost:443/
+[2018-07-04T16:48:07.222] [INFO] normal - socket.io is listening at:
+[2018-07-04T16:48:07.223] [INFO] normal - [31m%s[0m 	https://localhost:443/
+[2018-07-04T16:48:07.223] [INFO] normal - Your web-browser (HTML file) MUST set this line:
+[2018-07-04T16:48:07.223] [INFO] normal - [31m%s[0m connection.socketURL = "https://localhost:443/";
+[2018-07-04T16:48:07.223] [INFO] normal - ------------------------------
+[2018-07-04T16:48:13.401] [INFO] normal - changed-uuid is :: {"userid":"43edl3l862c","roomNm":"ㅈ"}

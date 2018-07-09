@@ -396,6 +396,7 @@ video {
 
 #chat-container {
 	background-color: #f2f2f2;
+  	border-left: 1px solid #13AFA5;
 	display: inline-block;
 	/* min-width: 320px; */
 	overflow: hidden;

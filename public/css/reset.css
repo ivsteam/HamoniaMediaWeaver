@@ -90,9 +90,9 @@ body > div { min-width: 360px; }
 .bottom_right .box1 .signup {
 	font-size: .75rem;
 	position: absolute;
-	right: 35px;
+	right: 10px;
 	text-align: right;
-	top: 20px;
+	top: 2px;
 }
 
 .showResult {
@@ -146,6 +146,7 @@ body > div { min-width: 360px; }
 	font-weight: bold;
 	padding: 2px 8px;
 }
+.box1 .btn.miniBtn { color: #007bff; }
 
 
 .bottom_right .box3 img { 

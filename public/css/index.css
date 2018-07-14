@@ -276,10 +276,7 @@ video {
 
 .loginBtnDiv {
 	display: flex;
-	margin: auto;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	max-width: 360px;
+	margin: 10px 0;
 }
 .loginBtnDiv div { 
 	max-width: 20%; 
@@ -331,6 +328,8 @@ video {
 
 
 /* video start */
+#myVideo { transform: rotateY(180deg); }
+
 #videos-container { 
 	background-color: rgb(244, 247, 253);
 	display: inline-block;
@@ -752,7 +751,7 @@ img.uploadImg {
 /* boart end */
 
 
-/* ì•ŒëžŒì°½ start */
+/* ¾Ë¶÷Ã¢ start */
 #mask {
 	background-color: black;
 	height: 100%;
@@ -812,4 +811,68 @@ img.uploadImg {
 }
 #text_c_enter { background-color: #13AFA5; }
 #inviteAlertNoBtn { background-color: #c4bdb3; }
-/* ì•ŒëžŒì°½ end */
+/* ¾Ë¶÷Ã¢ end */
+
+/* ¹öÆ°¼³¸íÃ¢ start */
+#buttonInfoAlert {
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	display: none;
+	overflow: hidden; 
+	position: absolute;
+	text-align: center;
+	width: 420px;
+	z-index: 10;
+}
+#buttonInfoAlert .btnInfoTop {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+#buttonInfoAlert .btnInfoContent {
+	padding: 1rem;
+}
+#buttonInfoAlert .btnInfoDiv {
+	margin-bottom: 10px;
+	text-align: left;
+}
+#buttonInfoAlert .btnInfoDiv p {
+	display: inline-block;
+	font-size: .8rem;
+	margin: 0;
+	margin-left: 10px;
+	vertical-align: middle;
+	width: 75%;
+}
+#buttonInfoAlert .blind {
+	height: 85%;
+	position: absolute;
+	top: 0;
+	width: 80px;
+	z-index: 5;
+}
+
+#buttonInfoAlert .btnInfoBottom{
+	background-color: white;
+	padding: 0px 10px 15px 10px;
+	z-index: 3;
+}
+#buttonInfoAlert .btnInfoBottom label { font-size: .9rem; }
+#buttonInfoAlert .btnInfoText {
+	border-top: 1px solid #aaa;
+	font-size: .8rem;
+	font-weight: bold;
+	margin: 0rem;
+	padding: 10px;
+}
+#buttonInfoAlert .closeBtn {
+    background-color: #AF87E8;
+    color: white;
+    font-weight: bold;
+    padding: .5rem 4rem;
+}
+/* ¹öÆ°¼³¸íÃ¢ end */

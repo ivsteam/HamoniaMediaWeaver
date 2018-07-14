@@ -144,7 +144,7 @@
 				</div>
 				
 				<div class="col-md-4">
-					<p><span>고객센터</span><br>
+					<p style="margin: 5px;"><span>고객센터</span><br>
 					Tel : 02-2039-3977<br>
 					Fax : 02-2039-3978<br>
 					E-mail : servicedesk@invesume.com</p>
@@ -169,13 +169,13 @@
 		<!-- 메뉴 -->
 		<div id="menuDiv">
 			<div class="menuLineDiv">
-				<!-- 종료 -->
-				<button class="btn btn--xl btn--red btn--fab mdi md-call-end" id="btn-leave-room" data-value="false" title="종료" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				<!-- 나가기 -->
+				<button class="btn btn--xl btn--red btn--fab mdi md-exit-to-app" id="btn-leave-room" data-value="false" title="나가기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
 				</button>
 				
 				<!-- 초대 -->
-				<button class="btn btn--xl btn--pink btn--fab mdi md-quick-contacts-dialer" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				<button class="btn btn--xl btn--pink btn--fab mdi md-person-add" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
 				</button>
 				
@@ -187,21 +187,26 @@
 				-->
 				
 				<!-- 마이크 버튼 -->
-				<button class="btn btn--xl btn--green btn--fab mdi md-mic buttonVolume" title="Audio toggle" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+				<button class="btn btn--xl btn--green btn--fab mdi md-mic buttonMic" title="마이크 끄기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
 				</button>
 				
 				<!-- 음소거 버튼 -->
-				<!-- 임시 -->
 				<!--
-				<button id="testbtn" onclick="javascript:$('#videos-container video').prop('muted', false).prop('volume', 1);">btn</button>
-				<button id="testbtn1" onclick="javascript:$('#videos-container video').attr('muted', true).prop('muted', true).prop('volume', 0);">btn</button>
+				<button class="btn btn--xl btn--teal btn--fab mdi md-volume-up buttonVolume" id="스피커 끄기" data-value="ture" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
 				-->
+				
+				<!-- 카메라 버튼 -->
+				<button class="btn btn--xl btn--blue btn--fab mdi md-videocam buttonVideo" title="카메라 끄기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
 			</div>
 			
 			<div class="menuLineDiv">
 				<!-- 채팅 open/close -->
-				<button class="btn btn--xl btn--blue btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
+				<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
 					<div class="msgCntDiv" style="display: none;">
 						<span>0</span>
 					</div>
@@ -209,7 +214,7 @@
 				</button>
 				
 				<!-- 영상 -->
-				<button class="btn btn--xl btn--purple btn--fab mdi md-videocam videoBtn" data-value="false" style="position: relative; font-size: 1.9rem;">
+				<button class="btn btn--xl btn--purple btn--fab mdi md-person videoBtn" title="영상통화" data-value="false" style="position: relative; font-size: 1.9rem;">
 					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
 				</button>
 			</div>
@@ -315,11 +320,13 @@
 		
 	</div>
 	
-	<!-- 초대창 -->
+	
+	<!-- 팝업용 백그라운드 -->
 	<div id="mask" style="display: none; opacity: .7; z-index: 5;">
 		<!-- <img alt="Loading" src="/img/spinner.gif"> -->
 	</div>
 	
+	<!-- 초대창 -->
 	<div id="inviteAlert" class="alertDiv" data-value="false">
 		<div class="alertTitle">사용자 초대</div>
 		
@@ -337,6 +344,86 @@
 			<a href="javascript:;" id="text_c_enter" class="btn">링크복사</a>
 			<span>&nbsp;</span>
 			<input type="button" id="inviteAlertNoBtn" class="btn" value="닫기">
+		</div>
+	</div>
+	
+	<!-- 버튼설명 -->
+	<div id="buttonInfoAlert">
+		<div class="btnInfoTop">사용설명</div>
+		
+		<div class="btnInfoContent">
+			<!-- 나가기 -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--red btn--fab mdi md-exit-to-app" id="btn-leave-room" data-value="false" title="나가기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 2px; left: 18.125px;"></span>
+				</button>
+				<p>영상통화를 종료합니다.<br/>방장이 종료한 경우 모든 영상통화가 종료됩니다.</p>
+			</div>
+			
+			<!-- 초대 -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--pink btn--fab mdi md-person-add" id="invite" title="초대" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 13px; left: 13px;"></span>
+				</button>
+				<p>사용자 초대 링크를 받을 수 있습니다.<br/>해당 주소를 공유하여 영상통화를 함께 할 수 있습니다.</p>
+			</div>
+			
+			<!-- 마이크 버튼 -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--green btn--fab mdi md-mic buttonMic" title="마이크 끄기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
+				<p>내 마이크 사용유무를 선택합니다.<br/>중지하면 상대방에게 소리를 전송하지 않습니다.</p>
+			</div>
+			
+			<!-- 음소거 버튼 -->
+			<!--
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--teal btn--fab mdi md-volume-up buttonVolume" id="스피커 끄기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
+				<p>모든 영상통화 소리를 음소거 합니다.</p>
+			</div>
+			-->
+			
+			<!-- 카메라 버튼 -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--blue btn--fab mdi md-videocam buttonVideo" title="카메라 끄기" style="position: relative; overflow: hidden; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
+				</button>
+				<p>내 영상화면을 끕니다.<br/>다른 사람들도 볼 수 없습니다.</p>
+			</div>
+			
+			<!-- 채팅 open/close -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--indigo btn--fab mdi md-chat chatBtn" title="채팅" style="position: relative; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+				</button>
+				<p>다른 사용자가 접속하면<br/>채팅창을 열 수 있습니다.</p>
+			</div>
+			
+			<!-- 영상 -->
+			<div class="btnInfoDiv">
+				<button class="btn btn--xl btn--purple btn--fab mdi md-person videoBtn" title="영상통화" data-value="false" style="position: relative; font-size: 1.9rem;">
+					<span class="ripple" style="height: 56px; width: 56px; top: 6px; left: -14.625px;"></span>
+				</button>
+				<p>영상만 나오는 화면으로 변경합니다.</p>
+			</div>
+		</div>
+		
+		<div class="blind"></div>
+		
+		<div class="btnInfoBottom">
+			<p class="btnInfoText">※ 해당 메뉴는 화면 우측 상단에 있습니다.</p>
+			
+			<label>
+				<input type="checkbox" class="btnInfoNot">
+				<span>그만보기</span>
+			</label>
+			
+			<br/>
+			
+			<input type="button" class="btn closeBtn" value="닫기">
 		</div>
 	</div>
 	<!-- room page end -->

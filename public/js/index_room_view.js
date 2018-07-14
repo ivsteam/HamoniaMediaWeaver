@@ -17,15 +17,17 @@ $(document).ready(function(){
 	defaultUISet();
 	getIndexEjs();
 	createBoard();
+	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	
 	$('#userName').css('display', 'none');
 	
 	// 그룹명 input tag
-	$('#room-id').keydown(function(key) {
+	$('.bottom_right').on('keydown', '#room-id', function(key) {
 		if(key.keyCode != 13) return;
-		$('#userName').focus();
+//		$('#userName').focus();
+		$('#open-or-join-room').trigger('click');
 	});
 		
 	// 대화명 input tag
@@ -100,9 +102,32 @@ $(document).ready(function(){
 	// 마이크 버튼
 	$('.md-mic').click(function(){
 		localStream.getAudioTracks()[0].enabled = !(localStream.getAudioTracks()[0].enabled);
+		micUIFnt();	// 마이크 아이콘변경
+	});
+	
+	// 스피커 버튼 - 안됨
+	$('.md-volume-up').click(function(){
+		var containers = $('.media-container');
+		var videos = $('#videos-container video');
+		var check = $('.buttonVolume').data('value');
+		var onoff = 'mute';
 		
-		// 아이콘변경
-		volumeUIFnt();
+		// 설정
+		if(!check) onoff = 'unmute';
+		$('.buttonVolume').data('value', !check);
+		
+		for(var i=0; i<videos.length ;++i){
+			videos[i].muted = check;
+//			connection.StreamsHandler.onSyncNeeded(containers.eq(i).attr('id'), onoff, 'audio');	// 선택된 stream 의 데이터를 모두가 공유한다...
+		}
+		
+		volumeUIFnt();	// 스피커 아이콘변경
+	});
+	
+	// 비디오 버튼
+	$('.md-videocam').click(function(){
+		localStream.getVideoTracks()[0].enabled = !(localStream.getVideoTracks()[0].enabled);
+		videoUIFnt();	// 비디오 아이콘변경
 	});
 	
 	
@@ -127,6 +152,14 @@ $(document).ready(function(){
 	});
 	
 	
+	// 사용설명창 닫기 버튼
+	$('.closeBtn').click(function(){
+		if($('.btnInfoNot').is(':checked')) $.cookie('btnInfoNot', 'true');
+		$('#buttonInfoAlert').css('display', 'none');
+		$('#mask').css('display', 'none');
+	});
+	
+	
 	// 메뉴 알림 확인처리용
 	$('#menuDiv .btn').click(function(){
 		$('.newInfoDiv').css('display', 'none');
@@ -143,7 +176,7 @@ $(window).resize(function(){
 	$('#videos-container').css('width', $(window).width() + 'px');
 	windowReset();
 	if(navigator.platform){
-		if(!checkmob){	
+		if(!checkmob){
 			var boardOpenCheck = $('#whiteBoardDiv').data('value');
 			var chatOpenCheck = $('#chat-container').data('value');
 			
@@ -151,6 +184,20 @@ $(window).resize(function(){
 			
 			if(boardOpenCheck) $('.boardBtn').trigger('click');
 			if(chatOpenCheck) $('.chatBtn').trigger('click');
+			
+			
+			// 버튼설명
+			$('#buttonInfoAlert').css('left', ($(window).width() - $('#buttonInfoAlert').width() ) / 2).css('top', '').css('height', '');
+			$('.btnInfoContent').css('height', '').css('overflow-y', '');
+			$('.btnInfoBottom').css('position', '').css('width', '').css('height', '').css('bottom', '');
+			
+			if($('#buttonInfoAlert').height() > $(window).height()){
+				$('#buttonInfoAlert').css('height', '100%').css('top', '0');
+				$('.btnInfoContent').css('height', '80%').css('overflow-y', 'scroll');
+				$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '15px');
+			}else{
+				$('#buttonInfoAlert').css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
+			}
 		}
 	}
 });
@@ -182,7 +229,7 @@ function windowReset(){
 // UI default setting
 function defaultUISet(){
 	if(navigator.platform){
-		if(checkmob){	
+		if(checkmob){
 			//alert("Mobile");
 			// main bottom_right
 			$('.box3 img').css('width', '100px').css('margin-bottom', '15px');
@@ -203,6 +250,11 @@ function defaultUISet(){
 			
 			// 화이트보드
 			$('#whiteBoardDiv').css('min-width', '0').css('width', '0.001px').css('display', 'none');
+			
+			// 버튼설명
+			$('#buttonInfoAlert').css('width', '100%').css('height', '100%').css('left', '0').css('top', '0').css('padding', '0');
+			$('.btnInfoContent').css('height', '80%').css('overflow-y', 'scroll');
+			$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '2rem');
 		}else{
 			//alert("PC");
 			$('#logo').css('position', 'fixed');
@@ -211,6 +263,10 @@ function defaultUISet(){
 			$('#menuDiv').css('top', '1rem');
 			$('.menuLineDiv').css('display', 'inline-block');
 			$('#chat-container').css('width', chatWidth + 'px');
+			
+			// 버튼설명
+			$('#buttonInfoAlert').css('left', ($(window).width() - $('#buttonInfoAlert').width() ) / 2)
+									.css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
 		}
 		
 		// 영상 전체화면 아이콘
@@ -588,14 +644,43 @@ function videoBtnFnt(){
 
 
 
-//볼륨 off 버튼 UI
+//마이크 off 버튼 UI
+function micUIFnt(){
+	if($('.buttonMic').hasClass('md-mic')){
+		$('.buttonMic').removeClass('md-mic');
+		$('.buttonMic').addClass('md-mic-off');
+		$('.buttonMic').attr('title', '마이크 켜기');
+	}else if($('.buttonMic').hasClass('md-mic-off')){
+		$('.buttonMic').removeClass('md-mic-off');
+		$('.buttonMic').addClass('md-mic');
+		$('.buttonMic').attr('title', '마이크 끄기');
+	}
+}
+
+// 스피커off 버튼 UI
 function volumeUIFnt(){
-	if($('.buttonVolume').hasClass('md-mic')){
-		$('.buttonVolume').removeClass('md-mic');
-		$('.buttonVolume').addClass('md-mic-off');
-	}else if($('.buttonVolume').hasClass('md-mic-off')){
-		$('.buttonVolume').removeClass('md-mic-off');
-		$('.buttonVolume').addClass('md-mic');
+	if($('.buttonVolume').hasClass('md-volume-up')){
+		$('.buttonVolume').removeClass('md-volume-up');
+		$('.buttonVolume').addClass('md-volume-off');
+		$('.buttonVolume').attr('title', '스피커 켜기');
+	}else if($('.buttonVolume').hasClass('md-volume-off')){
+		$('.buttonVolume').removeClass('md-volume-off');
+		$('.buttonVolume').addClass('md-volume-up');
+		$('.buttonVolume').attr('title', '스피커 끄기');
+	}
+}
+
+
+// 영상 off 버튼 UI
+function videoUIFnt(){
+	if($('.buttonVideo').hasClass('md-videocam')){
+		$('.buttonVideo').removeClass('md-videocam');
+		$('.buttonVideo').addClass('md-videocam-off');
+		$('.buttonVideo').attr('title', '카메라 끄기');
+	}else if($('.buttonVideo').hasClass('md-videocam-off')){
+		$('.buttonVideo').removeClass('md-videocam-off');
+		$('.buttonVideo').addClass('md-videocam');
+		$('.buttonVideo').attr('title', '카메라 켜기');
 	}
 }
 

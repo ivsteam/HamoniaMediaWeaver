@@ -42,8 +42,14 @@ function browserCheck(){
 
 $('.bottom_right').on('click', '#open-or-join-room', function(){
 	
-	// 비회원 사용자 id 설정
+	// 방이름 입력확인
+	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
+		$('#room-id').focus();
+		return;
+	}
+
 	if(!$('#userName').val()){
+		// 비회원 사용자 id 설정
 		$('#userName').val(messageSplit + connection.token());
 	}
 	
@@ -52,10 +58,6 @@ $('.bottom_right').on('click', '#open-or-join-room', function(){
 	var text = browserCheck();
 	
 	
-	if($('#room-id').val().replace(/^\s+|\s+$/g, '').length < 1) {
-		$('#room-id').focus();
-		return;
-	}
 	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
 		$('#userName').focus();
 		return;
@@ -181,13 +183,14 @@ var text = browserCheck();
 if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
 	var videoConstraintsMobile = {
 		mandatory: {
-			minWidth: 1280,
-			minAspectRatio: 1.77
+	//		minWidth: 640,
+	//		minAspectRatio: 1.77
 		},
 		optional: [{facingMode: 'user'}]
 	}; 
 	connection.mediaConstraints.video = videoConstraintsMobile;
 }else{
+
 	var videoConstraints = {
 		mandatory: {
 			maxWidth: 1920,
@@ -254,14 +257,21 @@ connection.onstream = function(event) {
         roomName = $('#room-id').val();
         userName = $('#userName').val();
         
-        if(userName.indexOf(messageSplit) != -1){
-        	userName = 'Guest' + userName.split(messageSplit)[1];
-        }
+//        if(userName.indexOf(messageSplit) != -1){
+//        	userName = 'Guest' + userName.split(messageSplit)[1];
+//        }
         
         $('#joinRoom').css('display', 'block');
         $('#createRoom').remove();
         
 //        width = 100;
+        
+
+        // 초기접속시 설명
+        if($.cookie('btnInfoNot') != 'true'){
+        	$('#buttonInfoAlert').css('display', 'block');
+        	$('#mask').css('display', 'block');
+        }
     }else{
     	// 그 외
         video.muted = true;
@@ -273,7 +283,7 @@ connection.onstream = function(event) {
     video.srcObject = event.stream;
 
     var mediaElement = getHTMLMediaElement(video, {
-        //title: event.userid, // 영상 상단 text
+//        title: event.userid, // 영상 상단 text
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
@@ -295,6 +305,11 @@ connection.onstream = function(event) {
    	for(var i=0; i<mContains.length ;++i){
    		if(mContains.eq(i).data('name') == roomName){
    			mContains.eq(i).css('border', '2px solid orange');
+   			
+   			if(userName.indexOf(messageSplit) != -1){
+   	        	userName = 'Guest' + (connection.getAllParticipants().length + 1);
+   	        	
+   	        }
    		}
    	}
     

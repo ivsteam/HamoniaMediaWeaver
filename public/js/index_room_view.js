@@ -193,7 +193,7 @@ $(window).resize(function(){
 			
 			if($('#buttonInfoAlert').height() > $(window).height()){
 				$('#buttonInfoAlert').css('height', '100%').css('top', '0');
-				$('.btnInfoContent').css('height', '80%').css('overflow-y', 'scroll');
+				$('.btnInfoContent').css('height', '70%').css('overflow-y', 'scroll');
 				$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '15px');
 			}else{
 				$('#buttonInfoAlert').css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
@@ -253,7 +253,7 @@ function defaultUISet(){
 			
 			// 버튼설명
 			$('#buttonInfoAlert').css('width', '100%').css('height', '100%').css('left', '0').css('top', '0').css('padding', '0');
-			$('.btnInfoContent').css('height', '80%').css('overflow-y', 'scroll');
+			$('.btnInfoContent').css('height', '70%').css('overflow-y', 'scroll');
 			$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '2rem');
 		}else{
 			//alert("PC");

@@ -116,10 +116,12 @@ $(document).ready(function(){
 		
 		
 		for(var i=0; i<videos.length ;++i){
-			videos[i].muted = check;
-			
-			if(check) connection.streamEvents[containers.eq(i).attr('id')].stream.mute('audio');
-			else connection.streamEvents[containers.eq(i).attr('id')].stream.unmute('audio');
+			if(videos[i].id != 'myVideo') {
+				videos[i].muted = check;
+				
+				if(check) connection.streamEvents[containers.eq(i).attr('id')].stream.mute('audio');
+				else connection.streamEvents[containers.eq(i).attr('id')].stream.unmute('audio');
+			}
 		}
 		
 		volumeUIFnt();	// 스피커 아이콘변경

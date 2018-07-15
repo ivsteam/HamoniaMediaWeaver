@@ -105,20 +105,21 @@ $(document).ready(function(){
 		micUIFnt();	// 마이크 아이콘변경
 	});
 	
-	// 스피커 버튼 - 안됨
+	// 스피커 버튼
 	$('.md-volume-up').click(function(){
 		var containers = $('.media-container');
 		var videos = $('#videos-container video');
 		var check = $('.buttonVolume').data('value');
-		var onoff = 'mute';
 		
 		// 설정
-		if(!check) onoff = 'unmute';
 		$('.buttonVolume').data('value', !check);
+		
 		
 		for(var i=0; i<videos.length ;++i){
 			videos[i].muted = check;
-//			connection.StreamsHandler.onSyncNeeded(containers.eq(i).attr('id'), onoff, 'audio');	// 선택된 stream 의 데이터를 모두가 공유한다...
+			
+			if(check) connection.streamEvents[containers.eq(i).attr('id')].stream.mute('audio');
+			else connection.streamEvents[containers.eq(i).attr('id')].stream.unmute('audio');
 		}
 		
 		volumeUIFnt();	// 스피커 아이콘변경

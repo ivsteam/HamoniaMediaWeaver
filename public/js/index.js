@@ -313,6 +313,8 @@ connection.onstream = function(event) {
    		}
    	}
     
+  	$('#myVideo')[0].muted = true;
+  	
     refreshVideoView(true);
 };
 

@@ -5876,9 +5876,47 @@ console.log("localUserid===1111111111111======"+ localUserid);
             console.info('Number of broadcast (', event.broadcastId, ') viewers', event.numberOfBroadcastViewers);
         };
 
+		// 사용자 상태가 변하면 실행
         connection.onUserStatusChanged = function(event, dontWriteLogs) {
             if (!!connection.enableLogs && !dontWriteLogs) {
                 console.info(event.userid, event.status);
+
+				// 방이름
+                var roomid = location.href.split(location.host+'/')[1];
+                
+                // 종료상태 && 종료된 사용자가 방 생성자인 경우 실행
+                if(event.status == 'offline' && event.userid == roomid){
+                	console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
+                	
+                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
+                	var mediaContainer = document.getElementsByClassName('media-container');
+                	var userIdList = [];
+                	
+                	// userid 를 리스트에 저장
+                	for(var i=0; i<mediaContainer.length ;++i){
+                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
+                	}
+//                	console.log('--userIdList : ' + userIdList);
+                	
+                	// 알파벳순으로 첫번재 사용자
+                	var firstUserId = userIdList.sort()[0];
+                	
+//                	console.log(myUserId + ' /// ' + firstUserId);
+                	
+                	// 첫 번째 사용자가 나라면 방장 위임
+                	if(myUserId == firstUserId){
+                		connection.changeUserId(roomid, function() {
+//                    	    alert('---- successfully changed to: ' + connection.userid);
+                    	    connection.isInitiator = true;
+                    	});
+                	}
+                	
+                	// 방장 위임받은 사람 표시
+                	for(var i=0; i<mediaContainer.length ;++i){
+                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
+                			mediaContainer[i].setAttribute('data-name', roomid);
+                	}
+                }
             }
         };
 
@@ -6003,6 +6041,45 @@ console.log("localUserid===1111111111111======"+ localUserid);
             if (connection.enableLogs) {
                 if (state.iceConnectionState.search(/closed|failed/gi) !== -1) {
                     console.error('Peer connection is closed between you & ', state.userid, state.extra, 'state:', state.iceConnectionState);
+
+					// 방이름
+                    var roomid = location.href.split(location.host+'/')[1];
+                    
+                    // 방장이 아니면 실행하지 않음
+                    if(state.userid != roomid) return;
+                    
+                    
+                	console.log('---- change start : ' + state.userid + ' // ' + roomid);
+                	
+                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
+                	var mediaContainer = document.getElementsByClassName('media-container');
+                	var userIdList = [];
+                	
+                	// userid 를 리스트에 저장
+                	for(var i=0; i<mediaContainer.length ;++i){
+                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
+                	}
+//                 	console.log('-- userIdList : ' + userIdList);
+                	
+                	// 알파벳순으로 첫번재 사용자
+                	var firstUserId = userIdList.sort()[0];
+                	
+//                	console.log(myUserId + ' /// ' + firstUserId);
+                	
+                	// 첫 번째 사용자가 나라면 방장 위임
+                	if(myUserId == firstUserId){
+                		connection.changeUserId(roomid, function() {
+//                    	    alert('---- successfully changed to: ' + connection.userid);
+                    	    connection.isInitiator = true;
+                    	});
+                	}
+                	
+                	// 방장 위임받은 사람 표시
+                	for(var i=0; i<mediaContainer.length ;++i){
+                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
+                			mediaContainer[i].setAttribute('data-name', roomid);
+                	}
+
                 }
             }
         };

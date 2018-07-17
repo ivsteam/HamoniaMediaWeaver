@@ -375,6 +375,7 @@ function chattingDivFnt(){
 				 
 				 // 채팅
 				 $('#chat-container').css('left', $(window).width() - chatWidth + 'px');
+				 $('#input-text-chat').focus();
 				 $('#chat-container').data('value', true);
 			 }else{
 				 $('#chat-container').data('value', false);

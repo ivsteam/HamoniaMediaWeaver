@@ -3,6 +3,7 @@
  */
 
 window.enableAdapter = true; // enable adapter.js
+
 var connectionCheck = false;
 
 var localStream;
@@ -102,16 +103,16 @@ $(document).ready(function(){
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
 
-    if (connection.isInitiator) {
-        // use this method if you did NOT set "autoCloseEntireSession===true"
-        // for more info: https://github.com/muaz-khan/RTCMultiConnection#closeentiresession
-        connection.closeEntireSession(function() {
-//			document.querySelector('h1').innerHTML = 'Entire session has been closed.';
-        	console.log('Entire session has been closed.');
-        });
-    } else {
+//    if (connection.isInitiator) {
+//        // use this method if you did NOT set "autoCloseEntireSession===true"
+//        // for more info: https://github.com/muaz-khan/RTCMultiConnection#closeentiresession
+//        connection.closeEntireSession(function() {
+////			document.querySelector('h1').innerHTML = 'Entire session has been closed.';
+//        	console.log('Entire session has been closed.');
+//        });
+//    } else {
         connection.leave();
-    }
+//    }
 	location.href= "/";
 };
 
@@ -345,7 +346,7 @@ connection.onstream = function(event) {
    	var mContains = $('.media-container');
    	for(var i=0; i<mContains.length ;++i){
    		if(mContains.eq(i).data('name') == roomName){
-   			mContains.eq(i).css('border', '2px solid orange');
+//   			mContains.eq(i).css('border', '2px solid orange');
    			
    			if(userName.indexOf(messageSplit) != -1){
    	        	userName = 'Guest' + (connection.getAllParticipants().length + 1);

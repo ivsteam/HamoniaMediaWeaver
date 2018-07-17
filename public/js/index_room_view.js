@@ -660,13 +660,25 @@ function menuFnc(){
 // 카메라 변경
 function cameraChangeFnt(deviceId){
 	connection.mediaConstraints = {
-		video: {
-			mandatory: {},
-			optional: [{
-				sourceId: deviceId
-			}]
+		audio: { 
+			deviceId: false 
+		},
+		video: { 
+			deviceId: deviceId 
 		}
 	};
+	
+	async function stopOldStreamFnt(){
+		connection.attachStreams.forEach(function(oldStream) {
+			oldStream.stop();
+		});
+	}
+	
+	stopOldStreamFnt();
+	
+	connection.captureUserMedia(function() {
+		connection.renegotiate();
+	});
 }
 
 

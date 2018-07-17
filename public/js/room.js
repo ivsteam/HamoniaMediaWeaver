@@ -449,7 +449,7 @@ connection.onEntireSessionClosed = function(event) {
     if (connection.userid === event.userid) return;
     console.log('Entire session has been closed by the moderator: ' + event.userid);
     
-    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.reload();
+    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.href='https://'+location.host;
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {

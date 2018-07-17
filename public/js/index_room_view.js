@@ -1,5 +1,5 @@
 /**
- * http://usejsdoc.org/
+ * http://hamonia.kr/
  */
 
 var filter = "win16|win32|win64|mac|linux x86_32|linux x86_64|macintel";
@@ -15,53 +15,12 @@ $(document).ready(function(){
 	// set UI
 	windowReset();
 	defaultUISet();
-	getIndexEjs();
 	createBoard();
+	
+	psycareFnt();
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
-	
-	$('#userName').css('display', 'none');
-	
-	// 그룹명 input tag
-	$('.bottom_right').on('keydown', '#room-id', function(key) {
-		if(key.keyCode != 13) return;
-//		$('#userName').focus();
-		$('#open-or-join-room').trigger('click');
-	});
-		
-	// 대화명 input tag
-	$('#userName').keydown(function(key) {
-		if(key.keyCode != 13) return;
-		$('#open-or-join-room').trigger('click');
-	});
-	
-	
-	// 로그인 버튼
-	$('.bottom_right').on('click', '#openLoginDiv', function(){
-		loginUISet();
-	});
-	
-	// 비회원 버튼
-	$('.bottom_right').on('click', '#notLoginDiv', function(){
-		location.reload();
-	});
-	
-	// 회원가입 버튼
-	$('.bottom_right').on('click', '#openSignupDiv', function(){
-		signupUISet();
-	});
-	
-	
-	// SNS icon button
-	$('.bottom_right').on('click', '.btn-login img', function(){
-		if($(this).attr('alt') != 'Hamonikr') {
-			location.href='https://' + location.host + '/login/' + $(this).attr('alt');
-		} else {
-//			location.href='http://localhost/hamoniRenewal/acountLogin.php';
-			location.href='http://hamonikr.org/acountLogin.php';
-		}
-	});
 	
 	
 	//set button
@@ -127,10 +86,33 @@ $(document).ready(function(){
 		volumeUIFnt();	// 스피커 아이콘변경
 	});
 	
-	// 비디오 버튼
+	// 카메라 버튼
 	$('.md-videocam').click(function(){
 		localStream.getVideoTracks()[0].enabled = !(localStream.getVideoTracks()[0].enabled);
 		videoUIFnt();	// 비디오 아이콘변경
+	});
+	
+	// 옵션 버튼
+	$('.buttonOption').click(function(){
+		optionFnt();
+	});
+	
+	// 옵션창 확인 버튼
+	$('.optionOkBtn').click(function(){
+		cameraChangeFnt($('#selectCamera').val()); // 카메라 변경
+		optionFnt();
+	});
+	
+	// 옵션창 닫기 버튼
+	$('.optionCloseBtn').click(function(){
+		optionFnt();
+	});
+	
+	
+	// 옵션창 - 내 영상 좌우반전
+	$('#myVideoRotate').click(function(){
+		if($(this).is(':checked')) $('#myVideo').css('transform', 'rotateY(180deg)');
+		else $('#myVideo').css('transform', 'rotateY(0deg)');
 	});
 	
 	
@@ -175,6 +157,8 @@ $(document).ready(function(){
 	});
 });
 
+
+
 $(window).resize(function(){
 	$('#videos-container').css('width', $(window).width() + 'px');
 	windowReset();
@@ -204,7 +188,6 @@ $(window).resize(function(){
 		}
 	}
 });
-
 
 
 
@@ -246,13 +229,15 @@ function defaultUISet(){
 			$('#share-file').css('top', '4rem').css('right', '.5rem').css('width', '50px').css('height', '50px');
 			
 			// 채팅
-			$('#chat-container').css('min-width', '0').css('width', '0.001px');
+			$('#chat-container').css('min-width', '0').css('width', '100%').css('display', 'none');
 			
 			// 영상
 			$('#myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo');
 			
 			// 화이트보드
-			$('#whiteBoardDiv').css('min-width', '0').css('width', '0.001px').css('display', 'none');
+			$('#whiteBoardDiv').css('min-width', '0').css('width', '100%').css('position', 'absolute').css('display', 'none');
+			$('#whiteBoardLayer').css('width', '100%')
+			$('.boardLeftDiv').css('display', 'none');
 			
 			// 버튼설명
 			$('#buttonInfoAlert').css('width', '100%').css('height', '100%').css('left', '0').css('top', '0').css('padding', '0');
@@ -270,75 +255,25 @@ function defaultUISet(){
 			// 버튼설명
 			$('#buttonInfoAlert').css('left', ($(window).width() - $('#buttonInfoAlert').width() ) / 2)
 									.css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
+			
+			// 화이트보드
+			$('#whiteBoardDiv').css('left', $(window).width() + 40 + 'px').css('width', boardWidth + 'px');
+			
+			// 채팅
+			$('#chat-container').css('left', $(window).width() + 40 + 'px');
 		}
 		
 		// 영상 전체화면 아이콘
 		$('.media-controls').css('display', 'none');
 		
-		// 화이트보드
-		$('#whiteBoardDiv').css('left', $(window).width() + 40 + 'px').css('width', boardWidth + 'px');
+		// 옵션창
+		$('#optionAlert').css('left', ($(window).width() - $('#optionAlert').width() ) / 2)
+								.css('top', ($(window).height() - $('#optionAlert').height() - 130 ) / 2);
 		
-		// 채팅
-		$('#chat-container').css('left', $(window).width() + 40 + 'px');
-		
-		// 초대
+		// 초대창
 		$('#inviteAlert').css('left', ($(window).width() - $('#inviteAlert').width() ) / 2)
-								.css('top', ($(window).height() - $('#inviteAlert').height() - 130 ) / 2);
+		.css('top', ($(window).height() - $('#inviteAlert').height() - 130 ) / 2);
 	}
-}
-
-
-//index.ejs 불러오기
-function getIndexEjs(){
-	$.ajax({
-		url	:"/bottom_right_main",
-		success : function(result, status, xhr){
-			$('.bottom_right').html(result);
-			psycareFnt();
-		},
-		error : function(result, status, error){
-			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
-		}
-	});
-}
-
-//로그인 버튼
-function loginUISet(){
-	$.ajax({
-		url	:"/login",
-		success : function(result, status, xhr){
-			$('.bottom_right').html(result);
-		},
-		error : function(result, status, error){
-			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
-		}
-	});
-}
-
-//회원가입 버튼
-function signupUISet(){
-	$.ajax({
-		url	:"/join",
-		success : function(result, status, xhr){
-			$('.bottom_right').html(result);
-		},
-		error : function(result, status, error){
-			console.log(' ==== loginUISet() error : ' + result + '\n' + status + '\n' + error);
-		}
-	});
-}
-
-//비회원 버튼 -- 사용X
-function publicLoginUISet(){
-	$.ajax({
-		url	:"/member/publicLogin",
-		success : function(result, status, xhr){
-			$('.bottom_right').html(result);
-		},
-		error : function(result, status, error){
-			console.log(' ==== publicLoginUISet() error : ' + result + '\n' + status + '\n' + error);
-		}
-	});
 }
 
 
@@ -420,20 +355,21 @@ function chattingDivFnt(){
 				console.log(' ---- close chatting');
 
 				// 채팅창
-				$('#chat-container').css('width', '0.001px').css('left', $(window).width() + 'px');
+				$('#chat-container').css('display', 'none');
 				$('#chat-container').data('value', false);
 			}else{
 				console.log(' ---- open chatting');
 				
 				// 채팅창
-				$('#chat-container').css('width', $(window).width() + 'px').css('left', '0px');
+				$('#chat-container').css('display', 'block');
 				$('#input-text-chat').focus();
-				
-				// 화이트보드창이 열린경우 닫기
-				if(boardOpenCheck) $('.boardBtn').trigger('click');
-				
 				$('#chat-container').data('value', true);
-				$('#whiteBoardDiv').data('value', false);
+				
+				// 로고
+				$('#logo').css('display', 'inline');
+				
+				// 화이트보드 닫기
+				$('#whiteBoardDiv').css('display', 'none');
 			}
 			$('#menuDiv').css('top', '-125px');
 			
@@ -451,6 +387,7 @@ function chattingDivFnt(){
 			 }else{
 				 $('#chat-container').data('value', false);
 			 }
+			 $('#videos-container').css('background-color', '');
 		}
 		$('#menuBtn').data('value', false);
 		$('#whiteBoardDiv').data('value', false);
@@ -542,10 +479,7 @@ function boardDivFnt(){
 				$('#logo').css('display', 'inline');
 				
 				// 화이트보드
-				$('#whiteBoardDiv').css('width', '0.001px').css('left', $(window).width() + 'px').css('display', 'none');
-				$('.boardLeftDiv').css('display', '');
-				$('#whiteBoardLayer').css('display', '');
-				
+				$('#whiteBoardDiv').css('display', 'none');
 				$('#whiteBoardDiv').data('value', false);
 			}else{
 				console.log(' ---- open board');
@@ -554,17 +488,14 @@ function boardDivFnt(){
 				$('#logo').css('display', 'none');
 				
 				// 화이트보드
-				$('#whiteBoardDiv').css('width', $(window).width() + 'px').css('left', '0px').css('display', 'block').css('position', 'absolute');
-				$('.boardLeftDiv').css('display', 'none');
-				$('#whiteBoardLayer').css('display', 'block').css('width', '100%');
-				
-				// 채팅창이 열린경우 닫기
-				if(chatOpenCheck) $('.chatBtn').trigger('click');
-				
-				$('#chat-container').data('value', false);
+				$('#whiteBoardDiv').css('display', 'block');
 				$('#whiteBoardDiv').data('value', true);
+				
+				// 채팅창 닫기
+				$('#chat-container').css('display', 'none');
 			}
 			$('#menuDiv').css('top', '-125px');
+			$('#chat-container').data('value', false);
 			
 		}else{
 //			alert("PC");
@@ -573,7 +504,7 @@ function boardDivFnt(){
 			$('#joinRoom').css('width', '1300px');
 			
 			// 영상
-			$('#videos-container').css('width', 'calc(100% - ' + ( boardWidth + chatWidth ) + 'px)');
+			$('#videos-container').css('width', 'calc(100% - ' + ( boardWidth + chatWidth ) + 'px)').css('background-color', 'rgb(244, 247, 253)');
 			$('.media-container').addClass('media-container-boardview');
 			
 			// 화이트보드
@@ -604,26 +535,26 @@ function videoBtnFnt(){
 	if(navigator.platform){
 		if(checkmob){
 //			alert("Mobile");
-			// 채팅
-			$('#chat-container').css('min-width', '0').css('width', '0.001px');
+			// 로고
+			$('#logo').css('display', 'block');
 			
 			// 화이트보드
-			$('#whiteBoardDiv').css('min-width', '0').css('width', '0.001px').css('display', 'none');
-			
-			$('#menuDiv').css('top', '-125px');
-			
-			if(chatOpenCheck) $('.chatBtn').trigger('click');
-			if(boardOpenCheck) $('.boardBtn').trigger('click');
-			
-			$('#chat-container').data('value', false);
+			$('#whiteBoardDiv').css('display', 'none');
 			$('#whiteBoardDiv').data('value', false);
+			
+			// 채팅창 닫기
+			$('#chat-container').css('display', 'none');
+			$('#chat-container').data('value', false);
+			
+			// 메뉴
+			$('#menuDiv').css('top', '-125px');
 		}else{
 //			alert("PC");
 			// 전체
 			$('#joinRoom').css('width', '');
 			
 			// 영상
-			$('#videos-container').css('width', '100%');
+			$('#videos-container').css('width', '100%').css('background-color', '');
 			$('.media-container-boardview').removeClass('media-container-boardview');
 			
 			// 화이트보드
@@ -734,16 +665,54 @@ function menuFnc(){
 }
 
 
+// 카메라 변경
+function cameraChangeFnt(deviceId){
+	connection.mediaConstraints = {
+		video: {
+			mandatory: {},
+			optional: [{
+				sourceId: deviceId
+			}]
+		}
+	};
+}
+
+
+// 옵션 버튼
+function optionFnt(){
+	// UI
+	var boolVal = $('#optionAlert').data('value');
+	
+	if( boolVal ){
+		$('#mask').css('display', 'none');
+		$('#optionAlert').css('display', 'none');
+	}else{
+		$('#mask').css('display', 'block');
+		$('#optionAlert').css('display', 'block');
+		
+		// select camera
+		$('#selectCamera').empty();
+		DetectRTC.load(function() {
+			DetectRTC.videoInputDevices.forEach(function(camera) {
+				  $('#selectCamera').append($('<option></option>').val(camera.deviceId).text(camera.label));
+			});
+		});
+	}
+	$('#optionAlert').data('value', !boolVal);
+}
+
+
+
 // 초대 버튼 , 초대창 닫기 버튼
 function inviteFnt(){
-	if( $('#inviteAlert').data('value') ){
+	var boolVal = $('#inviteAlert').data('value');
+	
+	if( boolVal ){
 		$('#mask').css('display', 'none');
 		$('#inviteAlert').css('display', 'none');
-		 $('#inviteAlert').data('value', false); 
 	}else{
 		$('#mask').css('display', 'block');
 		$('#inviteAlert').css('display', 'block');
-		$('#inviteAlert').data('value', true);
 		
 		var url = location.href;
 		
@@ -754,9 +723,21 @@ function inviteFnt(){
 			url = url[1].substr(0, url[1].lastIndexOf('/'));
 		}
 		
-		$('#inviteUrl').text('https://' + url + '?roomid=' + roomName);
+		$('#inviteUrl').text('https://' + url + '/' + roomName);
+	}
+	$('#inviteAlert').data('value', !boolVal);
+}
+
+
+// Link 복사 버튼
+function copyLinkFnt(){
+	try{
+		document.execCommand('copy');
+	}catch(err){
+		alert('이 브라우저는 지원하지 않습니다.');
 	}
 }
+
 
 //초대창 - 링크복사
 function clipboardBtn() {

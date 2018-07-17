@@ -331,7 +331,6 @@ video {
 #myVideo { transform: rotateY(180deg); }
 
 #videos-container { 
-	background-color: rgb(244, 247, 253);
 	display: inline-block;
 	height: 100%; 
 	position: relative;
@@ -751,7 +750,7 @@ img.uploadImg {
 /* boart end */
 
 
-/* 알람창 start */
+/* alert background start */
 #mask {
 	background-color: black;
 	height: 100%;
@@ -762,7 +761,48 @@ img.uploadImg {
 	width: 100%;
 	z-index: 1;
 }
+/* alert background end */
 
+
+/* option alert start */
+#optionAlert {
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	display: none;
+	overflow: hidden; 
+	position: absolute;
+	width: 420px;
+	z-index: 10;
+}
+.optionAlertTitle {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+.optionAlertContent{
+	padding: 1rem;
+}
+.optionAlertfooter{
+    padding: 1rem;
+	text-align: center;
+}
+
+.optionAlertfooter .btn {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: .5rem 3.5rem;
+}
+.optionAlertfooter .optionOkBtn { background-color: #2BC1A4; }
+.optionAlertfooter .optionCloseBtn { background-color: #c4bdb3; }
+/* option alert end */
+
+
+/* invite alert start */
 #inviteAlert { 
 	position: absolute;
 	z-index: 10; 
@@ -811,9 +851,10 @@ img.uploadImg {
 }
 #text_c_enter { background-color: #13AFA5; }
 #inviteAlertNoBtn { background-color: #c4bdb3; }
-/* 알람창 end */
+/* invite alert end */
 
-/* 버튼설명창 start */
+
+/* button info alert start */
 #buttonInfoAlert {
 	background-color: white;
 	border-radius: 0.2em;
@@ -872,7 +913,8 @@ img.uploadImg {
 #buttonInfoAlert .closeBtn {
     background-color: #AF87E8;
     color: white;
+    font-size: 0.85rem;
     font-weight: bold;
     padding: .5rem 4rem;
 }
-/* 버튼설명창 end */
+/* button info alert end */

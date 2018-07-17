@@ -103,6 +103,30 @@ http_app.get('/', function(req, res){
 });
 
 
+http_app.get('/*', function(req, res){
+	
+	if (/^http$/.test(req.protocol)) {
+		var host = req.headers.host.replace(/:[0-9]+$/g, "");
+
+		if ((port != null) && port !== port) {
+			return res.redirect("https://" + host + ":" + port + req.url, 301);
+		} else {
+			return res.redirect("https://" + host + req.url, 301);
+		}
+	} 
+	
+	fs.readFile(__dirname + '/views/room.ejs', 'utf8', function(error, data) {
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+			roomID : '',  
+			userName : '',  
+			psycare : '',
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+
+
 // translation] naver
 var express = require('express');
 var client_id = '******';

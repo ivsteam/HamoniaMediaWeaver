@@ -31,10 +31,6 @@ $(document).ready(function(){
 	
 	// 채팅창 open/close 버튼
 	$('.chatBtn').click(function(){
-		if( !connectionCheck ) {
-			alert('다른 접속자가 없습니다.');
-			return;
-		}
 		chattingDivFnt();
 	});
 	
@@ -46,10 +42,6 @@ $(document).ready(function(){
 	
 	// 화이트보드 버튼
 	$('.boardBtn').click(function(){
-		if( !connectionCheck ) {
-			alert('다른 접속자가 없습니다.');
-			return;
-		}
 		boardDivFnt();
 	});
 	

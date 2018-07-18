@@ -8,6 +8,7 @@ var connection = new RTCMultiConnection();
 
 $(document).ready(function(){
 	getIndexEjs();
+	browserCheck(true);
 	
 	$('#userName').css('display', 'none');
 	
@@ -57,16 +58,9 @@ $(document).ready(function(){
 	});
 	
 	
+	// 접속 또는 참여하기 버튼
 	$('#open-or-join-room').click(function(){
-		var inputRoomid = $('#room-id').val().replace(/^\s+|\s+$/g, '');
-		
-		// 방이름 입력확인
-		if(inputRoomid.length < 1) {
-			$('#room-id').focus();
-			return;
-		}
-		
-		location.href='https://' + location.host + '/' + $('#room-id').val().replace(/^\s+|\s+$/g, '');
+		openOrJoinRoomFnt();
 	});
 });
 
@@ -149,4 +143,21 @@ function publicLoginUISet(){
 			console.log(' ==== publicLoginUISet() error : ' + result + '\n' + status + '\n' + error);
 		}
 	});
+}
+
+
+
+// 접속 또는 참여하기 버튼
+function openOrJoinRoomFnt(){
+	if( !browserCheck(true) ) return;
+
+	var inputRoomid = $('#room-id').val().replace(/^\s+|\s+$/g, '');
+		
+	// 방이름 입력확인
+	if(inputRoomid.length < 1) {
+		$('#room-id').focus();
+		return;
+	}
+	
+	location.href='https://' + location.host + '/' + $('#room-id').val().replace(/^\s+|\s+$/g, '');
 }

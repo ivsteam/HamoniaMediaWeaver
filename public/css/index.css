@@ -153,15 +153,48 @@ video {
     align-items: center;
 }
 
+#roomHeadDiv { background-color: rgba(.5, .5, .5, .5); }
+
 #logo {
-	display: inline;
-	margin: 1em;
+	color: white;
+	/* display: inline; */
+	/* margin: 1em; */
+	padding: 16px;
 	left: 0px;
-	position: absolute;
+	/* position: absolute; */
 	top: 0px;
 	z-index: 5;
 }
-#logo img { height: 100%;}
+#logo img { 
+	height: 100%;
+	vertical-align: middle;
+}
+#logo #linkDiv { 
+	display: inline-block;
+	margin-left: 1rem;
+	vertical-align: middle; 
+}
+#logo .userCntDiv { 
+	margin-right: 10px;
+	vertical-align: middle; 
+}
+#logo .displayUrl { 
+	display: inline-block;
+	vertical-align: middle; 
+}
+#logo #linkDiv .copylinkBtnDiv { 
+	display: inline-block; 
+	vertical-align: middle;
+} 
+#logo .btn { 
+	background-color: #AF87E8;
+	font-size: 0.85rem;
+	margin-left: 10px;
+	margin-top: -15px;
+	padding: 4px 12px;
+	position: absolute;
+	z-index: 1;
+}
 
 #room-name {
     display: inline;
@@ -297,8 +330,17 @@ video {
 /****** room css ******/
 #joinRoom { 
 	margin: auto;
+	height: 100%;
 	overflow: hidden; 
-	position: relative;
+	/* position: relative; */
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+#roomProgressBar {
+	height: 100%; 
+	z-index: 0;
 }
 
 /* menu start */
@@ -309,20 +351,26 @@ video {
 }
 
 #menuDiv {
+	/* display: none; */
 	padding: 1rem;
 	padding-top: 0;
 	position: absolute;
 	right: 0;
 	text-align: right;
-	top: -125px;
-	z-index: 5;
+	top: 0px;
+	z-index: 1;
 }
-.menuLineDiv { margin-bottom: 8px; }
-.menuLineDiv:last-child { margin-top: 20px; }
+
+.userCntDiv div , .userCntDiv span { vertical-align: middle; }
 
 #menuDiv .btn {
-	height: 50px;
-	width: 50px;
+	height: 55px;
+}
+
+#menuDiv p {
+	font-size: 0.75rem;
+	margin: 0;
+	margin-top: -5px;
 }
 /* menu end */
 
@@ -330,19 +378,53 @@ video {
 /* video start */
 #myVideo { transform: rotateY(180deg); }
 
-#videos-container { 
+#linkInfoDiv { 
+	background-color: rgba(1,1,1,0.5);
+	border-radius: 4px;
+	color: white;
 	display: inline-block;
+	font-size: 1.3rem;
+	height: 100%;
+	overflow: hidden;
+	text-align: center;
+	vertical-align: middle;
+}
+#linkInfoDiv p { 
+	margin: auto;
+	margin-bottom: 10px;
+	width: 80%; 
+}
+#linkInfoDiv .displayUrl {
+	background-color: rgba(.5, .5, .5, .5);
+	border-radius: .25rem;
+	margin: auto;
+	margin-bottom: 10px;
+	padding: 10px;
+	width: 80%;
+}
+#linkInfoDiv .btn { 
+	background-color: #AF87E8;
+	font-size: 1.3rem;
+	width: 80%;
+}
+
+#videos-container {
+	display: inline-block;
+	flex-wrap: wrap;
 	height: 100%; 
 	position: relative;
+	text-align: center;
 	vertical-align: top;
 	width: 100%;
 }
-.media-container { 
+#videos-container .media-container { 
 	bottom: 0;
+	margin: 0.5%;
 	position: relative;
 	/* position: absolute; */
 	transition: unset !important;
-	width: 50%; 
+	vertical-align: middle;
+	/* width: 50%; */
 	z-index: 1; 
 }
 .media-container .media-box video {
@@ -353,8 +435,9 @@ video {
 .media-box { height: 100%; }
 
 .media-container.mainVideo {
-	height: 100% !important;
-	width: 100%  !important;
+	left: 33.3333%;
+	/* height: 100% !important; */
+	/* width: 100%  !important; */
 	z-index: 0;
 }
 
@@ -395,12 +478,12 @@ video {
 #chat-container {
 	background-color: #f2f2f2;
   	border-left: 1px solid #13AFA5;
-	display: inline-block;
+	display: none;
 	/* min-width: 320px; */
 	overflow: hidden;
 	position: absolute;
 	top: 0;
-	z-index: 1;
+	z-index: 4;
 }
 .chat-output {
 	background-color: rgb(244, 247, 253);
@@ -537,13 +620,13 @@ video {
 #whiteBoardDiv {
 	border: 0;
 	border-right: 1px solid #2BC1A4;
-	display: inline-block;
+	display: none;
 	height: 100%;
 	overflow: hidden;
 	/* position: absolute; */
 	top: 0;
 	width: 60%;
-	z-index: 1;
+	z-index: 3;
 }
 .boardLeftDiv {
 	display: inline-block;
@@ -646,7 +729,7 @@ video {
     position: relative;
     top: 35%;
     width: 1em;
-    z-index: 2147483647;
+    z-index: 5;
 }
 .bokeh li {
     border-radius: 50%;
@@ -762,6 +845,90 @@ img.uploadImg {
 	z-index: 1;
 }
 /* alert background end */
+
+
+/* messageAlert start */
+#messageAlert {
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	display: none;
+	overflow: hidden; 
+	position: absolute;
+	width: 375px;
+	z-index: 10;
+}
+.messageAlertTitle {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+.messageAlertContent{
+	padding: 1rem;
+}
+.messageAlertfooter{
+    padding: 1rem;
+	text-align: center;
+}
+
+.messageAlertfooter .btn {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: .5rem 3.5rem;
+}
+.messageAlertfooter .messageBtn { background-color: #c4bdb3; }
+/* messageAlert end */
+
+
+/* permissionAlert start */
+#permissionAlert {
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	display: none;
+	overflow: hidden; 
+	position: absolute;
+	width: 375px;
+	z-index: 10;
+}
+.permissionAlertTitle {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+.permissionAlertContent{
+	padding: 1rem;
+}
+.permissionAlertContent img {
+	margin: auto;
+	border: 1px solid;
+}
+.permissionAlertContent .mobile , 
+.permissionAlertContent .chrome , 
+.permissionAlertContent .firefox , 
+.permissionAlertContent .other {
+	display: none;
+}
+.permissionAlertfooter{
+    padding: 1rem;
+	text-align: center;
+}
+
+.permissionAlertfooter .btn {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: .5rem 3.5rem;
+}
+.permissionAlertfooter .permissionCloseBtn { background-color: #c4bdb3; }
+/* permissionAlert end */
 
 
 /* option alert start */
@@ -918,3 +1085,30 @@ img.uploadImg {
     padding: .5rem 4rem;
 }
 /* button info alert end */
+
+
+/* footer menu start */
+#footerMenu {
+	bottom: 0;
+	color: white;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	z-index: 3;
+}
+#footerMenu > div {
+	background-color: rgba(1, 1, 1, 0.5);
+	border-radius: 4px;
+	display: inline-block;
+	/* padding: 10px; */
+}
+#footerMenu button {
+	height: 55px;
+}
+#footerMenu p {
+	font-size: 0.75rem;
+	margin: 0;
+	margin-top: -5px;
+}
+.useWebBoard { display: none; }
+/* footer menu end */

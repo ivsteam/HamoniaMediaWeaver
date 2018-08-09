@@ -12,9 +12,15 @@
 // MIT License   - www.WebRTC-Experiment.com/licence
 // --------------------------------------------------
 
+var turn_server = 'turn:webrtcweb.com:7788';
+
+var isRTCMultiConnectionLogger = true;
+var isOnlyOneOwnerFnt = true;	// 방장 기능 사용여부 - true is 방장종료 == 방 종료
+
 window.RTCMultiConnection = function(roomid, forceOptions) {
 
     function SocketConnection(connection, connectCallback) {
+    	if(isRTCMultiConnectionLogger) console.log('---- SocketConnection');
         var parameters = '';
 
         parameters += '?userid=' + connection.userid;
@@ -409,6 +415,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function MultiPeers(connection) {
+    	if(isRTCMultiConnectionLogger) console.log('---- MultiPeers');
         var self = this;
 
         var skipPeers = ['getAllParticipants', 'getLength', 'selectFirst', 'streams', 'send', 'forEach'];
@@ -946,6 +953,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // --------------------------------------------------
 
     (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- (function(){ ... })() - get my device an browser information');
 
         var browserFakeUserAgent = 'Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45';
 
@@ -1022,6 +1030,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // https://www.websocket.org/js/stuff.js (DetectBrowser.js)
 
         function getBrowserInfo() {
+        	if(isRTCMultiConnectionLogger) console.log('---- getBrowserInfo');
+        	
             var nVer = navigator.appVersion;
             var nAgt = navigator.userAgent;
             var browserName = navigator.appName;
@@ -1119,6 +1129,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // via: https://gist.github.com/cou929/7973956
 
         function retry(isDone, next) {
+        	if(isRTCMultiConnectionLogger) console.log('---- retry');
+        	
             var currentTrial = 0,
                 maxRetry = 50,
                 interval = 10,
@@ -1140,6 +1152,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function isIE10OrLater(userAgent) {
+        	if(isRTCMultiConnectionLogger) console.log('---- isIE10OrLater');
+        	
             var ua = userAgent.toLowerCase();
             if (ua.indexOf('msie') === 0 && ua.indexOf('trident') === 0) {
                 return false;
@@ -1152,6 +1166,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function detectPrivateMode(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- detectPrivateMode');
+        	
             var isPrivate;
 
             try {
@@ -1272,6 +1288,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         // via: http://jsfiddle.net/ChristianL/AVyND/
         function detectDesktopOS() {
+        	if(isRTCMultiConnectionLogger) console.log('---- detectDesktopOS');
+        	
             var unknown = '-';
 
             var nVer = navigator.appVersion;
@@ -1402,6 +1420,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         var osVersion = 'Unknown OS Version';
 
         function getAndroidVersion(ua) {
+        	if(isRTCMultiConnectionLogger) console.log('---- getAndroidVersion');
+        	
             ua = (ua || navigator.userAgent).toLowerCase();
             var match = ua.match(/android\s([0-9\.]*)/);
             return match ? match[1] : false;
@@ -1445,6 +1465,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         // via: https://github.com/diafygi/webrtc-ips
         function DetectLocalIPAddress(callback, stream) {
+        	if(isRTCMultiConnectionLogger) console.log('---- DetectLocalIPAddress');
+        	
             if (!DetectRTC.isWebRTCSupported) {
                 return;
             }
@@ -1459,6 +1481,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function getIPs(callback, stream) {
+        	if(isRTCMultiConnectionLogger) console.log('---- getIPs');
+        	
             if (typeof document === 'undefined' || typeof document.getElementById !== 'function') {
                 return;
             }
@@ -1508,6 +1532,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             }
 
             function handleCandidate(candidate) {
+            	if(isRTCMultiConnectionLogger) console.log('---- handleCandidate');
+            	
                 var ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
                 var match = ipRegex.exec(candidate);
                 if (!match) {
@@ -1598,6 +1624,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
         function checkDeviceSupport(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- checkDeviceSupport');
+        	
             if (!canEnumerate) {
                 if (callback) {
                     callback();
@@ -1637,6 +1665,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             var alreadyUsedDevices = {};
 
             navigator.enumerateDevices(function(devices) {
+            	if(isRTCMultiConnectionLogger) console.log('---- navigator.enumerateDevices');
+            	
                 devices.forEach(function(_device) {
                     var device = {};
                     for (var d in _device) {
@@ -2070,6 +2100,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function fireEvent(obj, eventName, args) {
+    	if(isRTCMultiConnectionLogger) console.log('---- fireEvent');
+    	
         if (typeof CustomEvent === 'undefined') {
             return;
         }
@@ -2084,6 +2116,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function setHarkEvents(connection, streamEvent) {
+    	if(isRTCMultiConnectionLogger) console.log('---- setHarkEvents');
+    	
         if (!streamEvent.stream || !streamEvent.stream.getAudioTracks || !streamEvent.stream.getAudioTracks().length) return;
 
         if (!connection || !streamEvent) {
@@ -2118,6 +2152,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function setMuteHandlers(connection, streamEvent) {
+    	if(isRTCMultiConnectionLogger) console.log('---- setMuteHandlers');
+    	
         if (!streamEvent.stream || !streamEvent.stream || !streamEvent.stream.addEventListener) return;
 
         streamEvent.stream.addEventListener('mute', function(event) {
@@ -2144,6 +2180,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function getRandomString() {
+    	if(isRTCMultiConnectionLogger) console.log('---- getRandomString');
+    	
         if (window.crypto && window.crypto.getRandomValues && navigator.userAgent.indexOf('Safari') === -1) {
             var a = window.crypto.getRandomValues(new Uint32Array(3)),
                 token = '';
@@ -2160,6 +2198,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // todo: add API documentation for connection.autoCreateMediaElement
 
     function getRMCMediaElement(stream, callback, connection) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getRMCMediaElement');
+    	
         if (!connection.autoCreateMediaElement) {
             callback({});
             return;
@@ -2322,6 +2362,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function isAudioPlusTab(connection, audioPlusTab) {
+    	if(isRTCMultiConnectionLogger) console.log('---- isAudioPlusTab');
+    	
         if (connection.session.audio && connection.session.audio === 'two-way') {
             return false;
         }
@@ -2345,6 +2387,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function getAudioScreenConstraints(screen_constraints) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getAudioScreenConstraints');
+    	
         if (DetectRTC.browser.name === 'Firefox') {
             return true;
         }
@@ -2399,6 +2443,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // ios-hacks.js
 
     function setCordovaAPIs() {
+    	if(isRTCMultiConnectionLogger) console.log('---- setCordovaAPIs');
+    	
         // if (DetectRTC.osName !== 'iOS') return;
         if (typeof cordova === 'undefined' || typeof cordova.plugins === 'undefined' || typeof cordova.plugins.iosrtc === 'undefined') return;
 
@@ -2425,6 +2471,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     var defaults = {};
 
     function setSdpConstraints(config) {
+    	if(isRTCMultiConnectionLogger) console.log('---- setSdpConstraints');
+    	
         var sdpConstraints = {
             OfferToReceiveAudio: !!config.OfferToReceiveAudio,
             OfferToReceiveVideo: !!config.OfferToReceiveVideo
@@ -2466,6 +2514,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     var MediaStreamTrack = window.MediaStreamTrack;
 
     function PeerInitiator(config) {
+    	if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator');
+    	
         if (typeof window.RTCPeerConnection !== 'undefined') {
             RTCPeerConnection = window.RTCPeerConnection;
         } else if (typeof mozRTCPeerConnection !== 'undefined') {
@@ -2473,11 +2523,17 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         } else if (typeof webkitRTCPeerConnection !== 'undefined') {
             RTCPeerConnection = webkitRTCPeerConnection;
         }
-
+        
+        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - RTCPeerConnection : ' + RTCPeerConnection);
+        
         RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
         RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate;
         MediaStreamTrack = window.MediaStreamTrack;
-
+        
+        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - RTCSessionDescription : ' + RTCSessionDescription);
+        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - RTCIceCandidate : ' + RTCIceCandidate);
+        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - MediaStreamTrack : ' + MediaStreamTrack);
+        
         if (!RTCPeerConnection) {
             throw 'WebRTC 1.0 (RTCPeerConnection) API are NOT available in this browser.';
         }
@@ -2572,6 +2628,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function getLocalStreams() {
+        	if(isRTCMultiConnectionLogger) console.log('---- getLocalStreams');
+        	
             // if-block is temporarily disabled
             if (typeof window.InstallTrigger !== 'undefined' && 'getSenders' in peer && typeof peer.getSenders === 'function') {
                 var streamObject2 = new MediaStream();
@@ -2747,6 +2805,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }, false);
 
         peer.onremovestream = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- peer.onremovestream');
+        	
             // this event doesn't works anymore
             event.stream.streamid = event.stream.id;
 
@@ -2758,10 +2818,14 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         this.addRemoteCandidate = function(remoteCandidate) {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.addRemoteCandidate');
+        	
             peer.addIceCandidate(new RTCIceCandidate(remoteCandidate));
         };
 
         function oldAddRemoteSdp(remoteSdp, cb) {
+        	if(isRTCMultiConnectionLogger) console.log('---- oldAddRemoteSdp');
+        	
             cb = cb || function() {};
 
             if (DetectRTC.browser.name !== 'Safari') {
@@ -2777,15 +2841,17 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         this.addRemoteSdp = function(remoteSdp, cb) {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.addRemoteSdp');
+        	
             cb = cb || function() {};
 
             if (!window.enableAdapter) {
                 return oldAddRemoteSdp(remoteSdp, cb);
             }
-
-            if (DetectRTC.browser.name !== 'Safari') {
+//console.log("111111111111");
+//            if (DetectRTC.browser.name !== 'Safari') {
                 remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
-            }
+//            }
             peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(cb, function(error) {
                 if (!!connection.enableLogs) {
                     console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
@@ -2802,6 +2868,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         this.createDataChannel = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.createDataChannel');
+        	
             var channel = peer.createDataChannel('sctp', {});
             setChannelEvents(channel);
         };
@@ -2828,6 +2896,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function setChannelEvents(channel) {
+        	if(isRTCMultiConnectionLogger) console.log('---- setChannelEvents');
+        	
             // force ArrayBuffer in Firefox; which uses "Blob" by default.
             channel.binaryType = 'arraybuffer';
 
@@ -2878,6 +2948,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function oldCreateOfferOrAnswer(_method) {
+        	if(isRTCMultiConnectionLogger) console.log('---- oldCreateOfferOrAnswer');
+        	
             peer[_method](function(localSdp) {
                 if (DetectRTC.browser.name !== 'Safari') {
                     localSdp.sdp = connection.processSdp(localSdp.sdp);
@@ -2910,6 +2982,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function createOfferOrAnswer(_method) {
+        	if(isRTCMultiConnectionLogger) console.log('---- createOfferOrAnswer');
+        	
             if (!window.enableAdapter) {
                 return oldCreateOfferOrAnswer(_method);
             }
@@ -2970,8 +3044,18 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // CodecsHandler.js
 
     var CodecsHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- CodecsHandler');
+    	
         function preferCodec(sdp, codecName) {
+        	if(isRTCMultiConnectionLogger) console.log('---- preferCodec');
+        	
             var info = splitLines(sdp);
+
+			console.log("codecName==="+ codecName );
+			console.log("info.vp8LineNumber==="+ info.vp8LineNumber );
+			console.log("info.videoCodecNumbers[0]==="+ info.videoCodecNumbers[0] );
+			
+			console.log("info.videoCodecNumbers=="+ info.videoCodecNumbers);
 
             if (!info.videoCodecNumbers) {
                 return sdp;
@@ -2995,6 +3079,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function preferCodecHelper(sdp, codec, info, ignore) {
+			console.log("preferCodecHelper=============="+ codec);
+			
             var preferCodecNumber = '';
 
             if (codec === 'vp8') {
@@ -3039,6 +3125,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function splitLines(sdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- splitLines');
+        	
             var info = {};
             sdp.split('\n').forEach(function(line) {
                 if (line.indexOf('m=video') === 0) {
@@ -3068,6 +3156,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function removeVPX(sdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- removeVPX');
+        	
             var info = splitLines(sdp);
 
             // last parameter below means: ignore these codecs
@@ -3078,6 +3168,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function disableNACK(sdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- disableNACK');
+        	
             if (!sdp || typeof sdp !== 'string') {
                 throw 'Invalid arguments.';
             }
@@ -3091,6 +3183,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function prioritize(codecMimeType, peer) {
+        	if(isRTCMultiConnectionLogger) console.log('---- prioritize');
+        	
             if (!peer || !peer.getSenders || !peer.getSenders().length) {
                 return;
             }
@@ -3112,10 +3206,13 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function removeNonG722(sdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- removeNonG722');
             return sdp.replace(/m=audio ([0-9]+) RTP\/SAVPF ([0-9 ]*)/g, 'm=audio $1 RTP\/SAVPF 9');
         }
 
         function setBAS(sdp, bandwidth, isScreen) {
+        	if(isRTCMultiConnectionLogger) console.log('---- setBAS');
+        	
             if (!bandwidth) {
                 return sdp;
             }
@@ -3148,9 +3245,13 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             }
 
             if (bandwidth.screen) {
-                sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + bandwidth.screen + '\r\n');
+            	if(isRTCMultiConnectionLogger) console.log('---- bandwidth.screen');
+                sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + 1638400 + '\r\n');
+//				sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + bandwidth.screen + '\r\n');
             } else if (bandwidth.video) {
-                sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + bandwidth.video + '\r\n');
+            	if(isRTCMultiConnectionLogger) console.log('---- bandwidth.video');
+                sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + 1638400 + '\r\n');
+//				sdp = sdp.replace(/a=mid:video\r\n/g, 'a=mid:video\r\nb=AS:' + bandwidth.video + '\r\n');
             }
 
             return sdp;
@@ -3159,12 +3260,16 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // Find the line in sdpLines that starts with |prefix|, and, if specified,
         // contains |substr| (case-insensitive search).
         function findLine(sdpLines, prefix, substr) {
+        	if(isRTCMultiConnectionLogger) console.log('---- findLine');
+        	
             return findLineInRange(sdpLines, 0, -1, prefix, substr);
         }
 
         // Find the line in sdpLines[startLine...endLine - 1] that starts with |prefix|
         // and, if specified, contains |substr| (case-insensitive search).
         function findLineInRange(sdpLines, startLine, endLine, prefix, substr) {
+        	if(isRTCMultiConnectionLogger) console.log('---- findLineInRange');
+        	
             var realEndLine = endLine !== -1 ? endLine : sdpLines.length;
             for (var i = startLine; i < realEndLine; ++i) {
                 if (sdpLines[i].indexOf(prefix) === 0) {
@@ -3179,12 +3284,16 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         // Gets the codec payload type from an a=rtpmap:X line.
         function getCodecPayloadType(sdpLine) {
+        	if(isRTCMultiConnectionLogger) console.log('---- getCodecPayloadType');
+        	
             var pattern = new RegExp('a=rtpmap:(\\d+) \\w+\\/\\d+');
             var result = sdpLine.match(pattern);
             return (result && result.length === 2) ? result[1] : null;
         }
 
         function setVideoBitrates(sdp, params) {
+        	if(isRTCMultiConnectionLogger) console.log('---- setVideoBitrates');
+        	
             params = params || {};
             var xgoogle_min_bitrate = params.min;
             var xgoogle_max_bitrate = params.max;
@@ -3224,6 +3333,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function setOpusAttributes(sdp, params) {
+        	if(isRTCMultiConnectionLogger) console.log('---- setOpusAttributes');
+        	
             params = params || {};
 
             var sdpLines = sdp.split('\r\n');
@@ -3281,6 +3392,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // forceStereoAudio => via webrtcexample.com
         // requires getUserMedia => echoCancellation:false
         function forceStereoAudio(sdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- forceStereoAudio');
+        	
             var sdpLines = sdp.split('\r\n');
             var fmtpLineIndex = null;
             for (var i = 0; i < sdpLines.length; i++) {
@@ -3332,7 +3445,11 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // OnIceCandidateHandler.js
 
     var OnIceCandidateHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- OnIceCandidateHandler');
+    	
         function processCandidates(connection, icePair) {
+        	if(isRTCMultiConnectionLogger) console.log('---- processCandidates');
+        	
             var candidate = icePair.candidate;
 
             var iceRestrictions = connection.candidates;
@@ -3388,7 +3505,11 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // IceServersHandler.js
 
     var IceServersHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- IceServersHandler');
+    	
         function getIceServers(connection) {
+        	if(isRTCMultiConnectionLogger) console.log('---- getIceServers');
+        	
             // resiprocate: 3344+4433
             // pions: 7575
             var iceServers = [{
@@ -3401,7 +3522,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 },
                 {
                     'urls': [
-			'turn:52.231.31.43:5349',
+                    	turn_server,
 /*
                         'turn:webrtcweb.com:7788', // coTURN 7788+8877
                         'turn:webrtcweb.com:4455?transport=udp', // restund udp
@@ -3437,6 +3558,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // getUserMediaHandler.js
 
     function setStreamType(constraints, stream) {
+    	if(isRTCMultiConnectionLogger) console.log('---- setStreamType');
+    	
         if (constraints.mandatory && constraints.mandatory.chromeMediaSource) {
             stream.isScreen = true;
         } else if (constraints.mozMediaSource || constraints.mediaSource) {
@@ -3476,6 +3599,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     };
 
     function getUserMediaHandler(options) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getUserMediaHandler');
+    	
         if (currentUserMediaRequest.mutex === true) {
             currentUserMediaRequest.queueRequests.push(options);
             return;
@@ -3486,6 +3611,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         var idInstance = JSON.stringify(options.localMediaConstraints);
 
         function streaming(stream, returnBack) {
+        	if(isRTCMultiConnectionLogger) console.log('---- streaming');
+        	
             setStreamType(options.localMediaConstraints, stream);
 
             var streamEndedEvent = 'ended';
@@ -3516,6 +3643,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             options.onGettingLocalMedia(stream, returnBack);
         }
 
+        if(isRTCMultiConnectionLogger) console.log('---- currentUserMediaRequest.streams[idInstance] : ' + currentUserMediaRequest.streams[idInstance]);
         if (currentUserMediaRequest.streams[idInstance]) {
             streaming(currentUserMediaRequest.streams[idInstance].stream, true);
         } else {
@@ -3587,6 +3715,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // StreamsHandler.js
 
     var StreamsHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- StreamsHandler');
+    	
         function handleType(type) {
             if (!type) {
                 return;
@@ -3612,6 +3742,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function setHandlers(stream, syncAction, connection) {
+        	if(isRTCMultiConnectionLogger) console.log('---- setHandlers');
+        	
             if (!stream || !stream.addEventListener) return;
 
             if (typeof syncAction == 'undefined' || syncAction == true) {
@@ -3627,6 +3759,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             }
 
             stream.mute = function(type, isSyncAction) {
+            	if(isRTCMultiConnectionLogger) console.log('---- stream.mute');
+            	
                 type = handleType(type);
 
                 if (typeof isSyncAction !== 'undefined') {
@@ -3656,6 +3790,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             };
 
             stream.unmute = function(type, isSyncAction) {
+            	if(isRTCMultiConnectionLogger) console.log('---- stream.unmute');
+            	
                 type = handleType(type);
 
                 if (typeof isSyncAction !== 'undefined') {
@@ -3707,6 +3843,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             };
 
             function graduallyIncreaseVolume() {
+            	if(isRTCMultiConnectionLogger) console.log('---- graduallyIncreaseVolume');
+            	
                 if (!connection.streamEvents[stream.streamid].mediaElement) {
                     return;
                 }
@@ -3724,6 +3862,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         function afterEach(setTimeoutInteval, numberOfTimes, callback, startedTimes) {
+        	if(isRTCMultiConnectionLogger) console.log('---- afterEach');
+        	
             startedTimes = (startedTimes || 0) + 1;
             if (startedTimes >= numberOfTimes) return;
 
@@ -3755,6 +3895,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // postMessage is used to exchange "sourceId" between chrome extension and you webpage.
     // though, there are tons other options as well, e.g. XHR-signaling, websockets, etc.
     window.addEventListener('message', function(event) {
+    	if(isRTCMultiConnectionLogger) console.log('---- window.addEventListener');
+    	
         if (event.origin != window.location.origin) {
             return;
         }
@@ -3774,8 +3916,12 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // and the function that handles received messages
 
     function onMessageCallback(data) {
+    	if(isRTCMultiConnectionLogger) console.log('---- onMessageCallback');
+    	
         // "cancel" button is clicked
         if (data == 'PermissionDeniedError') {
+        	if(isRTCMultiConnectionLogger) console.log('---- PermissionDeniedError');
+        	
             chromeMediaSource = 'PermissionDeniedError';
             if (screenCallback) {
                 return screenCallback('PermissionDeniedError');
@@ -3786,11 +3932,15 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         // extension notified his presence
         if (data == 'rtcmulticonnection-extension-loaded') {
+        	if(isRTCMultiConnectionLogger) console.log('---- rtcmulticonnection-extension-loaded');
+        	
             chromeMediaSource = 'desktop';
         }
 
         // extension shared temp sourceId
         if (data.sourceId && screenCallback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- data.sourceId && screenCallback');
+        	
             sourceId = data.sourceId;
             screenCallback(sourceId);
         }
@@ -3803,6 +3953,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
     // this method can be used to check if chrome extension is installed & enabled.
     function isChromeExtensionAvailable(callback) {
+    	if(isRTCMultiConnectionLogger) console.log('---- isChromeExtensionAvailable');
+    	
         if (!callback) return;
 
         if (DetectRTC.browser.name === 'Firefox') return isFirefoxExtensionAvailable(callback);
@@ -3829,6 +3981,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function isFirefoxExtensionAvailable(callback) {
+    	if(isRTCMultiConnectionLogger) console.log('---- isFirefoxExtensionAvailable');
+    	
         if (!callback) return;
 
         if (DetectRTC.browser.name !== 'Firefox') return isChromeExtensionAvailable(callback);
@@ -3836,6 +3990,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         var isFirefoxAddonResponded = false;
 
         function messageCallback(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- messageCallback');
+        	
             var addonMessage = event.data;
 
             if (!addonMessage || typeof addonMessage.isScreenCapturingEnabled === 'undefined') return;
@@ -3867,6 +4023,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
     // this function can be used to get "source-id" from the extension
     function getSourceId(callback, audioPlusTab) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getSourceId');
+    	
         if (!callback) throw '"callback" parameter is mandatory.';
         if (sourceId) {
             callback(sourceId);
@@ -3884,6 +4042,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function getChromeExtensionStatus(extensionid, callback) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getChromeExtensionStatus');
+    	
         if (window.IsAndroidChrome) {
             chromeMediaSource = 'screen';
             callback('installed-enabled');
@@ -3915,6 +4075,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     }
 
     function getAspectRatio(w, h) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getAspectRatio');
+    	
         function gcd(a, b) {
             return (b == 0) ? a : gcd(b, a % b);
         }
@@ -3924,6 +4086,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
     // this function explains how to use above methods/objects
     function getScreenConstraints(callback, audioPlusTab) {
+    	if(isRTCMultiConnectionLogger) console.log('---- getScreenConstraints');
+    	
         var firefoxScreenConstraints = {
             mozMediaSource: 'window',
             mediaSource: 'window'
@@ -3987,9 +4151,13 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // TextReceiver.js & TextSender.js
 
     function TextReceiver(connection) {
+    	if(isRTCMultiConnectionLogger) console.log('---- TextReceiver');
+    	
         var content = {};
 
         function receive(data, userid, extra) {
+        	if(isRTCMultiConnectionLogger) console.log('---- receive');
+        	
             // uuid is used to uniquely identify sending instance
             var uuid = data.uuid;
             if (!content[uuid]) {
@@ -4058,6 +4226,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             sendText(initialText);
 
             function sendText(textMessage, text) {
+            	if(isRTCMultiConnectionLogger) console.log('---- sendText');
+            	
                 var data = {
                     type: 'text',
                     uuid: uuid,
@@ -4093,11 +4263,17 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // FileProgressBarHandler.js
 
     var FileProgressBarHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- FileProgressBarHandler');
+    	
         function handle(connection) {
+        	if(isRTCMultiConnectionLogger) console.log('---- handle');
+        	
             var progressHelper = {};
 
             // www.RTCMultiConnection.org/docs/onFileStart/
             connection.onFileStart = function(file) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.onFileStart');
+            	
                 var div = document.createElement('div');
                 div.title = file.name;
                 div.innerHTML = '<label>0%</label> <progress></progress>';
@@ -4136,6 +4312,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
             // www.RTCMultiConnection.org/docs/onFileProgress/
             connection.onFileProgress = function(chunk) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.onFileProgress');
+            	
                 var helper = progressHelper[chunk.uuid];
                 if (!helper) {
                     return;
@@ -4153,6 +4331,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
             // www.RTCMultiConnection.org/docs/onFileEnd/
             connection.onFileEnd = function(file) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.onFileEnd');
+            	
                 var helper = progressHelper[file.uuid];
                 if (!helper) {
                     console.error('No such progress-helper element exist.', file);
@@ -4175,6 +4355,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             };
 
             function updateLabel(progress, label) {
+            	if(isRTCMultiConnectionLogger) console.log('---- updateLabel');
+            	
                 if (progress.position === -1) {
                     return;
                 }
@@ -4192,7 +4374,11 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // TranslationHandler.js
 
     var TranslationHandler = (function() {
+    	if(isRTCMultiConnectionLogger) console.log('---- TranslationHandler');
+    	
         function handle(connection) {
+        	if(isRTCMultiConnectionLogger) console.log('---- handle');
+        	
             connection.autoTranslateText = false;
             connection.language = 'en';
             connection.googKey = 'AIzaSyCgB5hmFY74WYB-EoWkhr9cAGr6TiTHrEE';
@@ -4278,6 +4464,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         var preventDuplicateOnStreamEvents = {};
         mPeer.onGettingLocalMedia = function(stream, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- mPeer.onGettingLocalMedia');
+        	
             callback = callback || function() {};
 
             if (preventDuplicateOnStreamEvents[stream.streamid]) {
@@ -4323,6 +4511,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         mPeer.onGettingRemoteMedia = function(stream, remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- mPeer.onGettingRemoteMedia ');
+        	
             try {
                 stream.type = 'remote';
             } catch (e) {}
@@ -4352,6 +4542,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         mPeer.onRemovingRemoteMedia = function(stream, remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- mPeer.onRemovingRemoteMedia');
+        	
             var streamEvent = connection.streamEvents[stream.streamid];
             if (!streamEvent) {
                 streamEvent = {
@@ -4374,6 +4566,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         mPeer.onNegotiationNeeded = function(message, remoteUserId, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- mPeer.onNegotiationNeeded');
+        	
             remoteUserId = remoteUserId || message.remoteUserId;
             connectSocket(function() {
                 connection.socket.emit(connection.socketMessageEvent, 'password' in message ? message : {
@@ -4385,11 +4579,14 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         function onUserLeft(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- onUserLeft');
             connection.deletePeer(remoteUserId);
         }
 
         mPeer.onUserLeft = onUserLeft;
         mPeer.disconnectWith = function(remoteUserId, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- mPeer.disconnectWith');
+        	
             if (connection.socket) {
                 connection.socket.emit('disconnect-with', remoteUserId, callback || function() {});
             }
@@ -4406,6 +4603,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         function connectSocket(connectCallback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connectSocket');
+        	
             connection.socketAutoReConnect = true;
 
             if (connection.socket) { // todo: check here readySate/etc. to make sure socket is still opened
@@ -4436,10 +4635,13 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // 2nd paramter can be either password or a callback function
         // 3rd paramter is a callback function
         connection.openOrJoin = function(localUserid, password, callback) {
-console.log("localUserid===1111111111111======"+ localUserid);
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.openOrJoin');
+        	
             callback = callback || function() {};
 
             connection.checkPresence(localUserid, function(isRoomExist, roomid) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence - isRoomExist : ' + isRoomExist);
+            	
                 // i.e. 2nd parameter is a callback function
                 if (typeof password === 'function' && typeof password !== 'undefined') {
                     callback = password; // switch callback functions
@@ -4489,40 +4691,43 @@ console.log("localUserid===1111111111111======"+ localUserid);
                     });
                     return;
                 }
-
+                
                 connection.waitingForLocalMedia = true;
                 connection.isInitiator = true;
-
+                
                 var oldUserId = connection.userid;
                 connection.userid = connection.sessionid = localUserid || connection.sessionid;
                 connection.userid += '';
-
+                
                 connection.socket.emit('changed-uuid', connection.userid);
-
+                
                 if (password) {
                     connection.socket.emit('set-password', password);
                 }
-
+                
                 if (isData(connection.session)) {
                     connection.waitingForLocalMedia = false;
                     return;
                 }
-
+                
                 connection.captureUserMedia(function() {
+                	if(isRTCMultiConnectionLogger) console.log('---- connection.captureUserMedia');
+                	
                     connection.waitingForLocalMedia = false;
-
+                    
                     // tell user if room was opened
                     callback(isRoomExist, roomid);
                 });
+                
             });
-            
-            console.log(' ---- connection.getAllParticipants() 2 : ' + connection.getAllParticipants());
         };
 
         // don't allow someone to join this person until he has the media
         connection.waitingForLocalMedia = false;
 
         connection.open = function(localUserid, isPublicModerator, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.open');
+        	
             connection.waitingForLocalMedia = true;
             connection.isInitiator = true;
 
@@ -4561,15 +4766,21 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.becomePublicModerator = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.becomePublicModerator');
+        	
             if (!connection.isInitiator) return;
             connection.socket.emit('become-a-public-moderator');
         };
 
         connection.dontMakeMeModerator = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.dontMakeMeModerator');
+        	
             connection.socket.emit('dont-make-me-moderator');
         };
 
         connection.deletePeer = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer');
+        	
             if (!remoteUserId) {
                 return;
             }
@@ -4616,6 +4827,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.rejoin = function(connectionDescription) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.rejoin');
+        	
             if (connection.isInitiator || !connectionDescription || !Object.keys(connectionDescription).length) {
                 return;
             }
@@ -4638,6 +4851,7 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.join = connection.connect = function(remoteUserId, options) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.join');
 			console.log("remoteUserId========="+ remoteUserId);
             connection.sessionid = (remoteUserId ? remoteUserId.sessionid || remoteUserId.remoteUserId || remoteUserId : false) || connection.sessionid;
             connection.sessionid += '';
@@ -4716,6 +4930,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         function beforeJoin(userPreferences, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- beforeJoin');
+        	
             if (connection.dontCaptureUserMedia || userPreferences.isDataOnly) {
                 callback();
                 return;
@@ -4778,10 +4994,14 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.connectWithAllParticipants = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.connectWithAllParticipants');
+        	
             mPeer.onNegotiationNeeded('connectWithAllParticipants', remoteUserId || connection.sessionid);
         };
 
         connection.removeFromBroadcastersList = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.removeFromBroadcastersList');
+        	
             mPeer.onNegotiationNeeded('removeFromBroadcastersList', remoteUserId || connection.sessionid);
 
             connection.peers.getAllParticipants(remoteUserId || connection.sessionid).forEach(function(participant) {
@@ -4795,6 +5015,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.getUserMedia = connection.captureUserMedia = function(callback, sessionForced) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getUserMedia');
+        	
             callback = callback || function() {};
             var session = sessionForced || connection.session;
 
@@ -4859,6 +5081,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         function beforeUnload(shiftModerationControlOnLeave, dontCloseSocket) {
+        	if(isRTCMultiConnectionLogger) console.log('---- beforeUnload');
+        	
             if (!connection.closeBeforeUnload) {
                 return;
             }
@@ -4920,8 +5144,15 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.processSdp = function(sdp) {
+
+			
+console.log("========================");
+console.log("=========sdp===============" + sdp);
+console.log("========================");
+
             if (DetectRTC.browser.name === 'Safari') {
-                return sdp;
+            	sdp = CodecsHandler.preferCodec(sdp, 'vp9');
+//                return sdp;
             }
 
             if (connection.codecs.video.toUpperCase() === 'VP8') {
@@ -4943,7 +5174,6 @@ console.log("localUserid===1111111111111======"+ localUserid);
             if (DetectRTC.browser.name === 'Firefox') {
                 return sdp;
             }
-
             if (connection.bandwidth.video || connection.bandwidth.screen) {
                 sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, connection.bandwidth, !!connection.session.screen);
             }
@@ -4963,7 +5193,9 @@ console.log("localUserid===1111111111111======"+ localUserid);
                     maxptime: 3
                 });
             }
-
+			console.log("1----"+ connection.codecs.video.toUpperCase());
+			console.log("2--"+ sdp);
+			console.log("3--"+ DetectRTC.browser.name);
             return sdp;
         };
 
@@ -4975,16 +5207,16 @@ console.log("localUserid===1111111111111======"+ localUserid);
             audio: {
                // mandatory: {},
 
-		mandatory: {
-	            echoCancellation: true,
-                    googEchoCancellation: true,
-                    googAutoGainControl: true,
-                    googAutoGainControl2: true,
-                    googNoiseSuppression: true,
-                    googHighpassFilter: true,
-                    googTypingNoiseDetection: false,
-//                    googAudioMirroring: true 
-		},		
+				mandatory: {
+//					echoCancellation: true,
+//						googEchoCancellation: true,
+//						googAutoGainControl: true,
+//						googAutoGainControl2: true,
+//						googNoiseSuppression: true,
+//						googHighpassFilter: true,
+//						googTypingNoiseDetection: false,
+	//                    googAudioMirroring: true 
+				},		
 
                 optional: connection.bandwidth.audio ? [{
                     bandwidth: connection.bandwidth.audio * 8 * 1024 || 128 * 8 * 1024
@@ -5136,38 +5368,52 @@ console.log("localUserid===1111111111111======"+ localUserid);
 
         // EVENTs
         connection.onopen = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onopen');
+        	
             if (!!connection.enableLogs) {
                 console.info('Data connection has been opened between you & ', event.userid);
             }
         };
 
         connection.onclose = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onclose');
+        	
             if (!!connection.enableLogs) {
                 console.warn('Data connection has been closed between you & ', event.userid);
             }
         };
 
         connection.onerror = function(error) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onerror');
+        	
             if (!!connection.enableLogs) {
                 console.error(error.userid, 'data-error', error);
             }
         };
 
         connection.onmessage = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onmessage');
+        	
             if (!!connection.enableLogs) {
                 console.debug('data-message', event.userid, event.data);
             }
         };
 
         connection.send = function(data, remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.send');
+        	
             connection.peers.send(data, remoteUserId);
         };
 
         connection.close = connection.disconnect = connection.leave = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.close = connection.disconnect = connection.leave');
+        	
             beforeUnload(false, true);
         };
 
         connection.closeEntireSession = function(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.closeEntireSession');
+        	
             callback = callback || function() {};
             connection.socket.emit('close-entire-session', function looper() {
                 if (connection.getAllParticipants().length) {
@@ -5189,11 +5435,15 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onEntireSessionClosed = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onEntireSessionClosed');
+        	
             if (!connection.enableLogs) return;
             console.info('Entire session is closed: ', event.sessionid, event.extra);
         };
 
         connection.onstream = function(e) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onstream');
+        	
             var parentNode = connection.videosContainer;
             parentNode.insertBefore(e.mediaElement, parentNode.firstChild);
             var played = e.mediaElement.play();
@@ -5213,6 +5463,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onstreamended = function(e) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onstreamended');
+        	
             if (!e.mediaElement) {
                 e.mediaElement = document.getElementById(e.streamid);
             }
@@ -5227,6 +5479,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.direction = 'many-to-many';
 
         connection.removeStream = function(streamid, remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.removeStream');
+        	
             var stream;
             connection.attachStreams.forEach(function(localStream) {
                 if (localStream.id === streamid) {
@@ -5254,6 +5508,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.addStream = function(session, remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.addStream');
+        	
             if (!!session.getAudioTracks) {
                 if (connection.attachStreams.indexOf(session) === -1) {
                     if (!session.streamid) {
@@ -5293,6 +5549,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
                         });
                     } else {
                         connection.getScreenConstraints(function(error, screen_constraints) {
+                        	if(isRTCMultiConnectionLogger) console.log('---- connection.getScreenConstraints');
+                        	
                             if (error) {
                                 if (error === 'PermissionDeniedError') {
                                     if (session.streamCallback) {
@@ -5327,6 +5585,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
             }
 
             function gumCallback(stream) {
+            	if(isRTCMultiConnectionLogger) console.log('---- gumCallback');
+            	
                 if (session.streamCallback) {
                     session.streamCallback(stream);
                 }
@@ -5336,6 +5596,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.invokeGetUserMedia = function(localMediaConstraints, callback, session) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.invokeGetUserMedia');
+        	
             if (!session) {
                 session = connection.session;
             }
@@ -5377,6 +5639,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         function applyConstraints(stream, mediaConstraints) {
+        	if(isRTCMultiConnectionLogger) console.log('---- applyConstraints');
+        	
             if (!stream) {
                 if (!!connection.enableLogs) {
                     console.error('No stream to applyConstraints.');
@@ -5398,6 +5662,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.applyConstraints = function(mediaConstraints, streamid) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.applyConstraints');
+        	
             if (!MediaStreamTrack || !MediaStreamTrack.prototype.applyConstraints) {
                 alert('track.applyConstraints is NOT supported in your browser.');
                 return;
@@ -5418,6 +5684,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         function replaceTrack(track, remoteUserId, isVideoTrack) {
+        	if(isRTCMultiConnectionLogger) console.log('---- replaceTrack');
+        	
             if (remoteUserId) {
                 mPeer.replaceTrack(track, remoteUserId, isVideoTrack);
                 return;
@@ -5429,6 +5697,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.replaceTrack = function(session, remoteUserId, isVideoTrack) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.replaceTrack');
+        	
             session = session || {};
 
             if (!RTCPeerConnection.prototype.getSenders) {
@@ -5499,6 +5769,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.resetTrack = function(remoteUsersIds, isVideoTrack) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.resetTrack');
+        	
             if (!remoteUsersIds) {
                 remoteUsersIds = connection.getAllParticipants();
             }
@@ -5521,6 +5793,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.renegotiate = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.renegotiate');
+        	
             if (remoteUserId) {
                 mPeer.renegotiatePeer(remoteUserId);
                 return;
@@ -5532,6 +5806,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.setStreamEndHandler = function(stream, isRemote) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.setStreamEndHandler');
+        	
             if (!stream || !stream.addEventListener) return;
 
             isRemote = !!isRemote;
@@ -5548,6 +5824,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
             }
 
             stream.addEventListener(streamEndedEvent, function() {
+            	if(isRTCMultiConnectionLogger) console.log('---- stream.addEventListener');
+            	
                 if (stream.idInstance) {
                     currentUserMediaRequest.remove(stream.idInstance);
                 }
@@ -5604,12 +5882,51 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onMediaError = function(error, constraints) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onMediaError');
+        	
             if (!!connection.enableLogs) {
+            	var browserText = browserCheckReturnText();
+            	
+            	// safari 카메라 마이크 권한 없음인 경우 처리
+				if(browserText == 'Safari') {
+					// 브라우저별 알림내용 변경
+					$('.other').css('display', 'block');
+					$('.permissionAlertContent p:first').css('display', 'none');
+				}
+				
+				// firefox 카메라 마이크 권한 없음인 경우 처리
+				else if(browserText == 'Firefox'){
+					// 브라우저별 알림내용 변경
+					$('.firefox').css('display', 'block');
+					
+					// mobile
+					if(/Android/i.test(navigator.userAgent)) $('.mobile').css('display', 'block');
+				}
+				
+				// chrome 카메라 마이크 권한 없음인 경우 처리
+				else if(browserText == 'Chrome'){
+					// 브라우저별 알림내용 변경
+					$('.chrome').css('display', 'block');
+				}
+            	
+				// 그 외 브라우저
+				else{}
+				
+				
+				// 권한 알림창
+				$('#permissionAlert').css('left', ($(window).width() - $('#permissionAlert').width() ) / 2)
+				.css('top', ($(window).height() - $('#permissionAlert').height() - 80 ) / 2).css('display', 'block');
+				
+            	
+            	// 기존코드
+				console.log(error.name);
                 console.error(error, constraints);
             }
         };
 
         connection.addNewBroadcaster = function(broadcasterId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.addNewBroadcaster');
+        	
             if (connection.socket.isIO) {
                 return;
             }
@@ -5629,6 +5946,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.autoCloseEntireSession = false;
 
         function keepNextBroadcasterOnServer() {
+        	if(isRTCMultiConnectionLogger) console.log('---- keepNextBroadcasterOnServer');
+        	
             if (!connection.isInitiator) return;
 
             if (connection.session.oneway || connection.session.broadcast || connection.direction !== 'many-to-many') {
@@ -5662,10 +5981,14 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.token = getRandomString;
 
         connection.onNewParticipant = function(participantId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onNewParticipant');
+        	
             connection.acceptParticipationRequest(participantId, userPreferences);
         };
 
         connection.acceptParticipationRequest = function(participantId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.acceptParticipationRequest');
+        	
             if (userPreferences.successCallback) {
                 userPreferences.successCallback();
                 delete userPreferences.successCallback;
@@ -5675,10 +5998,14 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onShiftedModerationControl = function(sender, existingBroadcasters) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onShiftedModerationControl');
+        	
             connection.acceptModerationControl(sender, existingBroadcasters);
         };
 
         connection.acceptModerationControl = function(sender, existingBroadcasters) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.acceptModerationControl');
+        	
             connection.isInitiator = true; // NEW initiator!
 
             connection.broadcasters = existingBroadcasters;
@@ -5694,6 +6021,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.shiftModerationControl = function(remoteUserId, existingBroadcasters, firedOnLeave) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.shiftModerationControl');
+        	
             mPeer.onNegotiationNeeded({
                 shiftedModerationControl: true,
                 broadcasters: existingBroadcasters,
@@ -5708,12 +6037,16 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.onleave = function(userid) {};
 
         connection.invokeSelectFileDialog = function(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.invokeSelectFileDialog');
+        	
             var selector = new FileSelector();
             selector.accept = '*.*';
             selector.selectSingleFile(callback);
         };
 
         connection.getPublicModerators = connection.getPublicUsers = function(userIdStartsWith, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getPublicModerators');
+        	
             if (typeof userIdStartsWith === 'function') {
                 callback = userIdStartsWith;
             }
@@ -5728,6 +6061,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onmute = function(e) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onmute');
+        	
             if (!e || !e.mediaElement) {
                 return;
             }
@@ -5748,6 +6083,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onunmute = function(e) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onunmute');
+        	
             if (!e || !e.mediaElement || !e.stream) {
                 return;
             }
@@ -5762,23 +6099,33 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onExtraDataUpdated = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onExtraDataUpdated');
+        	
             event.status = 'online';
             connection.onUserStatusChanged(event, true);
         };
 
         connection.onJoinWithPassword = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onJoinWithPassword');
+        	
             console.warn(remoteUserId, 'is password protected. Please join with password.');
         };
 
         connection.onInvalidPassword = function(remoteUserId, oldPassword) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onInvalidPassword');
+        	
             console.warn(remoteUserId, 'is password protected. Please join with valid password. Your old password', oldPassword, 'is wrong.');
         };
 
         connection.onPasswordMaxTriesOver = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onPasswordMaxTriesOver');
+        	
             console.warn(remoteUserId, 'is password protected. Your max password tries exceeded the limit.');
         };
 
         connection.getAllParticipants = function(sender) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getAllParticipants');
+        	
             return connection.peers.getAllParticipants(sender);
         };
 
@@ -5796,10 +6143,14 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.connectSocket = function(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.connectSocket');
+        	
             connectSocket(callback);
         };
 
         connection.closeSocket = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.closeSocket');
+        	
             try {
                 io.sockets = {};
             } catch (e) {};
@@ -5818,6 +6169,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.getSocket = function(callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getSocket');
+        	
             if (!connection.socket) {
                 connectSocket(callback);
             } else if (callback) {
@@ -5854,6 +6207,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.DetectRTC = DetectRTC;
 
         connection.setCustomSocketEvent = function(customEvent) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.setCustomSocketEvent');
+        	
             if (customEvent) {
                 connection.socketCustomEvent = customEvent;
             }
@@ -5866,27 +6221,35 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.getNumberOfBroadcastViewers = function(broadcastId, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getNumberOfBroadcastViewers');
+        	
             if (!connection.socket || !broadcastId || !callback) return;
 
             connection.socket.emit('get-number-of-users-in-specific-broadcast', broadcastId, callback);
         };
 
         connection.onNumberOfBroadcastViewersUpdated = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onNumberOfBroadcastViewersUpdated');
+        	
             if (!connection.enableLogs || !connection.isInitiator) return;
             console.info('Number of broadcast (', event.broadcastId, ') viewers', event.numberOfBroadcastViewers);
         };
 
-		// 사용자 상태가 변하면 실행
+        // 사용자 상태가 변하면 실행
         connection.onUserStatusChanged = function(event, dontWriteLogs) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onUserStatusChanged');
+        	
             if (!!connection.enableLogs && !dontWriteLogs) {
                 console.info(event.userid, event.status);
-
-				// 방이름
+                
+                if( !isOnlyOneOwnerFnt ) return;
+                
+                // 방이름
                 var roomid = location.href.split(location.host+'/')[1];
                 
                 // 종료상태 && 종료된 사용자가 방 생성자인 경우 실행
                 if(event.status == 'offline' && event.userid == roomid){
-                	console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
+                	if(isRTCMultiConnectionLogger) console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
                 	
                 	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
                 	var mediaContainer = document.getElementsByClassName('media-container');
@@ -5924,6 +6287,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.multiPeersHandler = mPeer;
         connection.enableLogs = true;
         connection.setCustomSocketHandler = function(customSocketHandler) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.setCustomSocketHandler');
+        	
             if (typeof SocketConnection !== 'undefined') {
                 SocketConnection = customSocketHandler;
             }
@@ -5941,6 +6306,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         // check if room exist on server
         // we will pass roomid to the server and wait for callback (i.e. server's response)
         connection.checkPresence = function(remoteUserId, callback) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence');
+        	
             if (SocketConnection.name === 'SSEConnection') {
                 SSEConnection.checkPresence(remoteUserId, function(isRoomExist, roomid) {
                     if (!connection.socket) {
@@ -5968,10 +6335,14 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onReadyForOffer = function(remoteUserId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onReadyForOffer');
+        	
             connection.multiPeersHandler.createNewPeer(remoteUserId, userPreferences);
         };
 
         connection.setUserPreferences = function(userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.setUserPreferences');
+        	
             if (connection.dontAttachStream) {
                 userPreferences.dontAttachLocalStream = true;
             }
@@ -5984,6 +6355,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.updateExtraData = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.updateExtraData');
+        	
             connection.socket.emit('extra-data-updated', connection.extra);
         };
 
@@ -5995,16 +6368,22 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.dontGetRemoteStream = false;
 
         connection.onReConnecting = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onReConnecting');
+        	
             if (connection.enableLogs) {
                 console.info('ReConnecting with', event.userid, '...');
             }
         };
 
         connection.beforeAddingStream = function(stream) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.beforeAddingStream');
+        	
             return stream;
         };
 
         connection.beforeRemovingStream = function(stream) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.beforeRemovingStream');
+        	
             return stream;
         };
 
@@ -6021,6 +6400,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.getScreenConstraints = function(callback, audioPlusTab) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getScreenConstraints');
+        	
             if (isAudioPlusTab(connection, audioPlusTab)) {
                 audioPlusTab = true;
             }
@@ -6034,22 +6415,28 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.modifyScreenConstraints = function(screen_constraints) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.modifyScreenConstraints');
+        	
             return screen_constraints;
         };
 
         connection.onPeerStateChanged = function(state) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onPeerStateChanged');
+        	
             if (connection.enableLogs) {
                 if (state.iceConnectionState.search(/closed|failed/gi) !== -1) {
                     console.error('Peer connection is closed between you & ', state.userid, state.extra, 'state:', state.iceConnectionState);
-
-					// 방이름
+                    
+                    if( !isOnlyOneOwnerFnt ) return;
+                    
+                    // 방이름
                     var roomid = location.href.split(location.host+'/')[1];
                     
                     // 방장이 아니면 실행하지 않음
                     if(state.userid != roomid) return;
                     
                     
-                	console.log('---- change start : ' + state.userid + ' // ' + roomid);
+                	if(isRTCMultiConnectionLogger) console.log('---- change start : ' + state.userid + ' // ' + roomid);
                 	
                 	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
                 	var mediaContainer = document.getElementsByClassName('media-container');
@@ -6079,7 +6466,6 @@ console.log("localUserid===1111111111111======"+ localUserid);
                 		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
                 			mediaContainer[i].setAttribute('data-name', roomid);
                 	}
-
                 }
             }
         };
@@ -6127,6 +6513,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.getExtraData = function(remoteUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.getExtraData');
+        	
             if (!remoteUserId) throw 'remoteUserId is required.';
             if (!connection.peers[remoteUserId]) return {};
             return connection.peers[remoteUserId].extra;
@@ -6137,6 +6525,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         }
 
         connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onUserIdAlreadyTaken');
+        	
             if (connection.enableLogs) {
                 console.warn('Userid already taken.', useridAlreadyTaken, 'Your new userid:', yourNewUserId);
             }
@@ -6145,6 +6535,7 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.onRoomFull = function(roomid, memCnt) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onRoomFull');
     		alert('최대 인원수를 초과할 수 없습니다.(' + memCnt + '명)');
             
     		if (connection.enableLogs) {
@@ -6156,12 +6547,16 @@ console.log("localUserid===1111111111111======"+ localUserid);
         connection.version = '3.4.4';
 
         connection.onSettingLocalDescription = function(event) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.onSettingLocalDescription');
+        	
             if (connection.enableLogs) {
                 console.info('Set local description for remote user', event.userid);
             }
         };
 
         connection.oneRoomAlreadyExist = function(roomid) {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.oneRoomAlreadyExist');
+        	
             if (connection.enableLogs) {
                 console.info('Server says "Room ', roomid, 'already exist. Joining instead.');
             }
@@ -6169,6 +6564,8 @@ console.log("localUserid===1111111111111======"+ localUserid);
         };
 
         connection.resetScreen = function() {
+        	if(isRTCMultiConnectionLogger) console.log('---- connection.resetScreen');
+        	
             sourceId = null;
             if (DetectRTC && DetectRTC.screen) {
                 delete DetectRTC.screen.sourceId;

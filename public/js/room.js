@@ -1,10 +1,15 @@
 /**
  * https://hamonia.kr
+ * 
+ * value isOnlyOneOwnerFnt is in RTCMultiConnection.js
  */
 
 window.enableAdapter = true; // enable adapter.js
 
+var isRoomLogger = true;
 var connectionCheck = false;
+
+var vdoInfoCheck = false;	// video infomation - width , height , 
 
 var localStream;
 var roomName = '';
@@ -16,12 +21,89 @@ var newMsgCnt = 0;		// 새 메세지 수
 
 $(document).ready(function(){
 	// os 및 browser 체크
-	var checkBrowser = browserCheck(false);
+	if( !browserCheck(false) ) location.href="/";
 	
-	if( !checkBrowser ) location.href="/";
+	// 카메라 유무 확인 및 권한 확인(브라우저명)
+	checkingHasCameraNPermission(browserCheckReturnText());
+});
 
 
+// 카메라 유무 확인 및 권한 확인(브라우저명)
+function checkingHasCameraNPermission(browserText){
+	// 카메라 확인
+	DetectRTC.load(function() {
+		if(DetectRTC.videoInputDevices.length <= 0){
+			messageWindowFnt('사용가능한 카메라가 없습니다.<br/>확인후 다시 시도해 주시기 바랍니다.', '/');
+		}else{
+			
+			// 권한을 거부할 경우 관련 알림 Function 은 RTCMultiConnection.js
+			// connection.onMediaError = function(error, constraints) { ... }
+			
+			
+			// 브라우저에서 자동으로 권한을 묻는 경우
+			if(browserText == 'Safari') 		roomOpenNJoinFnt();	// 접속
+			else if(browserText == 'Firefox')	roomOpenNJoinFnt();	// 접속
+			
+			
+			// 브라우저에서 권한을 묻지 않는 경우
+			else if(browserText == 'Chrome'){
+				// 권한 확인을 위한 반복문 - 크롬
+				var interval = setInterval(function permissionIntervalStartFnt(intervalVal){
+					var permissionWindowIsOpen = false;
+					
+					navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+						clearInterval(interval);	// 권한 확인 후 반복문 종료
+						roomOpenNJoinFnt();	// 접속
+						
+						// 권한 허용 방법 알림창 닫기
+						$('#permissionAlert').css('display','');
+					}, function(e) {
+						// 권한 알림창
+						if( !permissionWindowIsOpen ){
+							permissionWindowIsOpen = true;
+							
+							// 브라우저별 알림내용 변경
+							$('.chrome').css('display', 'block');
+							
+							$('#permissionAlert').css('left', ($(window).width() - $('#permissionAlert').width() ) / 2)
+							.css('top', ($(window).height() - $('#permissionAlert').height() - 80 ) / 2).css('display', 'block');
+						}
+					});
+				}, 1300);
+			}else{
+				// 권한 확인 - 기타
+				navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+					roomOpenNJoinFnt();// 접속
+				}, function(e) {
+					// 권한 알림창
+					
+					$('#permissionAlert').css('left', ($(window).width() - $('#permissionAlert').width() ) / 2)
+					.css('top', ($(window).height() - $('#permissionAlert').height() - 80 ) / 2).css('display', 'block');
+				});
+			}
+		}
+	});
+}
+
+
+// 메세지창
+function messageWindowFnt(msg, url){
+	$('#messageAlert').css('display', 'block');
+	$('#messageTag').html(msg);
+	$('.messageBtn').attr('onclick', 'location.href="' + url + '"');
+	
+	$('#messageAlert').css('left', ($(window).width() - $('#messageAlert').width() ) / 2)
+					.css('top', ($(window).height() - $('#messageAlert').height() - 80 ) / 2).css('display', 'block');
+}
+
+
+// 접속
+function roomOpenNJoinFnt(){
+	
+	psycareFnt();
+	
 	$('#room-id').val(location.href.split(location.host+'/')[1]);
+	
 	
 	var inputRoomid = $('#room-id').val().replace(/^\s+|\s+$/g, '');
 	
@@ -29,6 +111,7 @@ $(document).ready(function(){
 	// 방이름 입력확인
 	if(inputRoomid.length < 1) {
 		$('#room-id').focus();
+		location.href="/";
 		return;
 	}
 		
@@ -50,21 +133,21 @@ $(document).ready(function(){
 //			showRoomURL(roomid);
 		}
 	});
-});
+}
 
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
-
-//    if (connection.isInitiator) {
-//        // use this method if you did NOT set "autoCloseEntireSession===true"
-//        // for more info: https://github.com/muaz-khan/RTCMultiConnection#closeentiresession
-//        connection.closeEntireSession(function() {
-////			document.querySelector('h1').innerHTML = 'Entire session has been closed.';
-//        	console.log('Entire session has been closed.');
-//        });
-//    } else {
+    
+    if ( isOnlyOneOwnerFnt && connection.isInitiator) {
+        // use this method if you did NOT set "autoCloseEntireSession===true"
+        // for more info: https://github.com/muaz-khan/RTCMultiConnection#closeentiresession
+        connection.closeEntireSession(function() {
+//			document.querySelector('h1').innerHTML = 'Entire session has been closed.';
+        	console.log('Entire session has been closed.');
+        });
+    } else {
         connection.leave();
-//    }
+    }
 	location.href= "/";
 };
 
@@ -173,12 +256,12 @@ connection.bandwidth = {
     screen: 1024
 };
 
-var text = browserCheck();
+
 if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
 	var videoConstraintsMobile = {
 		mandatory: {
-	//		minWidth: 640,
-	//		minAspectRatio: 1.77
+//			minWidth: 640,
+//			minAspectRatio: 1.77
 		},
 		optional: [{facingMode: 'user'}]
 	}; 
@@ -207,6 +290,10 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
+	if(isRoomLogger) console.log('---- connection.onstream - event : ' + event);
+	
+//	alert(event.mediaElement.videoWidth + ' // ' + event.mediaElement.videoHeight);
+	
 	var existing = document.getElementById(event.streamid);
 	if(existing && existing.parentNode) {
 		existing.parentNode.removeChild(existing);
@@ -217,7 +304,7 @@ connection.onstream = function(event) {
 
     var width;
     var video = document.createElement('video');
-    var text = browserCheck();
+    var text = browserCheckReturnText();
     
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && text == 'Safari') {
     	// iOS safari 인 경우
@@ -260,12 +347,31 @@ connection.onstream = function(event) {
         
 //        width = 100;
         
-
-        // 초기접속시 설명
-        if($.cookie('btnInfoNot') != 'true'){
-        	$('#buttonInfoAlert').css('display', 'block');
-        	$('#mask').css('display', 'block');
+        // 로딩제거
+        $('#roomProgressBar').css('display', 'none');
+        
+        if(navigator.platform){
+    		if(!checkmob){
+    			// alert('PC');
+    			// 주소표시
+    			$('#linkDiv').css('display', '');
+    			$('#linkInfoDiv').css('display', '');
+    		}
         }
+        
+        
+        // 메뉴표시
+        $('#footerMenu').css('display', '');
+        
+        // 메뉴
+        $('#menuDiv').css('display', 'block');
+        
+        // 설정창 열린경우 닫기
+        $('#mask').css('display', 'none');
+		$('#optionAlert').css('display', 'none');
+        
+        // 사용중인 카메라 정보 등록
+    	if( !$('#selectCamera').data('value') ) $('#selectCamera').data('value', DetectRTC.videoInputDevices[0].deviceId);
     }else{
     	// 그 외
 //        video.muted = true;
@@ -292,17 +398,16 @@ connection.onstream = function(event) {
     
     mediaElement.id = event.streamid;
     
-    $('body').css('overflow', 'hidden');
     
     // 방장표시
    	var mContains = $('.media-container');
    	for(var i=0; i<mContains.length ;++i){
    		if(mContains.eq(i).data('name') == roomName){
-//   			mContains.eq(i).css('border', '2px solid orange');
+   			
+   			if( isOnlyOneOwnerFnt ) mContains.eq(i).css('border', '2px solid orange');
    			
    			if(userName.indexOf(messageSplit) != -1){
    	        	userName = 'Guest' + (connection.getAllParticipants().length + 1);
-   	        	
    	        }
    		}
    	}
@@ -324,8 +429,8 @@ connection.onmessage = appendDIV;
 connection.filesContainer = document.getElementById('file-container');
 
 connection.onopen = function() {
-
-	var chkIos = browserCheck();
+	
+	var chkIos = browserCheckReturnText();
 	console.log("chk=2=======" + $('.media-container').length);
 //	if( $('.media-container').length != 0 ){
 	
@@ -337,10 +442,10 @@ connection.onopen = function() {
 			setTimeout(function() {
 				var videoDivCnt = $('.media-container').length;
 				for( var a=0; a<videoDivCnt; a++ ){
-					if( $('video')[a].muted  ){
+					if( $('video')[a].muted && $('video')[a].id != 'myVideo'){
 						$('video')[a].muted = false;
-	//					$('video')[a].play();
-	//					$('video')[a].removeAttribute("controls");
+//						$('video')[a].play();
+//						$('video')[a].removeAttribute("controls");
 					}
 				}
 				
@@ -351,14 +456,14 @@ connection.onopen = function() {
 		
 //	}
 
-    document.getElementById('share-file').disabled = false;
-    document.getElementById('input-text-chat').disabled = false;
+//    document.getElementById('share-file').disabled = false;
+//    document.getElementById('input-text-chat').disabled = false;
     document.getElementById('btn-leave-room').disabled = false;
     
     if(roomName == $('#myVideo').parent('.media-box').parent('.media-container').data('name')){
     	// 생성자
-    	$('.actions .btn.file').attr('disabled', false);
-    	$('#pdf').attr('disabled', false);
+//    	$('.actions .btn.file').attr('disabled', false);
+//    	$('#pdf').attr('disabled', false);
     }else{
     	// 접속자
     	$('.actions').css('display', 'none');
@@ -391,8 +496,8 @@ connection.onclose = function(event) {
 
 connection.onEntireSessionClosed = function(event) {
 	console.log(' ---- onEntireSessionClosed : ');
-    document.getElementById('share-file').disabled = true;
-    document.getElementById('input-text-chat').disabled = true;
+//    document.getElementById('share-file').disabled = true;
+//    document.getElementById('input-text-chat').disabled = true;
 
     connection.attachStreams.forEach(function(stream) {
         stream.stop();
@@ -402,7 +507,7 @@ connection.onEntireSessionClosed = function(event) {
     if (connection.userid === event.userid) return;
     console.log('Entire session has been closed by the moderator: ' + event.userid);
     
-    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.href='/';
+    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.href="/";
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
@@ -414,8 +519,8 @@ connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {
 function disableInputButtons() {
 //    document.getElementById('open-or-join-room').disabled = true;
     document.getElementById('room-id').disabled = true;
-    document.getElementById('userName').disabled = true; //
-    document.getElementById('share-file').disabled = true;
+    document.getElementById('userName').disabled = true;
+//    document.getElementById('share-file').disabled = true;
 }
 
 // ......................................................

@@ -6,6 +6,8 @@ var filter = "win16|win32|win64|mac|linux x86_32|linux x86_64|macintel";
 var checkmob = 0 > filter.indexOf(navigator.platform.toLowerCase());
 //var checkmob = true;	// true is mobile/
 
+var isWidthLongWindow = true;
+
 var chatWidth = 280;
 var boardWidth = 800;
 
@@ -13,11 +15,14 @@ var isFileshare = false;
 
 $(document).ready(function(){
 	// set UI
+	checkedWindowType();
 	windowReset();
 	defaultUISet();
-	createBoard();
+	refreshVideoView(false);
 	
-	psycareFnt();
+	// URL 표시
+	$('.displayUrl').text(location.href);
+	
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
@@ -91,12 +96,31 @@ $(document).ready(function(){
 	
 	// 옵션창 확인 버튼
 	$('.optionOkBtn').click(function(){
-		cameraChangeFnt($('#selectCamera').val()); // 카메라 변경
+		var useDevice = $('#selectCamera').data('value');
+		var selectDevice = $('#selectCamera').val();
+		
+		var checkbox = $('#myVideoRotate').is(':checked');
+		var saveval = $('#myVideoRotate').data('value');
+		
+		if(checkbox != saveval) $('#myVideoRotate').data('value', checkbox);
+		if(useDevice != selectDevice) {
+			// 카메라 변경
+			cameraChangeFnt(selectDevice);
+			
+			// 사용중인 디바이스 정보
+			$('#selectCamera').data('value', selectDevice);
+		}
+		
 		optionFnt();
 	});
-	
+
 	// 옵션창 닫기 버튼
 	$('.optionCloseBtn').click(function(){
+		var checkbox = $('#myVideoRotate').is(':checked');
+		var saveval = $('#myVideoRotate').data('value');
+		
+		if(checkbox != saveval) $('#myVideoRotate').trigger('click');
+		
 		optionFnt();
 	});
 	
@@ -129,14 +153,6 @@ $(document).ready(function(){
 	});
 	
 	
-	// 사용설명창 닫기 버튼
-	$('.closeBtn').click(function(){
-		if($('.btnInfoNot').is(':checked')) $.cookie('btnInfoNot', 'true');
-		$('#buttonInfoAlert').css('display', 'none');
-		$('#mask').css('display', 'none');
-	});
-	
-	
 	// 메뉴 알림 확인처리용
 	$('#menuDiv .btn').click(function(){
 		$('.newInfoDiv').css('display', 'none');
@@ -145,7 +161,7 @@ $(document).ready(function(){
 	
 	// 모바일 선택영상 크게 보기
 	$('#videos-container').on('click', '.media-container', function(){
-		changeVideo(this);
+//		changeVideo(this);
 	});
 });
 
@@ -153,7 +169,10 @@ $(document).ready(function(){
 
 $(window).resize(function(){
 	$('#videos-container').css('width', $(window).width() + 'px');
+	
+	checkedWindowType();
 	windowReset();
+	
 	if(navigator.platform){
 		if(!checkmob){
 			var boardOpenCheck = $('#whiteBoardDiv').data('value');
@@ -164,22 +183,20 @@ $(window).resize(function(){
 			if(boardOpenCheck) $('.boardBtn').trigger('click');
 			if(chatOpenCheck) $('.chatBtn').trigger('click');
 			
-			
-			// 버튼설명
-			$('#buttonInfoAlert').css('left', ($(window).width() - $('#buttonInfoAlert').width() ) / 2).css('top', '').css('height', '');
-			$('.btnInfoContent').css('height', '').css('overflow-y', '');
-			$('.btnInfoBottom').css('position', '').css('width', '').css('height', '').css('bottom', '');
-			
-			if($('#buttonInfoAlert').height() > $(window).height()){
-				$('#buttonInfoAlert').css('height', '100%').css('top', '0');
-				$('.btnInfoContent').css('height', '70%').css('overflow-y', 'scroll');
-				$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '15px');
-			}else{
-				$('#buttonInfoAlert').css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
-			}
+			// 권한 설정
+			$('#permissionAlert').css('left', ($(window).width() - $('#permissionAlert').width() ) / 2)
+			.css('top', ($(window).height() - $('#permissionAlert').height() - 80 ) / 2);
 		}
 	}
 });
+
+
+
+//창이 가로형 인지 세로형 인지 확인
+function checkedWindowType(){
+	if($(window).width() >= $(window).height()) isWidthLongWindow = true;
+	else isWidthLongWindow = false;
+}
 
 
 
@@ -187,7 +204,7 @@ $(window).resize(function(){
 function deleteFileshareFnt(){
 	$('#file-container').hide();
 	$('#share-file').hide();
-	$('.chat-output').css('height', 'calc(100% - 40px)').css('padding-top', '80px');
+	$('.chat-output').css('height', 'calc(100% - 40px)').css('padding-top', '60px');
 	
 	if(navigator.platform){
 		if(checkmob){
@@ -200,8 +217,26 @@ function deleteFileshareFnt(){
 /**** UI start ****/
 // UI 재설정
 function windowReset(){
-	$('#joinRoom').height($(window).height());
+	if(navigator.platform){
+		if(checkmob) {
+			//alert("Mobile");
+			if($('#chat-container').data('value')){
+				console.log('---- windowReset() // 채팅창 열린경우');
+				$('#joinRoom').height($(window).height() - 52);		// 채팅창 열린경우
+			}else{
+				console.log('---- windowReset() // 채팅창 닫힌경우');
+				$('#joinRoom').height($(window).height() - $('#joinRoom').css('padding-top').split('px')[0] - $('#footerMenu').height()); // 채팅창 닫힌경우
+			}
+		}else{
+			//alert("PC");
+			$('#joinRoom').height($(window).height() - 110);
+		}
+	}
 	$('#chat-container').height($(window).height()).css('right', '-' + $('#textRoom').width() + 'px');
+	$('#linkInfoDiv > div').css('margin-top', ($('#linkInfoDiv').height() - $('#linkInfoDiv > div').height()) / 2 + 'px');
+	
+	// 알림창 사이즈 조절 - window.width < alert.width
+	alertUIFnt();
 }
 
 // UI default setting
@@ -213,8 +248,19 @@ function defaultUISet(){
 			$('.box3 img').css('width', '100px').css('margin-bottom', '15px');
 			
 			// logo
-			$('#logo img').css('padding-top', '10px');
-			$('#logo').css('height', '50px');
+			$('#logo').css('height', '50px').css('padding', '10px');
+			
+			// 초대 및 정보
+			$('#linkDiv').css('display', 'inline-block');
+			$('.userCntDiv').css('display', 'inline-block');
+			$('.displayUrl').css('display', 'none');
+			
+			// 종료버튼
+			$('#btn-leave-room').css('font-size', '1.3rem').css('width', '35px').css('height', '35px');
+			$('#closeText').css('display', 'none');
+			
+			// 전체
+			$('#joinRoom').css('padding-top', '52px');
 			
 			// 메뉴
 			$('#menuDiv').css('padding', '.5rem');
@@ -225,31 +271,14 @@ function defaultUISet(){
 			
 			// 영상
 			$('#myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo');
-			
-			// 화이트보드
-			$('#whiteBoardDiv').css('min-width', '0').css('width', '100%').css('position', 'absolute').css('display', 'none');
-			$('#whiteBoardLayer').css('width', '100%')
-			$('.boardLeftDiv').css('display', 'none');
-			
-			// 버튼설명
-			$('#buttonInfoAlert').css('width', '100%').css('height', '100%').css('left', '0').css('top', '0').css('padding', '0');
-			$('.btnInfoContent').css('height', '70%').css('overflow-y', 'scroll');
-			$('.btnInfoBottom').css('position', 'absolute').css('width', '100%').css('height', '20%').css('bottom', '2rem');
 		}else{
 			//alert("PC");
-			$('#logo').css('position', 'fixed');
+//			$('#logo').css('position', 'fixed');
 //			$('.videoBtn').remove();
 			$('#menuBtn').remove();
 			$('#menuDiv').css('top', '1rem');
 			$('.menuLineDiv').css('display', 'inline-block');
 			$('#chat-container').css('width', chatWidth + 'px');
-			
-			// 버튼설명
-			$('#buttonInfoAlert').css('left', ($(window).width() - $('#buttonInfoAlert').width() ) / 2)
-									.css('top', ($(window).height() - $('#buttonInfoAlert').height() - 80 ) / 2);
-			
-			// 화이트보드
-			$('#whiteBoardDiv').css('left', $(window).width() + 40 + 'px').css('width', boardWidth + 'px');
 			
 			// 채팅
 			$('#chat-container').css('left', $(window).width() + 40 + 'px');
@@ -261,10 +290,31 @@ function defaultUISet(){
 		// 옵션창
 		$('#optionAlert').css('left', ($(window).width() - $('#optionAlert').width() ) / 2)
 								.css('top', ($(window).height() - $('#optionAlert').height() - 130 ) / 2);
-		
-		// 초대창
-		$('#inviteAlert').css('left', ($(window).width() - $('#inviteAlert').width() ) / 2)
-		.css('top', ($(window).height() - $('#inviteAlert').height() - 130 ) / 2);
+	}
+}
+
+
+//알림창 사이즈 조절 - window.width < alert.width
+function alertUIFnt(){
+	// 메세지창
+	if($(window).width() < $('#messageAlert').width()){
+		$('#messageAlert').width($(window).width()).css('left', '');
+	}else{
+		$('#messageAlert').css('width', '').css('left', ($(window).width() - $('#messageAlert').width() ) / 2);
+	}
+	
+	// 권한 허용방법 알림창
+	if($(window).width() < $('#permissionAlert').width()){
+		$('#permissionAlert').width($(window).width()).css('left', '');
+	}else{
+		$('#permissionAlert').css('width', '').css('left', ($(window).width() - $('#permissionAlert').width() ) / 2);
+	}
+	
+	// 옵션창
+	if($(window).width() < $('#optionAlert').width()){
+		$('#optionAlert').width($(window).width()).css('left', '');
+	}else{
+		$('#optionAlert').css('width', '').css('left', ($(window).width() - $('#optionAlert').width() ) / 2)
 	}
 }
 
@@ -274,70 +324,95 @@ function refreshVideoView(newStreamCheck){
 	var videoDiv = $('.media-container');
 	var cnt = videoDiv.length;
 	
-	if(navigator.platform){
-    	if(checkmob){
-    		// mob video css
-    		
-    		$('.mainVideo').removeClass('mainVideo');
-    		
-    		if(cnt <= 4){
-    			// 본인 포함 4명 이하
-    			var idx = 0;
-    			
-    			videoDiv.css('position', 'absolute').css('width', '33.3333%').css('height', '20%');
-    			
-    			for(var i=0 ; i<cnt ; ++i){
-    				if(videoDiv.eq(i).find('#myVideo').attr('id') === undefined){
-    					videoDiv.eq(i).css('left', (idx * 33.3333) + '%');
-    					++idx;
-    				}
-    			}
-    			
-    			// 본인
-    			$('.media-container #myVideo').parent('.media-box').parent('.media-container').addClass('mainVideo').css('left', '');
-    			
-    		}else{
-    			// 본인 포함 5명 이상
-    			videoDiv.css('left', '').css('position', 'relative').css('width', '50%').css('height', ( 100 / parseInt(cnt / 2 + cnt % 2)) + '%');
-    		}
-    		
-    	}else{
-    		// web video css - 수식으로 변경 필요
-	    	if(cnt == 1){
-	    		videoDiv.css('width', '100%').css('height', '100%');
-	    		
-	    	}else if(cnt <= 2){
-    			videoDiv.css('width', '50%').css('height', '100%');
-    			
-    		}else if (cnt <= 4) {
-    			videoDiv.css('width', '50%').css('height', '50%');
-    			
-    		}else if (cnt <= 6) {
-    			videoDiv.css('width', '33.3333%').css('height', '50%');
-    			
-    		}else if (cnt <= 9) {
-    			videoDiv.css('width', '33.3333%').css('height', '33.3333%');
-    			
-    		}else if (cnt <= 12) {
-    			videoDiv.css('width', '25%').css('height', '33.3333%');
-    			
-    		}else if (cnt <= 16) {
-    			videoDiv.css('width', '25%').css('height', '25%');
-    		}
-    	}
+	// web video css
+	videoDiv.css('margin', '').css('display', '').css('position', '').css('top', '').css('right', '').css('z-index', '');
+	videoDiv.children('.media-box').children('video').css('width', '');
+	
+	if(isWidthLongWindow && !checkmob ){
+		// window type width > height && PC
+		$('#joinRoom').css('padding-left', '').css('padding-right', '');
+		$('#videos-container').css('text-align', '');
+		$('#linkInfoDiv').css('width', '0.0001px').css('height', '').css('display', '');
+		
+		videoDiv.css('margin', '');
+		
+		if(cnt == 1){
+			// 접속자 1명
+			videoDiv.css('width', '48.5%').css('height', '');
+			
+			$('#videos-container').css('text-align', 'left');
+			$('#linkInfoDiv').css('width', '48.5%');
+			$('#linkInfoDiv > div').css('margin-top', ($('#linkInfoDiv').height() - $('#linkInfoDiv > div').height()) / 2 + 'px');
+			
+		}else if(cnt == 2){
+			// 접속자 2명
+			var vcWidth = $('#videos-container').width();
+			
+			if(vcWidth >= 1200) videoDiv.css('width', '32%').css('height', '');
+			else videoDiv.css('width', '').css('height', '');
+			
+		}else if (cnt == 3) {
+			// 접속자 3명
+			
+			// true == 1:1:1 비율	// false == 2개 : 1개 비율
+			var isSameWidth = true;
+			
+			if( !isSameWidth ){
+				videoDiv.css('width', '36%').css('height', '50%').css('display', 'block');
+				videoDiv.eq(cnt-1).css('width', '60%').css('height', '100%');
+				
+				$('#linkInfoDiv').css('display', 'none');
+			}
+			
+			if( isSameWidth ) videoDiv.css('width', '32%').css('height', '');
+			
+		}else if (cnt == 4) {
+			// 접속자 4명
+			videoDiv.css('width', '').css('height', '47%');
+			
+			$('#linkInfoDiv').css('display', 'none');
+		}
+	}else{
+		// window type width < height
+		$('#joinRoom').css('padding-left', '0').css('padding-right', '0');
+		$('#linkInfoDiv').css('width', '').css('height', '').css('display', 'none');
+		
+		videoDiv.css('margin', '0%');
+		
+		if(cnt == 1){
+			// 접속자 1명
+			videoDiv.css('width', '100%').css('height', '50%');
+			
+			$('#videos-container').css('text-align', 'left');
+			$('#linkInfoDiv').css('width', '100%').css('height', '50%').css('display', '');
+			$('#linkInfoDiv > div').css('margin-top', ($('#linkInfoDiv').height() - $('#linkInfoDiv > div').height()) / 2 + 'px');
+		}else if(cnt == 2){
+			// 접속자 2명
+			videoDiv.css('width', '100%').css('height', '50%');
+			
+		}else if (cnt == 3) {
+			// 접속자 3명
+			videoDiv.css('width', '100%').css('height', '50%');
+			
+			// 내 영상 사이즈 조절
+			$('#myVideo').parent('.media-box').parent('.media-container')
+			.css('width', '100px').css('height', '100px').css('left', '0').css('position', 'absolute').css('z-index', '2');
+		}else if (cnt == 4) {
+			// 접속자 4명
+			videoDiv.css('width', '').css('height', '50%');
+		}
 	}
 	
-	// 새로 생성되는 영상 && 화이트보드 open 확인
-	if(newStreamCheck && $('#whiteBoardDiv').data('value')) {
-		videoDiv.removeClass('media-container-boardview').addClass('media-container-boardview');
-	}
+	
+	// 인원수 체크 - .media-container 로 카운트
+//	console.log("---- $('.media-container').length : " + $('.media-container').length);
+	$('#userCnt').text($('.media-container').length);
 }
 /**** UI end ****/
 
 
 //채팅창 open/close 버튼
 function chattingDivFnt(){
-	var boardOpenCheck = $('#whiteBoardDiv').data('value');
 	var chatOpenCheck = $('#chat-container').data('value');
 	
 	if(navigator.platform){
@@ -352,32 +427,41 @@ function chattingDivFnt(){
 			}else{
 				console.log(' ---- open chatting');
 				
+				// 로고
+				$('#logo').css('display', 'block');
+				
 				// 채팅창
 				$('#chat-container').css('display', 'block');
 				$('#input-text-chat').focus();
 				$('#chat-container').data('value', true);
 				
-				// 로고
-				$('#logo').css('display', 'inline');
-				
-				// 화이트보드 닫기
-				$('#whiteBoardDiv').css('display', 'none');
+				// 하단메뉴
+				$('#footerMenu').css('display', 'none');
 			}
-			$('#menuDiv').css('top', '-125px');
-			
 		}else{
 //			alert("PC");
 			 videoBtnFnt();
 			
 			 if( !chatOpenCheck ){
+				// 메뉴
+				$('#menuDiv').css('right', chatWidth + 'px');
+				 
+				// 메뉴 버튼
+				$('.boardBtn').css('display', 'none');
+				$('.chatBtn').css('display', 'none');
+				$('.videoBtn').css('display', '');
+				
 				 // 영상
 				 $('#videos-container').css('width', $('#videos-container').width() - chatWidth + 'px');
 				 
 				 // 채팅
-				 $('#chat-container').css('left', $(window).width() - chatWidth + 'px');
+					$('#chat-container').css('height', $(window).height()).css('left', $(window).width() - chatWidth + 'px').css('display', 'inline-block');
 				 $('#input-text-chat').focus();
 				 $('#chat-container').data('value', true);
 			 }else{
+				// 메뉴
+				$('#menuDiv').css('right', '');
+				
 				 $('#chat-container').data('value', false);
 			 }
 			 $('#videos-container').css('background-color', '');
@@ -392,6 +476,8 @@ function chattingDivFnt(){
 		$('.msgCntDiv').css('display', 'none');
 		$('.msgCntDiv > span').text(newMsgCnt);
 	}
+	
+	refreshVideoView(false);
 }
 
 //채팅 메세지 전송 버튼
@@ -457,115 +543,67 @@ function newMsgCntFnc(){
 }
 
 
-// 화이트보드 버튼
-function boardDivFnt(){
-	var boardOpenCheck = $('#whiteBoardDiv').data('value');
-	var chatOpenCheck = $('#chat-container').data('value');
-	
-	if(navigator.platform){
-		if(checkmob){
-//			alert("Mobile");
-			if(boardOpenCheck){
-				console.log(' ---- close board');
-				
-				// 로고
-				$('#logo').css('display', 'inline');
-				
-				// 화이트보드
-				$('#whiteBoardDiv').css('display', 'none');
-				$('#whiteBoardDiv').data('value', false);
-			}else{
-				console.log(' ---- open board');
-				
-				// 로고
-				$('#logo').css('display', 'none');
-				
-				// 화이트보드
-				$('#whiteBoardDiv').css('display', 'block');
-				$('#whiteBoardDiv').data('value', true);
-				
-				// 채팅창 닫기
-				$('#chat-container').css('display', 'none');
-			}
-			$('#menuDiv').css('top', '-125px');
-			$('#chat-container').data('value', false);
-			
-		}else{
-//			alert("PC");
-			
-			// 전체
-			$('#joinRoom').css('width', '1300px');
-			
-			// 영상
-			$('#videos-container').css('width', 'calc(100% - ' + ( boardWidth + chatWidth ) + 'px)').css('background-color', 'rgb(244, 247, 253)');
-			$('.media-container').addClass('media-container-boardview');
-			
-			// 화이트보드
-			$('#whiteBoardDiv').css('left', '').css('right', chatWidth + 'px').css('width', boardWidth +'px' );
-			
-			// 채팅
-			$('#chat-container').css('left', '');
-			
-			// 메뉴 버튼
-			$('.boardBtn').css('display', 'none');
-			$('.chatBtn').css('display', 'none');
-			
-			refreshVideoView(false);
-			
-			$('#whiteBoardDiv').data('value', true);
-			$('#chat-container').data('value', false);
-		}
-	}
-	$('#menuBtn').data('value', false);
-}
-
-
 // 영상 버튼
 function videoBtnFnt(){
-	var boardOpenCheck = $('#whiteBoardDiv').data('value');
 	var chatOpenCheck = $('#chat-container').data('value');
 	
 	if(navigator.platform){
 		if(checkmob){
 //			alert("Mobile");
+			
+			if( chatOpenCheck ) $('#chat-container').trigger('click');
+			
 			// 로고
 			$('#logo').css('display', 'block');
-			
-			// 화이트보드
-			$('#whiteBoardDiv').css('display', 'none');
-			$('#whiteBoardDiv').data('value', false);
 			
 			// 채팅창 닫기
 			$('#chat-container').css('display', 'none');
 			$('#chat-container').data('value', false);
 			
-			// 메뉴
-			$('#menuDiv').css('top', '-125px');
+			// 하단메뉴
+			$('#footerMenu').css('display', '');
 		}else{
 //			alert("PC");
+			$('#linkInfoDiv').css('display', '');
+			
+			// 메뉴
+			$('#menuDiv').css('top', '1rem').css('right', '');
+			
 			// 전체
-			$('#joinRoom').css('width', '');
+			$('#joinRoom').css('padding-top', '').css('padding-bottom', '').css('position', '');
+			$('#joinRoom').css('height', '').css('width', '');
 			
 			// 영상
 			$('#videos-container').css('width', '100%').css('background-color', '');
 			$('.media-container-boardview').removeClass('media-container-boardview');
 			
-			// 화이트보드
-			$('#whiteBoardDiv').css('left', '100%').data('value', false);
+			
+			// logo
+			$('#logo').css('padding', '');
+			$('#logo img').css('height', '');
+			
+			// 종료버튼
+			$('#btn-leave-room').css('font-size', '1.5rem').css('width', '').css('height', '');
+			$('#closeText').css('display', '');	
+			
+			$('.userCntDiv').css('display', '');
 			
 			// 채팅
 			$('#chat-container').css('left', '100%').data('value', false);
 			
-			// 메뉴버튼
-			$('.boardBtn').css('display', '');
-			$('.chatBtn').css('display', '');
+			// 메뉴 재배치
+			$('#footerMenu').css('text-align', '');
+			$('#footerMenu > div').css('margin-left', '');
 		}
 	}
+	// 메뉴 버튼
+	$('.chatBtn').css('display', '');
+	$('#footerMenu .videoBtn').css('display', 'none');
 	
 	$('#menuBtn').data('value', false);
-	$('#whiteBoardDiv').data('value', false);
 	$('#chat-container').data('value', false);
 	
+	windowReset();
 	refreshVideoView(false);
 }
 
@@ -669,7 +707,7 @@ function cameraChangeFnt(deviceId){
 		}
 	};
 	
-	async function stopOldStreamFnt(){
+	function stopOldStreamFnt(){
 		connection.attachStreams.forEach(function(oldStream) {
 			oldStream.stop();
 		});
@@ -680,6 +718,9 @@ function cameraChangeFnt(deviceId){
 	connection.captureUserMedia(function() {
 		connection.renegotiate();
 	});
+	
+	// 영상반전 기본값
+	if( !$('#myVideoRotate').is(':checked') ) $('#myVideoRotate').trigger('click');
 }
 
 
@@ -698,8 +739,16 @@ function optionFnt(){
 		// select camera
 		$('#selectCamera').empty();
 		DetectRTC.load(function() {
+			// 사용중
 			DetectRTC.videoInputDevices.forEach(function(camera) {
-				  $('#selectCamera').append($('<option></option>').val(camera.deviceId).text(camera.label));
+				if(camera.deviceId == $('#selectCamera').data('value')) 
+					$('#selectCamera').append($('<option></option>').val(camera.deviceId).text('(사용중) ' + camera.label));
+			});
+			
+			// 목록
+			DetectRTC.videoInputDevices.forEach(function(camera) {
+				if(camera.deviceId != $('#selectCamera').data('value')) 
+					$('#selectCamera').append($('<option></option>').val(camera.deviceId).text(camera.label));
 			});
 		});
 	}
@@ -721,14 +770,7 @@ function inviteFnt(){
 		
 		var url = location.href;
 		
-		url = url.split('//');
-		if(url[1].indexOf('?roomid') > 0){
-			url = url[1].substr(0, url[1].indexOf('?roomid'));
-		}else{
-			url = url[1].substr(0, url[1].lastIndexOf('/'));
-		}
-		
-		$('#inviteUrl').text('https://' + url + '/' + roomName);
+		$('#inviteUrl').text(url);
 	}
 	$('#inviteAlert').data('value', !boolVal);
 }
@@ -746,8 +788,7 @@ function copyLinkFnt(){
 
 //초대창 - 링크복사
 function clipboardBtn() {
-	var text = $("#inviteUrl").text();
-	$('#clip_target').val(text);
+	$('#clip_target').val(location.href);
 	$('#clip_target').select();
 
 	// Use try & catch for unsupported browser

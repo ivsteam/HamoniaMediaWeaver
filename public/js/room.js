@@ -252,7 +252,7 @@ connection.session = {
 
 connection.bandwidth = {
     audio: 128,
-    video: 1024,
+    video: 2048,
     screen: 1024
 };
 
@@ -272,8 +272,8 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.u
 		mandatory: {
 			maxWidth: 1920,
 			maxHeight: 1080,
-			minWidth: 1280,
-			minHeight: 720,
+			minWidth: 640,
+			minHeight: 320,
 			minAspectRatio: 1.77,
 			minFrameRate: 30,
 			maxFrameRate: 64

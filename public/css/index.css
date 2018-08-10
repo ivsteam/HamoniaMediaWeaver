@@ -153,7 +153,7 @@ video {
     align-items: center;
 }
 
-#roomHeadDiv { background-color: rgba(.5, .5, .5, .5); }
+#roomHeadDiv { background-color: rgba(0, 0, 0, .5); }
 
 #logo {
 	color: white;
@@ -395,7 +395,7 @@ video {
 	width: 80%; 
 }
 #linkInfoDiv .displayUrl {
-	background-color: rgba(.5, .5, .5, .5);
+	background-color: rgba(0, 0, 0, .5);
 	border-radius: .25rem;
 	margin: auto;
 	margin-bottom: 10px;
@@ -1097,7 +1097,7 @@ img.uploadImg {
 	z-index: 3;
 }
 #footerMenu > div {
-	background-color: rgba(1, 1, 1, 0.5);
+	background-color: rgba(0, 0, 0, .5);
 	border-radius: 4px;
 	display: inline-block;
 	/* padding: 10px; */

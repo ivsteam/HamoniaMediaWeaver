@@ -2524,7 +2524,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             RTCPeerConnection = webkitRTCPeerConnection;
         }
         
-        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - RTCPeerConnection : ' + RTCPeerConnection);
+//        if(isRTCMultiConnectionLogger) console.log('---- PeerInitiator - RTCPeerConnection : ' + RTCPeerConnection);
         
         RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
         RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate;

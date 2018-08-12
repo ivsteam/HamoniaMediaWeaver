@@ -617,6 +617,23 @@ video {
 
 /* board start */
 #__gesture_canvas__ { opacity: 0; }
+
+#whiteBoardMobAlarmDiv {
+	height: 100%;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	z-index: 10;
+}
+#whiteBoardMobAlarmDiv p {
+	background-color: rgba(0,0,0,.8);
+	color: white;
+	display: block;
+	height: 80px;
+	margin: 0;
+	padding: 25px;
+}
+
 #whiteBoardDiv {
 	border: 0;
 	border-right: 1px solid #2BC1A4;
@@ -845,6 +862,47 @@ img.uploadImg {
 	z-index: 1;
 }
 /* alert background end */
+
+
+/* changeNameAlert start */
+#changeNameAlert {
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	display: none;
+	overflow: hidden; 
+	position: absolute;
+	width: 375px;
+	z-index: 10;
+}
+.changeNameAlertTitle {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+.changeNameAlertContent{
+	padding: 1rem;
+}
+.changeNameAlertContent input {
+	margin: auto;
+	width: 90%;
+}
+.changeNameAlertfooter{
+    padding: 1rem;
+	text-align: center;
+}
+
+.changeNameAlertfooter .btn {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: .5rem 3.5rem;
+}
+.changeNameAlertfooter .btn { background-color: #c4bdb3; }
+/* changeNameAlert end */
 
 
 /* messageAlert start */
@@ -1097,7 +1155,7 @@ img.uploadImg {
 	z-index: 3;
 }
 #footerMenu > div {
-	background-color: rgba(0, 0, 0, .5);
+	background-color: rgba(0, 0, 0, 0.5);
 	border-radius: 4px;
 	display: inline-block;
 	/* padding: 10px; */

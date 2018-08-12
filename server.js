@@ -107,11 +107,12 @@ http_app.get('/*', function(req, res){
 	
 	if (/^http$/.test(req.protocol)) {
 		var host = req.headers.host.replace(/:[0-9]+$/g, "");
+		var url = encodeURI(req.url, 'UTF-8');
 
 		if ((port != null) && port !== port) {
-			return res.redirect("https://" + host + ":" + port + req.url, 301);
+			return res.redirect("https://" + host + ":" + port + url, 301);
 		} else {
-			return res.redirect("https://" + host + req.url, 301);
+			return res.redirect("https://" + host + url, 301);
 		}
 	} 
 	

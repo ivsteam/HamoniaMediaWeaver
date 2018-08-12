@@ -16,6 +16,7 @@ var roomName = '';
 var userName = '';
 var fileSelectValue = '::::f!le$electCheckV@lue::::';
 var messageSplit = "::::H@moni@::split::::";
+var changeNameValue = '::::ch@nge::user::N@me::::';
 var newMsgCnt = 0;		// 새 메세지 수
 
 
@@ -117,7 +118,7 @@ function roomOpenNJoinFnt(){
 		
 		
 	// 사용자 id 설정
-	$('#userName').val(messageSplit + connection.token());
+	$('#userName').val('Guest');
 		
 	
 	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
@@ -134,6 +135,8 @@ function roomOpenNJoinFnt(){
 		}
 	});
 }
+
+
 
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
@@ -181,6 +184,30 @@ function appendDIV(event) {
 		// 채팅 메세지를 받은 경우
 		createreceMsgDiv(unescape(event.data.split(messageSplit)[0]), unescape(event.data.split(event.data.split(messageSplit)[0]+messageSplit)[1]));
 		newMsgCntFnc();
+		return;
+	}
+	
+	if(event.data.indexOf(changeNameValue) != -1){
+		// 닉네임 변경한 경우
+		// event.date : changeNameValue + user .media-container id + changeNameValue + newUserName
+		
+		var containers = $('.media-container');
+		
+		var id = event.data.split(changeNameValue)[1];
+		var newUserName = unescape(event.data.split(changeNameValue)[2]);
+		
+		// firefox 인 경우 앞 뒤로 {, } 가 붙는데 수신시 %7B, %7D 로 변경되어 전송된다. 변환
+		if(id.indexOf('%7B') == 0) id = '{' + id.split('%7B')[1];
+		if(id.indexOf('%7D') == (id.length - '%7D'.length)) id = id.split('%7D')[0] + '}';
+		
+		for(var i=0; i<containers.length ;++i){
+			if(containers.eq(i).attr('id') == id){
+				var mediabox = containers.eq(i).children('.media-box');
+				
+				mediabox.children('h2').text(newUserName);
+				mediabox.children('video').data('name', newUserName);
+			}
+		}
 		return;
 	}
 	
@@ -267,7 +294,6 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.u
 	}; 
 	connection.mediaConstraints.video = videoConstraintsMobile;
 }else{
-
 	var videoConstraints = {
 		mandatory: {
 			maxWidth: 1920,
@@ -290,7 +316,7 @@ connection.sdpConstraints.mandatory = {
 
 connection.videosContainer = document.getElementById('videos-container');
 connection.onstream = function(event) {
-	if(isRoomLogger) console.log('---- connection.onstream - event : ' + event);
+	if(isRoomLogger) console.log('---- connection.onstream - event.type : ' + event.type);
 	
 //	alert(event.mediaElement.videoWidth + ' // ' + event.mediaElement.videoHeight);
 	
@@ -378,19 +404,28 @@ connection.onstream = function(event) {
     	video.id = event.userid;
     	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
 //    	width = 15;
+    	
+    	// changeNameValue + user .media-container id + changeNameValue + newUserName
+    	connection.send(
+    			changeNameValue 
+    			+ escape( $('#myVideo').parent('.media-box').parent('.media-container').attr('id') ) 
+    			+ changeNameValue 
+    			+ escape(userName)
+    	);
     }
     
     video.srcObject = event.stream;
+    video.setAttribute('data-name', 'Guest');
 
     var mediaElement = getHTMLMediaElement(video, {
-//        title: event.userid, // 영상 상단 text
+        title: event.userid, // 영상 상단 text
         buttons: ['full-screen'],
         width: width,
         showOnMouseEnter: false
     });
     
     mediaElement.dataset.name = event.userid;
-    connection.videosContainer.appendChild(mediaElement);
+	connection.videosContainer.appendChild(mediaElement);
 
     setTimeout(function() {
         mediaElement.media.play();
@@ -398,17 +433,16 @@ connection.onstream = function(event) {
     
     mediaElement.id = event.streamid;
     
-    
     // 방장표시
    	var mContains = $('.media-container');
    	for(var i=0; i<mContains.length ;++i){
    		if(mContains.eq(i).data('name') == roomName){
    			
    			if( isOnlyOneOwnerFnt ) mContains.eq(i).css('border', '2px solid orange');
-   			
-   			if(userName.indexOf(messageSplit) != -1){
-   	        	userName = 'Guest' + (connection.getAllParticipants().length + 1);
-   	        }
+   				
+//   			if(userName.indexOf(messageSplit) != -1){
+//   	        	userName = 'Guest' + (connection.getAllParticipants().length + 1);
+//   	        }
    		}
    	}
    	

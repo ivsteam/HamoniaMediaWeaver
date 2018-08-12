@@ -12,6 +12,7 @@ var chatWidth = 280;
 var boardWidth = 800;
 
 var isFileshare = false;
+var isChangeName = false;
 
 $(document).ready(function(){
 	// set UI
@@ -21,13 +22,38 @@ $(document).ready(function(){
 	refreshVideoView(false);
 	
 	// URL 표시
-	$('.displayUrl').text(location.href);
+	$('.displayUrl').text(decodeURI(location.href, 'UTF-8'));
 	
 	
 	// file share 제거 - UX/UI 적용 후 제거
 	if( ! isFileshare ) deleteFileshareFnt();
 	
 	
+	// 이름 변경 창 open
+	$('#videos-container').on('click', '.media-box h2', function(){
+		if($(this).next().attr('id') != 'myVideo') return;
+		
+		$('#mask').css('display', 'block');
+		changeNameWindowFnt();
+	});
+	
+	// 이름변경 엔터 처리
+	$('#newName').keydown(function(key){
+		if(key.keyCode != 13) return;
+		$('#changeNameAlert .changeNameBtn').trigger('click');
+	});
+	
+	// 이름 변경 확인
+	$('#changeNameAlert .changeNameBtn').click(function(){
+		changeNameFnt(true);
+	});
+	
+	// 이름 변경 취소
+	$('#changeNameAlert .changeNameCancelBtn').click(function(){
+		changeNameFnt(false);
+	});
+
+
 	//set button
 	// 메뉴 버튼
 	$('#menuBtn').click(function(){
@@ -294,6 +320,43 @@ function defaultUISet(){
 }
 
 
+// 닉네임변경창
+function changeNameWindowFnt(){
+	$('#newName').val(userName);
+	$('#changeNameAlert').css('display', 'block')
+						.css('left', ($(window).width() - $('#changeNameAlert').width() ) / 2)
+						.css('top', ($(window).height() - $('#changeNameAlert').height() - 80 ) / 2);
+}
+
+// 이름 변경 확인/취소
+function changeNameFnt(isChange){
+	if(isChange){
+		var newName = $('#newName').val().replace(/^\s+|\s+$/g, '');
+		
+		if(newName.length < 1) return;
+		
+		// changeNameValue + user .media-container id + changeNameValue + newUserName
+		connection.send(
+				changeNameValue 
+				+ escape( $('#myVideo').parent('.media-box').parent('.media-container').attr('id') ) 
+				+ changeNameValue 
+				+ escape(newName)
+		);
+		
+		userName = newName;
+		$('#userName').val(newName);
+		
+		$('#myVideo').data('name', newName);
+		$('#myVideo').prev('h2').text(newName);
+		
+		if( !isChangeName ) isChangeName = !isChangeName;
+	}
+	
+	$('#changeNameAlert').css('display', '');
+	$('#mask').css('display', 'none');
+}
+
+
 //알림창 사이즈 조절 - window.width < alert.width
 function alertUIFnt(){
 	// 메세지창
@@ -396,7 +459,7 @@ function refreshVideoView(newStreamCheck){
 			
 			// 내 영상 사이즈 조절
 			$('#myVideo').parent('.media-box').parent('.media-container')
-			.css('width', '100px').css('height', '100px').css('left', '0').css('position', 'absolute').css('z-index', '2');
+			.css('width', '100px').css('height', '100px').css('right', '0').css('position', 'absolute').css('z-index', '2');
 		}else if (cnt == 4) {
 			// 접속자 4명
 			videoDiv.css('width', '').css('height', '50%');
@@ -407,6 +470,21 @@ function refreshVideoView(newStreamCheck){
 	// 인원수 체크 - .media-container 로 카운트
 //	console.log("---- $('.media-container').length : " + $('.media-container').length);
 	$('#userCnt').text($('.media-container').length);
+
+	// 닉네임 표시
+	for(var i=0; i<cnt ;++i){
+		var userIdTxt = videoDiv.eq(i).children('.media-box').children('video').data('name');
+		videoDiv.eq(i).children('.media-box').children('h2').text(userIdTxt);
+	}
+	
+	// 내 닉네임 텍스트 추가
+	if( !isChangeName ) {
+		var myNameTxt = $('#myVideo').parent('.media-box').children('h2');
+		myNameTxt.text(myNameTxt.text() + '(변경하기)');
+	}
+	
+	// 내 닉네임 css
+	$('#myVideo').parent('.media-box').children('h2').css('cursor', 'pointer');
 }
 /**** UI end ****/
 
@@ -455,14 +533,14 @@ function chattingDivFnt(){
 				 $('#videos-container').css('width', $('#videos-container').width() - chatWidth + 'px');
 				 
 				 // 채팅
-					$('#chat-container').css('height', $(window).height()).css('left', $(window).width() - chatWidth + 'px').css('display', 'inline-block');
-				 $('#input-text-chat').focus();
-				 $('#chat-container').data('value', true);
+				$('#chat-container').css('height', $(window).height()).css('left', $(window).width() - chatWidth + 'px').css('display', 'inline-block');
+				$('#input-text-chat').focus();
+				$('#chat-container').data('value', true);
 			 }else{
 				// 메뉴
 				$('#menuDiv').css('right', '');
 				
-				 $('#chat-container').data('value', false);
+				$('#chat-container').data('value', false);
 			 }
 			 $('#videos-container').css('background-color', '');
 		}
@@ -683,19 +761,6 @@ function goFullscreen(data){
 }
 
 
-//메뉴 버튼
-function menuFnc(){
-	var check = $('#menuBtn').data('value');
-	if(check){
-		$('#menuDiv').css('top', '-125px');
-	}else{
-		$('#menuDiv').css('top', '.5rem');
-	}
-	$('#menuBtn').data('value', !check);
-	
-}
-
-
 // 카메라 변경
 function cameraChangeFnt(deviceId){
 	connection.mediaConstraints = {
@@ -776,19 +841,9 @@ function inviteFnt(){
 }
 
 
-// Link 복사 버튼
-function copyLinkFnt(){
-	try{
-		document.execCommand('copy');
-	}catch(err){
-		alert('이 브라우저는 지원하지 않습니다.');
-	}
-}
-
-
 //초대창 - 링크복사
 function clipboardBtn() {
-	$('#clip_target').val(location.href);
+	$('#clip_target').val(decodeURI(location.href, 'UTF-8'));
 	$('#clip_target').select();
 
 	// Use try & catch for unsupported browser

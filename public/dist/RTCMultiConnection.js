@@ -15,7 +15,7 @@
 var turn_server = 'turn:webrtcweb.com:7788';
 
 var isRTCMultiConnectionLogger = true;
-var isOnlyOneOwnerFnt = true;	// 방장 기능 사용여부 - true is 방장종료 == 방 종료
+var isOnlyOneOwnerFnt = false;	// 방장 기능 사용여부 - true is 방장종료 == 방 종료
 
 window.RTCMultiConnection = function(roomid, forceOptions) {
 
@@ -2848,10 +2848,11 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             if (!window.enableAdapter) {
                 return oldAddRemoteSdp(remoteSdp, cb);
             }
-//console.log("111111111111");
-//            if (DetectRTC.browser.name !== 'Safari') {
+//			console.log("111111111111");
+//			if (DetectRTC.browser.name !== 'Safari') {
                 remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
-//            }
+//			}
+            
             peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(cb, function(error) {
                 if (!!connection.enableLogs) {
                     console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
@@ -3531,8 +3532,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                         'turn:webrtcweb.com:8877?transport=tcp', // coTURN tcp
 */
                     ],
-                    'username': 'invuser', // 'muazkh',
-                    'credential':'12901290' // 'muazkh'
+                    'username': 'muazkh',
+                    'credential': 'muazkh'
                 },
                 {
                     'urls': [
@@ -4640,7 +4641,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             callback = callback || function() {};
 
             connection.checkPresence(localUserid, function(isRoomExist, roomid) {
-            	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence - isRoomExist : ' + isRoomExist);
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence');
             	
                 // i.e. 2nd parameter is a callback function
                 if (typeof password === 'function' && typeof password !== 'undefined') {
@@ -4653,6 +4654,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 }
 
                 if (isRoomExist) {
+                	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence - isRoomExist : ' + isRoomExist);
+                	
                     connection.sessionid = roomid;
 
                     var localPeerSdpConstraints = false;
@@ -4782,6 +4785,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer');
         	
             if (!remoteUserId) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer 1');
                 return;
             }
 
@@ -4791,12 +4795,16 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             };
 
             if (connection.peersBackup[eventObject.userid]) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer 2');
+            	
                 eventObject.extra = connection.peersBackup[eventObject.userid].extra;
             }
 
             connection.onleave(eventObject);
 
             if (!!connection.peers[remoteUserId]) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer 3');
+            	
                 connection.peers[remoteUserId].streams.forEach(function(stream) {
                     stream.stop();
                 });
@@ -4815,6 +4823,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             }
 
             if (connection.broadcasters.indexOf(remoteUserId) !== -1) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.deletePeer 4');
+            	
                 var newArray = [];
                 connection.broadcasters.forEach(function(broadcaster) {
                     if (broadcaster !== remoteUserId) {
@@ -5146,39 +5156,54 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         connection.processSdp = function(sdp) {
 
 			
-console.log("========================");
-console.log("=========sdp===============" + sdp);
-console.log("========================");
+			console.log("========================1");
+			console.log("=========sdp===============" + sdp);
+			console.log("========================3");
 
             if (DetectRTC.browser.name === 'Safari') {
+            	if(isRTCMultiConnectionLogger) console.log("====== DetectRTC.browser.name === 'Safari'");
             	sdp = CodecsHandler.preferCodec(sdp, 'vp9');
-//                return sdp;
+//				return sdp;
             }
 
             if (connection.codecs.video.toUpperCase() === 'VP8') {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.codecs.video.toUpperCase() === 'VP8'");
+            	
                 sdp = CodecsHandler.preferCodec(sdp, 'vp8');
             }
 
             if (connection.codecs.video.toUpperCase() === 'VP9') {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.codecs.video.toUpperCase() === 'VP9'");
+            	
                 sdp = CodecsHandler.preferCodec(sdp, 'vp9');
             }
 
             if (connection.codecs.video.toUpperCase() === 'H264') {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.codecs.video.toUpperCase() === 'H264'");
+            	
                 sdp = CodecsHandler.preferCodec(sdp, 'h264');
             }
 
             if (connection.codecs.audio === 'G722') {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.codecs.audio === 'G722'");
+            	
                 sdp = CodecsHandler.removeNonG722(sdp);
             }
 
             if (DetectRTC.browser.name === 'Firefox') {
+            	if(isRTCMultiConnectionLogger) console.log("====== DetectRTC.browser.name === 'Firefox'");
+            	
                 return sdp;
             }
             if (connection.bandwidth.video || connection.bandwidth.screen) {
-                sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, connection.bandwidth, !!connection.session.screen);
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.bandwidth.video || connection.bandwidth.screen");
+                
+            	sdp = CodecsHandler.setApplicationSpecificBandwidth(sdp, connection.bandwidth, !!connection.session.screen);
             }
 
             if (connection.bandwidth.video) {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.bandwidth.video");
+            	
                 sdp = CodecsHandler.setVideoBitrates(sdp, {
                     min: connection.bandwidth.video * 8 * 1024,
                     max: connection.bandwidth.video * 8 * 1024
@@ -5186,6 +5211,8 @@ console.log("========================");
             }
 
             if (connection.bandwidth.audio) {
+            	if(isRTCMultiConnectionLogger) console.log("====== connection.bandwidth.audio");
+            	
                 sdp = CodecsHandler.setOpusAttributes(sdp, {
                     maxaveragebitrate: connection.bandwidth.audio * 8 * 1024,
                     maxplaybackrate: connection.bandwidth.audio * 8 * 1024,
@@ -5193,9 +5220,11 @@ console.log("========================");
                     maxptime: 3
                 });
             }
-			console.log("1----"+ connection.codecs.video.toUpperCase());
+			
+            console.log("1----"+ connection.codecs.video.toUpperCase());
 			console.log("2--"+ sdp);
 			console.log("3--"+ DetectRTC.browser.name);
+			
             return sdp;
         };
 
@@ -6242,43 +6271,43 @@ console.log("========================");
             if (!!connection.enableLogs && !dontWriteLogs) {
                 console.info(event.userid, event.status);
                 
-                if( !isOnlyOneOwnerFnt ) return;
-                
-                // 방이름
-                var roomid = location.href.split(location.host+'/')[1];
-                
-                // 종료상태 && 종료된 사용자가 방 생성자인 경우 실행
-                if(event.status == 'offline' && event.userid == roomid){
-                	if(isRTCMultiConnectionLogger) console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
-                	
-                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
-                	var mediaContainer = document.getElementsByClassName('media-container');
-                	var userIdList = [];
-                	
-                	// userid 를 리스트에 저장
-                	for(var i=0; i<mediaContainer.length ;++i){
-                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
-                	}
-//                	console.log('--userIdList : ' + userIdList);
-                	
-                	// 알파벳순으로 첫번재 사용자
-                	var firstUserId = userIdList.sort()[0];
-                	
-//                	console.log(myUserId + ' /// ' + firstUserId);
-                	
-                	// 첫 번째 사용자가 나라면 방장 위임
-                	if(myUserId == firstUserId){
-                		connection.changeUserId(roomid, function() {
-//                    	    alert('---- successfully changed to: ' + connection.userid);
-                    	    connection.isInitiator = true;
-                    	});
-                	}
-                	
-                	// 방장 위임받은 사람 표시
-                	for(var i=0; i<mediaContainer.length ;++i){
-                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
-                			mediaContainer[i].setAttribute('data-name', roomid);
-                	}
+                if( !isOnlyOneOwnerFnt ) {
+	                // 방이름
+	                var roomid = location.href.split(location.host+'/')[1];
+	                
+	                // 종료상태 && 종료된 사용자가 방 생성자인 경우 실행
+	                if(event.status == 'offline' && event.userid == roomid){
+	                	if(isRTCMultiConnectionLogger) console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
+	                	
+	                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
+	                	var mediaContainer = document.getElementsByClassName('media-container');
+	                	var userIdList = [];
+	                	
+	                	// userid 를 리스트에 저장
+	                	for(var i=0; i<mediaContainer.length ;++i){
+	                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
+	                	}
+	//                	console.log('--userIdList : ' + userIdList);
+	                	
+	                	// 알파벳순으로 첫번재 사용자
+	                	var firstUserId = userIdList.sort()[0];
+	                	
+	//                	console.log(myUserId + ' /// ' + firstUserId);
+	                	
+	                	// 첫 번째 사용자가 나라면 방장 위임
+	                	if(myUserId == firstUserId){
+	                		connection.changeUserId(roomid, function() {
+	//                    	    alert('---- successfully changed to: ' + connection.userid);
+	                    	    connection.isInitiator = true;
+	                    	});
+	                	}
+	                	
+	                	// 방장 위임받은 사람 표시
+	                	for(var i=0; i<mediaContainer.length ;++i){
+	                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
+	                			mediaContainer[i].setAttribute('data-name', roomid);
+	                	}
+	                }
                 }
             }
         };
@@ -6427,45 +6456,45 @@ console.log("========================");
                 if (state.iceConnectionState.search(/closed|failed/gi) !== -1) {
                     console.error('Peer connection is closed between you & ', state.userid, state.extra, 'state:', state.iceConnectionState);
                     
-                    if( !isOnlyOneOwnerFnt ) return;
-                    
-                    // 방이름
-                    var roomid = location.href.split(location.host+'/')[1];
-                    
-                    // 방장이 아니면 실행하지 않음
-                    if(state.userid != roomid) return;
-                    
-                    
-                	if(isRTCMultiConnectionLogger) console.log('---- change start : ' + state.userid + ' // ' + roomid);
-                	
-                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
-                	var mediaContainer = document.getElementsByClassName('media-container');
-                	var userIdList = [];
-                	
-                	// userid 를 리스트에 저장
-                	for(var i=0; i<mediaContainer.length ;++i){
-                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
-                	}
-//                 	console.log('-- userIdList : ' + userIdList);
-                	
-                	// 알파벳순으로 첫번재 사용자
-                	var firstUserId = userIdList.sort()[0];
-                	
-//                	console.log(myUserId + ' /// ' + firstUserId);
-                	
-                	// 첫 번째 사용자가 나라면 방장 위임
-                	if(myUserId == firstUserId){
-                		connection.changeUserId(roomid, function() {
-//                    	    alert('---- successfully changed to: ' + connection.userid);
-                    	    connection.isInitiator = true;
-                    	});
-                	}
-                	
-                	// 방장 위임받은 사람 표시
-                	for(var i=0; i<mediaContainer.length ;++i){
-                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
-                			mediaContainer[i].setAttribute('data-name', roomid);
-                	}
+                    if( !isOnlyOneOwnerFnt ) {
+	                    // 방이름
+	                    var roomid = location.href.split(location.host+'/')[1];
+	                    
+	                    // 방장이 아니면 실행하지 않음
+	                    if(state.userid != roomid) return;
+	                    
+	                    
+	                	if(isRTCMultiConnectionLogger) console.log('---- change start : ' + state.userid + ' // ' + roomid);
+	                	
+	                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
+	                	var mediaContainer = document.getElementsByClassName('media-container');
+	                	var userIdList = [];
+	                	
+	                	// userid 를 리스트에 저장
+	                	for(var i=0; i<mediaContainer.length ;++i){
+	                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
+	                	}
+	//                 	console.log('-- userIdList : ' + userIdList);
+	                	
+	                	// 알파벳순으로 첫번재 사용자
+	                	var firstUserId = userIdList.sort()[0];
+	                	
+	//                	console.log(myUserId + ' /// ' + firstUserId);
+	                	
+	                	// 첫 번째 사용자가 나라면 방장 위임
+	                	if(myUserId == firstUserId){
+	                		connection.changeUserId(roomid, function() {
+	//                    	    alert('---- successfully changed to: ' + connection.userid);
+	                    	    connection.isInitiator = true;
+	                    	});
+	                	}
+	                	
+	                	// 방장 위임받은 사람 표시
+	                	for(var i=0; i<mediaContainer.length ;++i){
+	                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
+	                			mediaContainer[i].setAttribute('data-name', roomid);
+	                	}
+                    }
                 }
             }
         };

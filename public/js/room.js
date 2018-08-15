@@ -22,7 +22,7 @@ var newMsgCnt = 0;		// 새 메세지 수
 
 $(document).ready(function(){
 	// os 및 browser 체크
-	if( !browserCheck(false) ) location.href="/";
+	if( !browserCheck(false) ) location.href = "https://" + location.host;
 	
 	// 카메라 유무 확인 및 권한 확인(브라우저명)
 	checkingHasCameraNPermission(browserCheckReturnText());
@@ -37,28 +37,67 @@ function checkingHasCameraNPermission(browserText){
 			messageWindowFnt('사용가능한 카메라가 없습니다.<br/>확인후 다시 시도해 주시기 바랍니다.', '/');
 		}else{
 			
+			if(isRoomLogger) {
+				var mVideo = connection.mediaConstraints.video;
+				for(var key in mVideo)
+					for(var key1 in mVideo[key])
+						console.log("==== mVideo key : " + key + ' // key1 : ' + key1 
+								+ '// mVideo[key] : ' + mVideo[key][key1]);
+			}
+			
 			// 권한을 거부할 경우 관련 알림 Function 은 RTCMultiConnection.js
 			// connection.onMediaError = function(error, constraints) { ... }
 			
+			var userMediaOption = { 
+					audio: true,
+					video: connection.mediaConstraints.video
+			};
 			
 			// 브라우저에서 자동으로 권한을 묻는 경우
-			if(browserText == 'Safari') 		roomOpenNJoinFnt();	// 접속
-			else if(browserText == 'Firefox')	roomOpenNJoinFnt();	// 접속
+			if(browserText == 'Safari')	{
+				if(isRoomLogger) console.log('==== Safari');
+				
+				roomOpenNJoinFnt();	// 접속
+			}
+			
+			
+			else if(browserText == 'Firefox'){
+				if($.cookie('cameraInfo') != null){
+					if(isRoomLogger) console.log('==== Firefox have cookie');
+					
+					navigator.mediaDevices.getUserMedia(userMediaOption).then(function(stream){
+						if(isRoomLogger) console.log('==== Firefox - connection');
+						
+						roomOpenNJoinFnt();	// 접속
+					}).catch(function(err){
+						console.log('==== Firefox - err : ' + err);
+					});
+				}else{
+					if(isRoomLogger) console.log('==== Firefox not cookie');
+					roomOpenNJoinFnt();	// 접속
+				}
+			}
 			
 			
 			// 브라우저에서 권한을 묻지 않는 경우
 			else if(browserText == 'Chrome'){
+				if(isRoomLogger) console.log('==== Chrome');
+				
 				// 권한 확인을 위한 반복문 - 크롬
 				var interval = setInterval(function permissionIntervalStartFnt(intervalVal){
 					var permissionWindowIsOpen = false;
 					
-					navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
-						clearInterval(interval);	// 권한 확인 후 반복문 종료
-						roomOpenNJoinFnt();	// 접속
+					navigator.getUserMedia(userMediaOption, function(localMediaStream) {
+						if(isRoomLogger) console.log('==== Chrome - connection');
+						
+						clearInterval(interval); // 권한 확인 후 반복문 종료
+						roomOpenNJoinFnt();		// 접속
 						
 						// 권한 허용 방법 알림창 닫기
 						$('#permissionAlert').css('display','');
-					}, function(e) {
+					}, function(err) {
+						console.log('==== Chrome - err : ' + err);
+						
 						// 권한 알림창
 						if( !permissionWindowIsOpen ){
 							permissionWindowIsOpen = true;
@@ -73,7 +112,7 @@ function checkingHasCameraNPermission(browserText){
 				}, 1300);
 			}else{
 				// 권한 확인 - 기타
-				navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+				navigator.getUserMedia(userMediaOption, function(localMediaStream) {
 					roomOpenNJoinFnt();// 접속
 				}, function(e) {
 					// 권한 알림창
@@ -101,25 +140,34 @@ function messageWindowFnt(msg, url){
 // 접속
 function roomOpenNJoinFnt(){
 	
-	psycareFnt();
+	psycareFnt();	// 심리센터
 	
-	$('#room-id').val(location.href.split(location.host+'/')[1]);
+	// URL
+	if(location.href.split('psycare').length == 2) {
+		try{
+			$('#room-id').val(location.href.split(location.host+'/')[1].split('?roomid=')[1].split('&name=')[0]);
+		}catch(err){
+			alert('잘못된 경로입니다.');
+			location.href = "https://" + location.host;
+		}
+	} else {
+		$('#room-id').val(location.href.split(location.host+'/')[1]);
+	}
 	
-	
-	var inputRoomid = $('#room-id').val().replace(/^\s+|\s+$/g, '');
+	var inputRoomid = decodeURI($('#room-id').val().replace(/^\s+|\s+$/g, ''), 'UTF-8');
 	
 	
 	// 방이름 입력확인
 	if(inputRoomid.length < 1) {
 		$('#room-id').focus();
-		location.href="/";
+		location.href = "https://" + location.host;
 		return;
 	}
-		
-		
-	// 사용자 id 설정
+
+	
+	// 대화명 설정
 	$('#userName').val('Guest');
-		
+	
 	
 	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
 		$('#userName').focus();
@@ -127,13 +175,13 @@ function roomOpenNJoinFnt(){
 	}
 	
 	disableInputButtons();
-	   connection.openOrJoin(inputRoomid, function(isRoomExists, roomid) {
-			$.cookie('roomid', '');
-			
-			if (!isRoomExists) {
+    connection.openOrJoin(inputRoomid, function(isRoomExists, roomid) {
+    	$.cookie('roomid', '');
+		
+        if (!isRoomExists) {
 //			showRoomURL(roomid);
-		}
-	});
+        }
+    });
 }
 
 
@@ -151,7 +199,7 @@ document.getElementById('btn-leave-room').onclick = function() {
     } else {
         connection.leave();
     }
-	location.href= "/";
+	location.href = "https://" + location.host;
 };
 
 // ......................................................
@@ -276,15 +324,18 @@ connection.session = {
     data: true
 };
 
-
 connection.bandwidth = {
     audio: 128,
     video: 2048,
     screen: 1024
 };
 
-
-if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.userAgent)) {
+if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+	if(isRoomLogger) console.log("==== $.cookie('cameraInfo') ios : " + $.cookie('cameraInfo'));
+	
+	// ios 카메라 전환 미구현 - 구현될때까지 버튼 제거
+	$('.buttonOption').css('display', 'none');
+	
 	var videoConstraintsMobile = {
 		mandatory: {
 //			minWidth: 640,
@@ -294,18 +345,83 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || /Android/i.test(navigator.u
 	}; 
 	connection.mediaConstraints.video = videoConstraintsMobile;
 }else{
-	var videoConstraints = {
-		mandatory: {
-			maxWidth: 1920,
-			maxHeight: 1080,
-			minWidth: 640,
-			minHeight: 320,
-			minAspectRatio: 1.77,
-			minFrameRate: 30,
-			maxFrameRate: 64
-		},
-		optional: [{facingMode: 'user'}]
-	}; 
+	if(isRoomLogger) console.log("==== $.cookie('cameraInfo') other : " + $.cookie('cameraInfo'));
+	
+	var videoConstraints;
+	
+	if($.cookie('cameraInfo') != null){
+		// 카메라 변경 리로드시 설정
+		
+		if(DetectRTC.browser.name === 'Firefox'){
+			if(isRoomLogger) console.log('re camera firefox');
+			
+			videoConstraints = {
+				echoCancellation: { exact: false },
+				deviceId: { exact: $.cookie('cameraInfo') },
+				frameRate: {
+					maxWidth: 1920,
+					maxHeight: 1080,
+					minWidth: 640,
+					minHeight: 320,
+					minAspectRatio: 1.77,
+//					minFrameRate: 30,
+					maxFrameRate: 64
+				}
+			}
+		}else{
+			if(isRoomLogger) console.log('re camera other');
+			
+			videoConstraints = {
+				mandatory: {
+					maxWidth: 1920,
+					maxHeight: 1080,
+					minWidth: 640,
+					minHeight: 320,
+					minAspectRatio: 1.77,
+//					minFrameRate: 30,
+					maxFrameRate: 64
+				},
+				optional: [
+					{ sourceId : $.cookie('cameraInfo') }
+				]
+			}
+		}
+	}else{
+		// 일반 설정
+		if(DetectRTC.browser.name === 'Firefox'){
+			if(isRoomLogger) console.log('camera firefox');
+			
+			videoConstraints = {
+				echoCancellation: { exact: false },
+				facingMode: 'user',
+				frameRate: {
+					maxWidth: 1920,
+					maxHeight: 1080,
+					minWidth: 640,
+					minHeight: 320,
+					minAspectRatio: 1.77,
+//					minFrameRate: 30,
+					maxFrameRate: 64
+				}
+			}
+		}else{
+			if(isRoomLogger) console.log('camera other');
+			
+			videoConstraints = {
+				mandatory: {
+					maxWidth: 1920,
+					maxHeight: 1080,
+					minWidth: 640,
+					minHeight: 320,
+					minAspectRatio: 1.77,
+//					minFrameRate: 30,
+					maxFrameRate: 64
+				},
+				optional: [{facingMode: 'user'}]
+			}; 
+		}
+	}
+	
 	connection.mediaConstraints.video = videoConstraints;
 }
 
@@ -346,12 +462,14 @@ connection.onstream = function(event) {
 			video.setAttribute('playsinline', true);
 		}
 	}
-
-    
+	
     if(event.type === 'local') {
     	// 내 영상
         video.muted = true;
         video.id = "myVideo";
+        
+        // 닉네임 설정
+		video.setAttribute('data-name', 'Guest');
     	
 		localStream = event.stream;
         
@@ -397,11 +515,22 @@ connection.onstream = function(event) {
 		$('#optionAlert').css('display', 'none');
         
         // 사용중인 카메라 정보 등록
-    	if( !$('#selectCamera').data('value') ) $('#selectCamera').data('value', DetectRTC.videoInputDevices[0].deviceId);
+		if(isRoomLogger) console.log("==== $.cookie('cameraInfo') : " + $.cookie('cameraInfo'));
+			
+    	if( $.cookie('cameraInfo') != null ) {
+    		$('#selectCamera').data('value', $.cookie('cameraInfo'));
+    		$.removeCookie('cameraInfo');
+    	}else{
+    		// 기본값
+    		$('#selectCamera').data('value', DetectRTC.videoInputDevices[0].deviceId);
+    	}
+    	if(isRoomLogger) console.log("==== $('#selectCamera').data('value') : " + $('#selectCamera').data('value'));
     }else{
     	// 그 외
 //        video.muted = true;
     	video.id = event.userid;
+    	video.setAttribute('data-name', 'Guest');
+    	
     	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
 //    	width = 15;
     	
@@ -415,7 +544,6 @@ connection.onstream = function(event) {
     }
     
     video.srcObject = event.stream;
-    video.setAttribute('data-name', 'Guest');
 
     var mediaElement = getHTMLMediaElement(video, {
         title: event.userid, // 영상 상단 text
@@ -541,7 +669,7 @@ connection.onEntireSessionClosed = function(event) {
     if (connection.userid === event.userid) return;
     console.log('Entire session has been closed by the moderator: ' + event.userid);
     
-    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.href="/";
+    if(confirm('방장이 영상통화를 종료하였습니다.\n메인페이지로 이동합니다.')) location.href = "https://" + location.host;
 };
 
 connection.onUserIdAlreadyTaken = function(useridAlreadyTaken, yourNewUserId) {

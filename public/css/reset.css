@@ -431,6 +431,6 @@ footer .footer_info {
 
 @media screen and (min-width: 1200px) {
 	#videos-container .media-container {
-		width: 32%;
+		/* width: 32%; */
 	}
 }

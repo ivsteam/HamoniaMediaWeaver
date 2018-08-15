@@ -168,6 +168,7 @@ video {
 #logo img { 
 	height: 100%;
 	vertical-align: middle;
+	width: auto;
 }
 #logo #linkDiv { 
 	display: inline-block;

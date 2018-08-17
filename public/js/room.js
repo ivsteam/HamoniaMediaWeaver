@@ -347,6 +347,11 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 }else{
 	if(isRoomLogger) console.log("==== $.cookie('cameraInfo') other : " + $.cookie('cameraInfo'));
 	
+	if(browserCheckReturnText() == 'Safari'){
+		// safari 현재 방식으론 카메라 전환이 불가능
+		$('.buttonOption').css('display', 'none');
+	}
+
 	var videoConstraints;
 	
 	if($.cookie('cameraInfo') != null){

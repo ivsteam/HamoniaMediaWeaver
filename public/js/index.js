@@ -10,6 +10,8 @@ $(document).ready(function(){
 	getIndexEjs();
 	browserCheck(true);
 	
+	// 대화명 초기화
+	$.removeCookie('userName');
 	$('#userName').css('display', 'none');
 	
 	// 로그인체크 후 유니크룸 확인

@@ -127,9 +127,6 @@ $(document).ready(function(){
 		if(useDevice != selectDevice) {
 			// 카메라 변경
 			cameraChangeFnt(selectDevice);
-			
-			// 사용중인 디바이스 정보
-			$('#selectCamera').data('value', selectDevice);
 		}
 		
 		optionFnt();
@@ -336,6 +333,7 @@ function changeNameFnt(isChange){
 		
 		userName = newName;
 		$('#userName').val(newName);
+		$.cookie('userName', newName);
 		
 		$('#myVideo').data('name', newName);
 		$('#myVideo').prev('h2').text(newName);
@@ -456,9 +454,6 @@ function refreshVideoView(newStreamCheck){
 		}
 	}
 	
-	// 인원수 체크
-	countUsers();
-	
 	// 닉네임 표시
 	for(var i=0; i<cnt ;++i){
 		var userIdTxt = videoDiv.eq(i).children('.media-box').children('video').data('name');
@@ -473,6 +468,9 @@ function refreshVideoView(newStreamCheck){
 	
 	// 내 닉네임 css
 	$('#myVideo').parent('.media-box').children('h2').css('cursor', 'pointer');
+	
+	// 인원수 체크
+	countUsers();
 }
 
 function countUsers(){
@@ -598,7 +596,7 @@ function sendMessageFnt(){
 function newMsgCntFnc(){
 	var checkValue = !$('#chat-container').data('value');
 	
-	if(checkValue && boardOpenCheck){
+	if(checkValue){
 		if(newMsgCnt == '99+') return;
 		
 		newMsgCnt += 1;

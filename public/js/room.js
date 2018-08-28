@@ -7,6 +7,7 @@
 window.enableAdapter = true; // enable adapter.js
 
 var isRoomLogger = true;
+var isGetStatus = false;	// video 화면에 정보 출력
 var connectionCheck = false;
 
 var vdoInfoCheck = false;	// video infomation - width , height , 
@@ -164,9 +165,9 @@ function roomOpenNJoinFnt(){
 		return;
 	}
 
-	
 	// 대화명 설정
-	$('#userName').val('Guest');
+	if($.cookie('userName') != null) $('#userName').val($.cookie('userName'));
+	else $('#userName').val('Guest');
 	
 	
 	if($('#userName').val().replace(/^\s+|\s+$/g, '').length < 1) {
@@ -474,7 +475,8 @@ connection.onstream = function(event) {
         video.id = "myVideo";
         
         // 닉네임 설정
-		video.setAttribute('data-name', 'Guest');
+		if($.cookie('userName') != null) video.setAttribute('data-name', $.cookie('userName'));
+        else video.setAttribute('data-name', 'Guest');
     	
 		localStream = event.stream;
         
@@ -487,16 +489,16 @@ connection.onstream = function(event) {
         roomName = $('#room-id').val();
         userName = $('#userName').val();
         
-//        if(userName.indexOf(messageSplit) != -1){
-//        	userName = 'Guest' + userName.split(messageSplit)[1];
-//        }
+//		if(userName.indexOf(messageSplit) != -1){
+//			userName = 'Guest' + userName.split(messageSplit)[1];
+//		}
         
         $('#joinRoom').css('display', 'block');
         $('#createRoom').remove();
         
-//        width = 100;
+//		width = 100;
         
-        // 로딩제거
+		// 로딩제거
         $('#roomProgressBar').css('display', 'none');
         
         if(navigator.platform){
@@ -661,14 +663,15 @@ connection.onclose = function(event) {
 	refreshVideoView(false);
 };
 
+// 방장 종료시 실행
 connection.onEntireSessionClosed = function(event) {
-	console.log(' ---- onEntireSessionClosed : ');
+	console.log(' ---- onEntireSessionClosed - sessionid : ' + event.sessionid + ' // userid : ' + event.userid + ' // extra : ' + event.extra);
 //    document.getElementById('share-file').disabled = true;
 //    document.getElementById('input-text-chat').disabled = true;
 
-    connection.attachStreams.forEach(function(stream) {
-        stream.stop();
-    });
+//    connection.attachStreams.forEach(function(stream) {
+//        stream.stop();
+//    });
 
     // don't display alert for moderator
     if (connection.userid === event.userid) return;
@@ -689,6 +692,85 @@ function disableInputButtons() {
     document.getElementById('userName').disabled = true;
 //    document.getElementById('share-file').disabled = true;
 }
+
+
+
+
+//----------------------------------------------------
+//getStats codes goes here
+//----------------------------------------------------
+connection.onPeerStateChanged = function(event) {
+	if( !isGetStatus ) return;
+	
+	if(event.iceConnectionState === 'connected' && event.signalingState === 'stable') {
+		if(connection.peers[event.userid].gettingStats === true) {
+			return;
+		}
+		
+		connection.peers[event.userid].gettingStats = true; // do not duplicate
+		
+		var peer = connection.peers[event.userid].peer;
+		var interval = 1000;
+		
+		if(DetectRTC.browser.name === 'Firefox') {
+			getStats(peer, peer.getLocalStreams()[0].getTracks()[0], function(stats) {
+				onGettingWebRTCStats(stats, event.userid);
+			}, interval);
+		}
+		else {
+			getStats(peer, function(stats) {
+				onGettingWebRTCStats(stats, event.userid);
+			}, interval);
+		}
+	}
+};
+
+function onGettingWebRTCStats(stats, remoteUserId) {
+	if(!connection.peers[remoteUserId]) {
+		stats.nomore();
+	}
+	
+	var statsData = 'UserID: ' + remoteUserId + '\n';
+	statsData += 'Bandwidth: ' + bytesToSize(stats.bandwidth.speed);
+	statsData += '\n';
+	statsData += 'Encryption: ' + stats.encryption;
+	statsData += '\n';
+	statsData += 'Codecs: ' + stats.audio.recv.codecs.concat(stats.video.recv.codecs).join(', ');
+	statsData += '\n';
+	statsData += 'Data: ' + bytesToSize(stats.audio.bytesReceived + stats.video.bytesReceived);
+	statsData += '\n';
+	statsData += 'ICE: ' + stats.connectionType.remote.candidateType.join(', ');
+	statsData += '\n';
+	statsData += 'Port: ' + stats.connectionType.remote.transport.join(', ');
+	
+	var div = getDivByUserId(remoteUserId);
+	
+	if(!div) {
+		return;
+	}
+	
+	statsData = 'NickName: ' + $('#'+remoteUserId).data('name') + '\n' + statsData;
+	
+	div.querySelector('h2').innerHTML = statsData.replace(/\n/g, '<br>');
+}
+
+function getDivByUserId(userid) {
+	return document.querySelector('[data-name="' + userid + '"]');
+}
+
+function bytesToSize(bytes) {
+	var k = 1000;
+	var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+	if (bytes === 0) {
+		return '0 Bytes';
+	}
+	var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+	return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+}
+
+
+
+
 
 // ......................................................
 // ......................Handling Room-ID................

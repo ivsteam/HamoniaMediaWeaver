@@ -44,8 +44,8 @@
 	
 	
 	<!-- 확인을 위해 script src="/dist/RTCMultiConnection.min.js"></script -->
-	<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 	<script src="/dev/adapter.js"></script>
+	<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 	<script src="/dist/RTCMultiConnection.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -53,6 +53,8 @@
 	<link rel="stylesheet" href="/dev/getHTMLMediaElement.css">
 	<script src="/dev/getHTMLMediaElement.js"></script>
 	<script src="/dev/FileBufferReader.js"></script>
+	
+	<script src="/dev/getStats.js"></script>
 </head>
 
 <script type="text/javascript">
@@ -330,12 +332,14 @@
 			<br class="useWebBoard"/>
 			
 			<!-- 음소거 버튼 -->
+			<!--
 			<button class="btn btn--xl btn--indigo btn--fab mdi md-volume-up buttonVolume" id="스피커 끄기" data-value="ture" style="position: relative; overflow: hidden; font-size: 1.5rem;">
 				<span class="ripple" style="height: 56px; width: 56px; top: -11px; left: -15.25px;"></span>
 				<p>스피커</p>
 			</button>
 			
 			<br class="useWebBoard"/>
+			-->
 			
 			<!-- 마이크 버튼 -->
 			<button class="btn btn--xl btn--deep-purple btn--fab mdi md-mic buttonMic" title="마이크" style="position: relative; overflow: hidden; font-size: 1.5rem;">

@@ -23,7 +23,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     	if(isRTCMultiConnectionLogger) console.log('---- SocketConnection');
         var parameters = '';
 
-        parameters += '?userid=' + connection.userid;
+        parameters += '?roomid=' + connection.roomid;
+        parameters += '&userid=' + connection.userid;
         parameters += '&sessionid=' + connection.sessionid;
         parameters += '&msgEvent=' + connection.socketMessageEvent;
         parameters += '&socketCustomEvent=' + connection.socketCustomEvent;
@@ -2856,6 +2857,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(cb, function(error) {
                 if (!!connection.enableLogs) {
                     console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
+					window.location.reload();
                 }
 
                 cb();
@@ -3896,7 +3898,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // postMessage is used to exchange "sourceId" between chrome extension and you webpage.
     // though, there are tons other options as well, e.g. XHR-signaling, websockets, etc.
     window.addEventListener('message', function(event) {
-    	if(isRTCMultiConnectionLogger) console.log('---- window.addEventListener');
+//    	if(isRTCMultiConnectionLogger) console.log('---- window.addEventListener');
     	
         if (event.origin != window.location.origin) {
             return;
@@ -3917,7 +3919,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
     // and the function that handles received messages
 
     function onMessageCallback(data) {
-    	if(isRTCMultiConnectionLogger) console.log('---- onMessageCallback');
+//    	if(isRTCMultiConnectionLogger) console.log('---- onMessageCallback');
     	
         // "cancel" button is clicked
         if (data == 'PermissionDeniedError') {
@@ -4589,7 +4591,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         	if(isRTCMultiConnectionLogger) console.log('---- mPeer.disconnectWith');
         	
             if (connection.socket) {
-                connection.socket.emit('disconnect-with', remoteUserId, callback || function() {});
+//                connection.socket.emit('disconnect-with', remoteUserId, callback || function() {});
             }
 
             connection.deletePeer(remoteUserId);
@@ -4635,12 +4637,12 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         // 1st paramter is roomid
         // 2nd paramter can be either password or a callback function
         // 3rd paramter is a callback function
-        connection.openOrJoin = function(localUserid, password, callback) {
+        connection.openOrJoin = function(roomid, password, callback) {
         	if(isRTCMultiConnectionLogger) console.log('---- connection.openOrJoin');
         	
             callback = callback || function() {};
 
-            connection.checkPresence(localUserid, function(isRoomExist, roomid) {
+            connection.checkPresence(roomid, function(isRoomExist) {
             	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence');
             	
                 // i.e. 2nd parameter is a callback function
@@ -4674,6 +4676,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                     }
 
                     var connectionDescription = {
+                		roomid: roomid,
                         remoteUserId: connection.sessionid,
                         message: {
                             newParticipationRequest: true,
@@ -4699,10 +4702,10 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 connection.isInitiator = true;
                 
                 var oldUserId = connection.userid;
-                connection.userid = connection.sessionid = localUserid || connection.sessionid;
-                connection.userid += '';
+//                connection.userid = connection.sessionid = connection.sessionid;
+//                connection.userid += '';
                 
-                connection.socket.emit('changed-uuid', connection.userid);
+                connection.socket.emit('changed-uuid', roomid);
                 
                 if (password) {
                     connection.socket.emit('set-password', password);
@@ -4776,8 +4779,6 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         connection.dontMakeMeModerator = function() {
-        	if(isRTCMultiConnectionLogger) console.log('---- connection.dontMakeMeModerator');
-        	
             connection.socket.emit('dont-make-me-moderator');
         };
 
@@ -5096,9 +5097,10 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             if (!connection.closeBeforeUnload) {
                 return;
             }
-
+            
+            // 방장만 실행
             if (connection.isInitiator === true) {
-                connection.dontMakeMeModerator();
+//            	connection.dontMakeMeModerator();
             }
 
             connection.peers.getAllParticipants().forEach(function(participant) {
@@ -5116,15 +5118,18 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             if (!dontCloseSocket) {
                 connection.closeSocket();
             }
-
+            
             connection.broadcasters = [];
             connection.isInitiator = false;
         }
 
         connection.closeBeforeUnload = true;
         window.addEventListener('beforeunload', beforeUnload, false);
-
+        
+        // 초기 접속시 roomid & userid 설정
         connection.userid = getRandomString();
+        connection.roomid = decodeURI(location.href.split(location.host+'/')[1].replace(/^\s+|\s+$/g, ''), 'UTF-8');
+        
         connection.changeUserId = function(newUserId, callback) {
             callback = callback || function() {};
             connection.userid = newUserId || getRandomString();
@@ -6271,44 +6276,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             if (!!connection.enableLogs && !dontWriteLogs) {
                 console.info(event.userid, event.status);
                 
-                if( !isOnlyOneOwnerFnt ) {
-	                // 방이름
-	                var roomid = location.href.split(location.host+'/')[1];
-	                
-	                // 종료상태 && 종료된 사용자가 방 생성자인 경우 실행
-	                if(event.status == 'offline' && event.userid == roomid){
-	                	if(isRTCMultiConnectionLogger) console.log('---- initiator change - userid : ' + event.userid + ' // ' + roomid);
-	                	
-	                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
-	                	var mediaContainer = document.getElementsByClassName('media-container');
-	                	var userIdList = [];
-	                	
-	                	// userid 를 리스트에 저장
-	                	for(var i=0; i<mediaContainer.length ;++i){
-	                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
-	                	}
-	//                	console.log('--userIdList : ' + userIdList);
-	                	
-	                	// 알파벳순으로 첫번재 사용자
-	                	var firstUserId = userIdList.sort()[0];
-	                	
-	//                	console.log(myUserId + ' /// ' + firstUserId);
-	                	
-	                	// 첫 번째 사용자가 나라면 방장 위임
-	                	if(myUserId == firstUserId){
-	                		connection.changeUserId(roomid, function() {
-	//                    	    alert('---- successfully changed to: ' + connection.userid);
-	                    	    connection.isInitiator = true;
-	                    	});
-	                	}
-	                	
-	                	// 방장 위임받은 사람 표시
-	                	for(var i=0; i<mediaContainer.length ;++i){
-	                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
-	                			mediaContainer[i].setAttribute('data-name', roomid);
-	                	}
-	                }
-                }
+                // 인원수 체크
+            	$('#userCnt').text(connection.peers.getLength()+1);
             }
         };
 
@@ -6330,15 +6299,16 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         connection.maxParticipantsAllowed = 1000;
 
         // eject or leave single user
-        connection.disconnectWith = mPeer.disconnectWith;
+//		connection.disconnectWith = mPeer.disconnectWith;
 
         // check if room exist on server
         // we will pass roomid to the server and wait for callback (i.e. server's response)
-        connection.checkPresence = function(remoteUserId, callback) {
+        connection.checkPresence = function(roomid, callback) {
         	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence');
         	
+        	/*
             if (SocketConnection.name === 'SSEConnection') {
-                SSEConnection.checkPresence(remoteUserId, function(isRoomExist, roomid) {
+                SSEConnection.checkPresence(roomid, function(isRoomExist, roomid) {
                     if (!connection.socket) {
                         if (!isRoomExist) {
                             connection.userid = roomid;
@@ -6353,14 +6323,19 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 });
                 return;
             }
-
+        	*/
+        	
             if (!connection.socket) {
+            	if(isRTCMultiConnectionLogger) console.log('---- connection.checkPresence - !connection.socket');
                 connection.connectSocket(function() {
-                    connection.checkPresence(remoteUserId, callback);
+                    connection.checkPresence(roomid, callback);
                 });
                 return;
             }
-            connection.socket.emit('check-presence', (remoteUserId || connection.sessionid) + '', callback);
+            
+            if(isRTCMultiConnectionLogger) console.log("---- connection.socket.emit('check-presence'");
+            
+            connection.socket.emit('check-presence', roomid, callback);
         };
 
         connection.onReadyForOffer = function(remoteUserId, userPreferences) {
@@ -6456,45 +6431,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 if (state.iceConnectionState.search(/closed|failed/gi) !== -1) {
                     console.error('Peer connection is closed between you & ', state.userid, state.extra, 'state:', state.iceConnectionState);
                     
-                    if( !isOnlyOneOwnerFnt ) {
-	                    // 방이름
-	                    var roomid = location.href.split(location.host+'/')[1];
-	                    
-	                    // 방장이 아니면 실행하지 않음
-	                    if(state.userid != roomid) return;
-	                    
-	                    
-	                	if(isRTCMultiConnectionLogger) console.log('---- change start : ' + state.userid + ' // ' + roomid);
-	                	
-	                	var myUserId = document.getElementById('myVideo').parentNode.parentNode.getAttribute('data-name');
-	                	var mediaContainer = document.getElementsByClassName('media-container');
-	                	var userIdList = [];
-	                	
-	                	// userid 를 리스트에 저장
-	                	for(var i=0; i<mediaContainer.length ;++i){
-	                		userIdList.push(mediaContainer[i].getAttribute('data-name'));
-	                	}
-	//                 	console.log('-- userIdList : ' + userIdList);
-	                	
-	                	// 알파벳순으로 첫번재 사용자
-	                	var firstUserId = userIdList.sort()[0];
-	                	
-	//                	console.log(myUserId + ' /// ' + firstUserId);
-	                	
-	                	// 첫 번째 사용자가 나라면 방장 위임
-	                	if(myUserId == firstUserId){
-	                		connection.changeUserId(roomid, function() {
-	//                    	    alert('---- successfully changed to: ' + connection.userid);
-	                    	    connection.isInitiator = true;
-	                    	});
-	                	}
-	                	
-	                	// 방장 위임받은 사람 표시
-	                	for(var i=0; i<mediaContainer.length ;++i){
-	                		if(firstUserId == mediaContainer[i].getAttribute('data-name'))
-	                			mediaContainer[i].setAttribute('data-name', roomid);
-	                	}
-                    }
+                    // 인원수 체크
+                	$('#userCnt').text(connection.peers.getLength()+1);
                 }
             }
         };

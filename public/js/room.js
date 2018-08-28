@@ -335,7 +335,7 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 	if(isRoomLogger) console.log("==== $.cookie('cameraInfo') ios : " + $.cookie('cameraInfo'));
 	
 	// ios 카메라 전환 미구현 - 구현될때까지 버튼 제거
-	$('.buttonOption').css('display', 'none');
+	$('.optionAlertContent > div:first-child').css('display', 'none');
 	
 	var videoConstraintsMobile = {
 		mandatory: {
@@ -350,7 +350,7 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 	
 	if(browserCheckReturnText() == 'Safari'){
 		// safari 현재 방식으론 카메라 전환이 불가능
-		$('.buttonOption').css('display', 'none');
+		$('.optionAlertContent > div:first-child').css('display', 'none');
 	}
 
 	var videoConstraints;

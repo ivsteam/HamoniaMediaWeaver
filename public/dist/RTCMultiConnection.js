@@ -2857,7 +2857,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             peer.setRemoteDescription(new RTCSessionDescription(remoteSdp)).then(cb, function(error) {
                 if (!!connection.enableLogs) {
                     console.error('setRemoteDescription failed', '\n', error, '\n', remoteSdp.sdp);
-					window.location.reload();
+//					window.location.reload();
                 }
 
                 cb();

@@ -46,6 +46,7 @@
 	<!-- 확인을 위해 script src="/dist/RTCMultiConnection.min.js"></script -->
 	<script src="/dev/adapter.js"></script>
 	<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+	<script src="/dev/getStats.js"></script>
 	<script src="/dist/RTCMultiConnection.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -54,7 +55,12 @@
 	<script src="/dev/getHTMLMediaElement.js"></script>
 	<script src="/dev/FileBufferReader.js"></script>
 	
-	<script src="/dev/getStats.js"></script>
+	
+	<link rel="stylesheet" href="/css/rating/font-awesome.min.css" />
+	<link rel="stylesheet" href="/css/rating/fontawesome-stars.css" />
+	
+	<script src="/js/rating/jquery.barrating.js"></script>
+	<script src="/js/rating/rating.js"></script>
 </head>
 
 <script type="text/javascript">
@@ -106,6 +112,35 @@
 			</div>
 		</div>
 	</div>
+	
+	
+	<!-- 리뷰 start -->
+	<div id="userReview" style="display: none;">
+		<div class="userReviewAlert">
+			<div class="userReviewAlertTitle">평가</div>
+			<div class="userReviewAlertContent">
+				<h1>평가</h1>
+				<p>하모니아 서비스 개선을 위해 의견을 남겨주세요.</p>
+				
+				<select id="example-fontawesome" name="score" autocomplete="off">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3" selected>3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+				</select>
+				
+				<textarea name="review" class="form-control" rows="4" placeholder="리뷰" maxlength="480"></textarea>
+			</div>
+			
+			<div class="userReviewfooter">
+				<input type="button" value="확인" id="userRevireOkBtn" class="btn">
+				<input type="button" value="닫기" id="userRevireCloseBtn" class="btn">
+			</div>
+		</div>
+	</div>
+	<!-- 리뷰 end -->
+	
 	
 	<!-- room page start -->
 	<div id="joinRoom">

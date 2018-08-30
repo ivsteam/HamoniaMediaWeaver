@@ -8,9 +8,8 @@ window.enableAdapter = true; // enable adapter.js
 
 var isRoomLogger = true;
 var isGetStatus = false;	// video 화면에 정보 출력
+var isUseReview = false; // 사용자 리뷰 사용여부 - DB필요
 var connectionCheck = false;
-
-var vdoInfoCheck = false;	// video infomation - width , height , 
 
 var localStream;
 var roomName = '';
@@ -27,6 +26,9 @@ $(document).ready(function(){
 	
 	// 카메라 유무 확인 및 권한 확인(브라우저명)
 	checkingHasCameraNPermission(browserCheckReturnText());
+
+	// view 설정
+	if( !isUseReview ) $('#userReview').remove();
 });
 
 
@@ -152,7 +154,7 @@ function roomOpenNJoinFnt(){
 			location.href = "https://" + location.host;
 		}
 	} else {
-		$('#room-id').val(location.href.split(location.host+'/')[1]);
+		$('#room-id').val(decodeURI(location.href.split(location.host+'/')[1], 'UTF-8'));
 	}
 	
 	var inputRoomid = decodeURI($('#room-id').val().replace(/^\s+|\s+$/g, ''), 'UTF-8');
@@ -186,7 +188,7 @@ function roomOpenNJoinFnt(){
 }
 
 
-
+// 종료 버튼
 document.getElementById('btn-leave-room').onclick = function() {
     this.disabled = true;
     
@@ -199,9 +201,65 @@ document.getElementById('btn-leave-room').onclick = function() {
         });
     } else {
         connection.leave();
+        localStream.stop();
     }
-	location.href = "https://" + location.host;
+    
+     // 사용자 리뷰
+    if( isUseReview ) userReview();
+    if( !isUseReview ) location.href = "https://" + location.host;
 };
+
+
+// 사용자 리뷰
+function userReview(){
+	$('#userReview').css('display', '');
+	$('#userReview .userReviewAlert').css('margin-top', ($(window).height() - $('.userReviewAlert').height() - 130) / 2);
+}
+
+// 사용자 리뷰 확인
+document.getElementById('userRevireOkBtn').onclick = function() {
+	// 리뷰 작성 확인 start
+	var reviewIpt = $('.form-control').eq(0);
+	var reviewText = reviewIpt.val().replace(/^\s+|\s+$/g, '');
+	var score = $('#example-fontawesome').val();
+	
+	if(reviewText.length < 1){
+		reviewIpt.focus();
+		return;
+	}
+	// 리뷰 작성 확인 end
+	
+	
+	// 리뷰 등록 start
+	var detectRTC = connection.DetectRTC;
+	var os = detectRTC.osName + detectRTC.osVersion;
+	var browser = detectRTC.browser.name + '_' + detectRTC.browser.fullVersion;
+	var data;
+	
+	data = { os : os, browser : browser, roomName: roomName, review : reviewText, score : score };
+	
+	$.ajax({
+		type: 'post',
+		url: '/review',
+		data: data,
+		success: function(data){
+			// 페이지 이동
+			if(data.sendResult) location.href = "https://" + location.host;
+		},
+		error: function(err){
+			console.log('error : ' + err);
+		}
+	});
+	// 리뷰 등록 end
+}
+
+
+// 사용자 리뷰 취소
+document.getElementById('userRevireCloseBtn').onclick = function() {
+	// 페이지 이동
+	location.href = "https://" + location.host;
+}
+
 
 // ......................................................
 // ................FileSharing/TextChat Code.............
@@ -640,14 +698,7 @@ connection.onopen = function() {
     	$('.center').css('height', '10%');
     }
     
-//    document.getElementsByClassName('boardBtn')[0].disabled = false;
-//    document.getElementsByClassName('chatBtn')[0].disabled = false;
-//    document.getElementsByClassName('videoBtn')[0].disabled = false;
-    
     connectionCheck = true;
-    
-//    createBoard();
-//    document.querySelector('h1').innerHTML = 'You are connected with: ' + connection.getAllParticipants().join(', ');
 };
 
 connection.onclose = function(event) {
@@ -819,9 +870,7 @@ if (roomid && roomid.length && $('#userName').val() !==undefined && $('#userName
     document.getElementById('room-id').value = roomid;
     localStorage.setItem(connection.socketMessageEvent, roomid);
     
-    console.log('0000');
     console.log('1111 : ' + DetectRTC);
-    console.log('2222');
     
     // auto-join-room
     (function reCheckRoomPresence() {

@@ -376,6 +376,56 @@ video {
 /* menu end */
 
 
+/* userReview start */
+#userReview {
+	/* background-color: #AF87E8; */
+	background-image: url(../img/bg.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	color: white;
+	height: 100%;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+}
+.userReviewAlert{
+	background-color: white;
+	border-radius: 0.2em;
+	color: black;
+	margin: auto;
+	width: 420px;
+	z-index: 10;
+}
+.userReviewAlertTitle {
+	background-color: #343a40;
+	color: white;
+	font-size: .9rem;
+	font-weight: bold;
+	padding: 10px;
+	text-align: left;
+}
+.userReviewAlertContent{ padding: 1rem; }
+.userReviewAlertContent .form-control { 
+	margin-top: 1rem; 
+	resize: none;
+}
+.userReviewfooter{
+    padding: 1rem;
+	text-align: center;
+}
+.userReviewfooter .btn {
+	color: white;
+	font-size: 0.85rem;
+	font-weight: bold;
+	padding: .5rem 3.5rem;
+}
+.userReviewfooter #userRevireOkBtn { background-color: #2BC1A4; }
+.userReviewfooter #userRevireCloseBtn { background-color: #c4bdb3; }
+/* userReview end */
+
+
 /* video start */
 #myVideo { transform: rotateY(180deg); }
 

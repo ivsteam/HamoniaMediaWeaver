@@ -1,65 +1,64 @@
-var logger = require('./log4js-utils').logger();
+var log4js_utils = require('./log4js-utils');
+var logger = log4js_utils.logger();
+var loggerApp = log4js_utils.loggerApp();
+
+var send_email_utils = require('./send-email-utils');
+
+
 function resolveURL(url) {
     var isWin = !!process.platform.match(/^win/);
     if (!isWin) return url;
     return url.replace(/\//g, '\\');
 }
 
-// Please use HTTPs on non-localhost domains.
-var isUseHTTPs = true;
-
-var port = 443;
-
 try {
-    process.argv.forEach(function(val, index, array) {
-        if (!val) return;
-
-        if (val === '--ssl') {
-            isUseHTTPs = true;
-        }
-    });
+	process.argv.forEach(function(val, index, array) {
+		if (!val) return;
+	});
 } catch (e) { logger.info(' ==== error : ' + e); }
 
-var fs = require('fs');
-var path = require('path');
 
-var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/privatekey.pem')));
-var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/certificate.pem')));
-var ssl_cabundle = null;
-
-// force auto reboot on failures
+//force auto reboot on failures
 var autoRebootServerOnFailure = false;
+var isErrorSendEmail = false;	// 에러 메일 전송
 
-
-// see how to use a valid certificate:
-var options = {
-    key: ssl_key,
-    cert: ssl_cert, passphrase : '******',
-    ca: ssl_cabundle
-};
-
-
-var server = require('https');
-var url = require('url');
 var express = require('express');
-var app= express();
-var http_app;
+var server = require('https');
 var http = require('http');
+var path = require('path');
+var url = require('url');
+var fs = require('fs');
+
 var HTTP_PORT = 80;
+var port = 443;
 
-http_app = express();
-http_app.set('port', port);
-var router = require('./router/index');
 
-if (isUseHTTPs) {
-    app = server.createServer(options, http_app);
-}
 var bodyParser = require('body-parser'); 
 var passport = require('passport');
 var session = require('express-session');
 var flash = require('connect-flash');
 var ejs = require('ejs');
-var path = require('path');
+var router = require('./router/index');
+
+var ssl_key = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/privatekey.pem')));
+var ssl_cert = fs.readFileSync(path.join(__dirname, resolveURL('fake-keys/certificate.pem')));
+var ssl_cabundle = null;
+
+var app= express();
+var http_app;
+
+var options = {
+	key: ssl_key,
+	cert: ssl_cert, passphrase : '******',
+	ca: ssl_cabundle
+};
+
+
+http_app = express();
+http_app.set('port', port);
+
+
+app = server.createServer(options, http_app);
 
 
 http_app.use(express.static(path.join(__dirname, 'public')));
@@ -79,56 +78,7 @@ http_app.use(router);
 
 
 
-http_app.get('/', function(req, res){
-
-	if (/^http$/.test(req.protocol)) {
-		var host = req.headers.host.replace(/:[0-9]+$/g, "");
-
-		if ((port != null) && port !== port) {
-			return res.redirect("https://" + host + ":" + port + req.url, 301);
-		} else {
-			return res.redirect("https://" + host + req.url, 301);
-		}
-	} 
-
-	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-			roomID : '',  
-			userName : '',  
-			psycare : '',
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-
-
-http_app.get('/*', function(req, res){
-	
-	if (/^http$/.test(req.protocol)) {
-		var host = req.headers.host.replace(/:[0-9]+$/g, "");
-		var url = encodeURI(req.url, 'UTF-8');
-
-		if ((port != null) && port !== port) {
-			return res.redirect("https://" + host + ":" + port + url, 301);
-		} else {
-			return res.redirect("https://" + host + url, 301);
-		}
-	} 
-	
-	fs.readFile(__dirname + '/views/room.ejs', 'utf8', function(error, data) {
-		res.writeHead(200, {'content-type' : 'text/html'});   
-		res.end(ejs.render(data, {  
-			roomID : '',  
-			userName : '',  
-			psycare : '',
-			description : 'Hello .. !'  
-		}));  
-	});  
-});
-
-
-// translation] naver
+//translation] naver
 var express = require('express');
 var client_id = '******';
 var client_secret = '*********';
@@ -164,6 +114,83 @@ http_app.post('/translate', function(req, res){
 });
 
 
+http_app.get('/', function(req, res, next){
+
+	if (/^http$/.test(req.protocol)) {
+		var host = req.headers.host.replace(/:[0-9]+$/g, "");
+
+		if ((port != null) && port !== port) {
+			return res.redirect("https://" + host + ":" + port + req.url, 301);
+		} else {
+			return res.redirect("https://" + host + req.url, 301);
+		}
+	} 
+
+	fs.readFile(__dirname + '/views/index.ejs', 'utf8', function(error, data) {  
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+			roomID : '',  
+			userName : '',  
+			psycare : '',
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+
+
+http_app.get('/*', function(req, res, next){
+	
+	if (/^http$/.test(req.protocol)) {
+		var host = req.headers.host.replace(/:[0-9]+$/g, "");
+		var url = encodeURI(req.url, 'UTF-8');
+
+		return res.redirect("https://" + host + ":" + port + url, 301);
+	} 
+	
+	fs.readFile(__dirname + '/views/room.ejs', 'utf8', function(error, data) {
+		if(error) return errorHandlerFnt(error, req, res, next);
+
+		res.writeHead(200, {'content-type' : 'text/html'});   
+		res.end(ejs.render(data, {  
+			roomID : '',  
+			userName : '',  
+			psycare : '',
+			description : 'Hello .. !'  
+		}));  
+	});  
+});
+
+
+//error handler
+http_app.use(function(err, req, res, next){
+	errorHandlerFnt(err, req, res, next);
+});
+
+
+//error handler function
+function errorHandlerFnt(err, req, res, next){
+	loggerApp.error('[ERROR] ' + err.stack);
+	
+	if(isErrorSendEmail){
+		// 메일 발송
+		send_email_utils.sendEmailFnt(err, logger, loggerApp, 'Application', goingMainPage(res));
+	}else{
+		goingMainPage(res);	// 메인페이지로 이동
+	}
+}
+
+
+//메인페이지로 이동
+function goingMainPage(res){
+	fs.readFile('./views/error_page.html', function(err, html){
+		if(err) throw err;
+		res.writeHead(500, {'Content-Type':'text/html; charset=utf-8'});
+		res.write(html);
+		res.end();
+	});
+}
+
+
 function cmd_exec(cmd, args, cb_stdout, cb_end) {
     var spawn = require('child_process').spawn,
         child = spawn(cmd, args),
@@ -195,11 +222,9 @@ function log_console() {
 function runServer() {
     app.on('error', function(e) {
         if (e.code == 'EADDRINUSE') {
-            if (e.address === '0.0.0.0') {
-                e.address = 'localhost';
-            }
+            if (e.address === '0.0.0.0') e.address = 'localhost';
 
-            var socketURL = (isUseHTTPs ? 'https' : 'http') + '://' + e.address + ':' + e.port + '/';
+            var socketURL = 'https://' + e.address + ':' + e.port + '/';
 
             logger.info('------------------------------ socketURL : ' + socketURL);
             logger.info('\x1b[31m%s\x1b[0m ' + 'Unable to listen on port: ' + e.port);
@@ -226,25 +251,15 @@ function runServer() {
             addr.address = 'localhost';
         }
 
-        var domainURL = (isUseHTTPs ? 'https' : 'http') + '://' + addr.address + ':' + addr.port + '/';
+        var domainURL = 'https://' + addr.address + ':' + addr.port + '/';
 
         logger.info('------------------------------ domainURL : ' + domainURL);
 
         logger.info('socket.io is listening at:');
         logger.info('\x1b[31m%s\x1b[0m ' +  '\t' + domainURL);
 
-        if (!isUseHTTPs) {
-            logger.info('use --ssl to enable HTTPs:');
-            logger.info('\x1b[31m%s\x1b[0m ' +  '\t' + 'node server.js --ssl');
-        }
-
         logger.info('Your web-browser (HTML file) MUST set this line:');
         logger.info('\x1b[31m%s\x1b[0m ' +  'connection.socketURL = "' + domainURL + '";');
-
-        if (addr.address != 'localhost' && !isUseHTTPs) {
-            logger.info('Warning:');
-            logger.info('\x1b[31m%s\x1b[0m ' +  'Please set isUseHTTPs=true to make sure audio,video and screen demos can work on Google Chrome as well.');
-        }
 
         logger.info('------------------------------');
     });
@@ -267,20 +282,6 @@ function runServer() {
     
     
     // http -> https porwording start
-    http_app.all('/*', function(req, res, next) {
-    	if (/^http$/.test(req.protocol)) {
-    		var host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
-
-    		if ((port != null) && port !== port) {
-    			return res.redirect("https://" + host + ":" + port + req.url, 301);
-    		} else {
-    			return res.redirect("https://" + host + req.url, 301);
-    		}
-    	} else {
-    		return next();
-    	}
-    });
-
     http.createServer(http_app).listen(HTTP_PORT).on('listening', function() {
     	return logger.info("HTTP to HTTPS redirect app launched.");
     });

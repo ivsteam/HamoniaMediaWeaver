@@ -5,7 +5,7 @@ log4js.configure(
       file: {
         type: 'file',
         filename: './log/AppLogFile.log',
-        maxLogSize: 1024*1024*10 ,
+        maxLogSize: 1024*1024*50 ,
         numBackups: 10, // keep five backup files
         compress: true, // compress the backups
         encoding: 'utf-8',
@@ -29,15 +29,31 @@ log4js.configure(
 );
 
 const logger = log4js.getLogger('normal');
+const loggerApp = log4js.getLogger('application');
+const loggerSignaling = log4js.getLogger('signaling');
 
 
 exports.logger = function(){
 	var logger = log4js.getLogger('normal');
-/*	logger.debug('debug');
+    return logger;
+}
+
+exports.loggerApp = function(){
+	var logger = log4js.getLogger('application');
+	logger.debug('debug');
 	logger.info('info');
 	logger.error('error');
 	logger.fatal('fatal');
 	logger.trace('trace');
-*/
+    return logger;
+}
+
+exports.loggerSignaling = function(){
+	var logger = log4js.getLogger('signaling');
+	logger.debug('debug');
+	logger.info('info');
+	logger.error('error');
+	logger.fatal('fatal');
+	logger.trace('trace');
     return logger;
 }

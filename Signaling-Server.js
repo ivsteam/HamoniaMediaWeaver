@@ -1,10 +1,19 @@
+var log4js_utils = require('./log4js-utils');
+var logger = log4js_utils.logger();
+var loggerSignaling = log4js_utils.loggerSignaling();
+
+var send_email_utils = require('./send-email-utils');
+
+
 var listOfUsers = {};
 var roomList = {};
 var shiftedModerationControls = {};
 var ScalableBroadcast;
-var logger = require('./log4js-utils').logger();
 //maximum member of users = customMaxParticipantsAllowed
 var customMaxParticipantsAllowed = 4;	// 방 인원수
+
+var isRoomAndUserListLog = true; // 사용자 & 방 리스트 로그
+var isErrorSendEmail = false;	// 에러 메일 전송
 
 
 module.exports = exports = function(app, socketCallback) {
@@ -72,9 +81,21 @@ module.exports = exports = function(app, socketCallback) {
         };
     }
 	
+	
+	// error handling
+    function errorHandlerFnt(msg, content, err){
+    	loggerSignaling.error('[ERROR] ' + msg);
+    	if(content != null) loggerSignaling.error('[ERROR] ' + content);
+    	if(err != null && err.stack != null) loggerSignaling.error('[ERROR] ' + err.stack);
+    	
+    	// 메일 발송
+    	if(isErrorSendEmail) send_email_utils.sendEmailFnt(err, logger, loggerSignaling, 'Signaling');
+    }
 
  // 방 목록 & 사용자 목록 확인
     function logForRoomAndUsers(textInfo){
+		if( !isRoomAndUserListLog ) return;
+		
     	for(var key in roomList){
 			for(var key1 in roomList[key]){
 				logger.info(textInfo + " - roomList["+key+"]["+key1+"][userid] is :: " + roomList[key][key1]['userid']);
@@ -87,7 +108,7 @@ module.exports = exports = function(app, socketCallback) {
 			}
         }
     }
-
+	
     function onConnection(socket) {
 		logForRoomAndUsers('onConnection start');
 	
@@ -118,7 +139,6 @@ module.exports = exports = function(app, socketCallback) {
         socket.userid = params.userid;
         appendUser(socket);
 
-	
 
         if (autoCloseEntireSession == 'false' && Object.keys(listOfUsers).length == 1) {
             socket.shiftModerationControlBeforeLeaving = true;
@@ -137,7 +157,7 @@ module.exports = exports = function(app, socketCallback) {
                     listOfUsers[user].socket.emit('extra-data-updated', socket.userid, extra);
                 }
             } catch (e) {
-                logger.ingo('extra-data-updated is :: ' +  e);
+                errorHandlerFnt('extra-data-updated is ::', null, e);
             }
         });
 
@@ -155,7 +175,7 @@ module.exports = exports = function(app, socketCallback) {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = true;
             } catch (e) {
-                logger.ingo('become-a-public-moderator is :: '+ e);
+                errorHandlerFnt('become-a-public-moderator is :: ', null, e);
             }
         });
 
@@ -176,7 +196,7 @@ module.exports = exports = function(app, socketCallback) {
                 if (!listOfUsers[socket.userid]) return;
                 listOfUsers[socket.userid].isPublic = false;
             } catch (e) {
-                logger.ingo('dont-make-me-moderator is :: '+ e);
+                errorHandlerFnt('dont-make-me-moderator is :: ', null, e);
             }
         });
 
@@ -196,13 +216,14 @@ module.exports = exports = function(app, socketCallback) {
 
                 callback(allPublicModerators);
             } catch (e) {
-                logger.ingo('get-public-moderators is :: ' + e);
+                errorHandlerFnt('get-public-moderators is :: ', null, e);
             }
         });
 
 
         // 방 존재유무 확인
 		socket.on('check-presence', function(roomid, callback) {
+			logger.info(' check-presence - roomid : ' + roomid + ' // ' + (!roomList[roomid]));
             if (!roomList[roomid]) {
         		callback(false);
         	} else {
@@ -213,29 +234,29 @@ module.exports = exports = function(app, socketCallback) {
 
 		// 방 생성 및 사용자 명 변경
         socket.on('changed-uuid', function(roomid, callback) {
-			var oldUserId = socket.userid;
-        	
-        	if( !roomList[roomid] ) roomList[roomid] = [];
-        	
-			roomList[roomid].push(socket);
-			
-//			logForRoomAndUsers('changed-uuid 1');
+			try{
+				var oldUserId = socket.userid;
+        		
+        		if( !roomList[roomid] ) roomList[roomid] = [];
+	        	
+				roomList[roomid].push(socket);
+				
+//				logForRoomAndUsers('changed-uuid 1');
 
-            callback = callback || function() {};
+	            callback = callback || function() {};
 
-            if (params.dontUpdateUserId) {
-                delete params.dontUpdateUserId;
-                return;
-            }
+    	        if (params.dontUpdateUserId) {
+        	        delete params.dontUpdateUserId;
+            	    return;
+            	}
 
-            try {
-                appendUser(socket);
+				appendUser(socket);
 
-//    			logForRoomAndUsers('changed-uuid 3');
-                
-                callback();
+//  	  		logForRoomAndUsers('changed-uuid 3');
+        	        
+            	callback();
             } catch (e) {
-                logger.info('changed-uuid e is :: ' +  e);
+               	errorHandlerFnt('changed-uuid e is :: ', null, e);
             }
         });
 
@@ -320,41 +341,44 @@ module.exports = exports = function(app, socketCallback) {
                     listOfUsers[message.sender].connectedWith[message.remoteUserId].emit(socketMessageEvent, message);
                 }
             } catch (e) {
-                logger.ingo('onMessageCallback is ::' + e);
+                errorHandlerFnt('onMessageCallback is :: ', null, e);
             }
         }
 
         // 방 접속
         function joinARoomNoOwner(message) {
-        	
-			var roomid = message.roomid;
-        	var currentRoom = roomList[roomid];
-        	var roomMemberCnt = currentRoom.length;
-			
-			// 인원수
-//        	logger.info('joinARoomNoOwner - roomMemberCnt : ' + roomMemberCnt);
-        	if (roomMemberCnt >= customMaxParticipantsAllowed) {
-            	var memCnt = roomMemberCnt + '/' + ( customMaxParticipantsAllowed );
+        	logger.info('joinARoomNoOwner - message.remoteUserId : ' + message.remoteUserId);
+			try{
+				var roomid = message.roomid;
+        		var currentRoom = roomList[roomid];
+        		var roomMemberCnt = currentRoom.length;
 				
-				socket.emit('room-full', roomid, memCnt);
-                return;
-            }
+				// 인원수
+//        		logger.info('joinARoomNoOwner - roomMemberCnt : ' + roomMemberCnt);
+        		if (roomMemberCnt >= customMaxParticipantsAllowed) {
+            		var memCnt = roomMemberCnt + '/' + ( customMaxParticipantsAllowed );
+					
+					socket.emit('room-full', roomid, memCnt);
+                	return;
+            	}
             
-            // 정보 전달 - peer 연결
-        	currentRoom.forEach(function(userSocket){
-            	console.log('---- : ' + userSocket.userid);
-            	if (params.oneToMany) return;
+            	// 정보 전달 - peer 연결
+        		currentRoom.forEach(function(userSocket){
+            		console.log('---- : ' + userSocket.userid);
+            		if (params.oneToMany) return;
+            		
+            		message.remoteUserId = userSocket.userid;
+            		userSocket.emit(socketMessageEvent, message);
+            	});
+
+				// 사용자 목록에 추가
+            	roomList[roomid].push(socket);
             	
-            	message.remoteUserId = userSocket.userid;
-            	userSocket.emit(socketMessageEvent, message);
-            });
-
-			// 사용자 목록에 추가
-            roomList[roomid].push(socket);
-            
-//			logForRoomAndUsers('joinARoomNoOwner');
-        }
-
+//				logForRoomAndUsers('joinARoomNoOwner');
+			} catch (e) {
+                errorHandlerFnt('joinARoomNoOwner is :: ', null, e);
+            }
+		}
 
 
         var numberOfPasswordTries = 0;
@@ -452,7 +476,7 @@ module.exports = exports = function(app, socketCallback) {
 
                 onMessageCallback(message);
             } catch (e) {
-                logger.ingo('on-socketMessageEvent is ::' + e);
+                errorHandlerFnt('on-socketMessageEvent is :: ', null, e);
             }
         });
 
@@ -465,7 +489,7 @@ module.exports = exports = function(app, socketCallback) {
                     delete socket.namespace.sockets[this.id];
                 }
             } catch (e) {
-                logger.ingo('disconnect is ::' + e);
+                errorHandlerFnt('disconnect socket is :: ', null, e);
             }
 
             try {
@@ -476,8 +500,9 @@ module.exports = exports = function(app, socketCallback) {
                     onMessageCallback(message);
                 }
             } catch (e) {
-                logger.ingo('disconnect is :: ' + e);
+                errorHandlerFnt('disconnect message is :: ', null, e);
             }
+
 
             try {
 				var roomid = socket.handshake.query['roomid'];
@@ -510,14 +535,19 @@ module.exports = exports = function(app, socketCallback) {
                     logger.info("roomList["+roomid+"] is delete " + roomList[roomid]);
         			delete roomList[roomid];
         		}
+        		
             } catch (e) {
-                logger.info('disconnect delete is :: ' + e);
+                errorHandlerFnt('disconnect delete is :: ', null, e);
             }
 
-            // 사용자삭제
-            delete listOfUsers[socket.userid];
-            
-//            logForRoomAndUsers('disconnect end');
+            try{
+            	// 사용자삭제
+            	delete listOfUsers[socket.userid];
+            	
+            	logForRoomAndUsers('disconnect end');
+            } catch (e) {
+            	errorHandlerFnt('disconnect delete listOfUsers is :: ', null, e);
+            }
         });
 
         if (socketCallback) {

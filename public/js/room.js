@@ -28,7 +28,7 @@ $(document).ready(function(){
 	checkingHasCameraNPermission(browserCheckReturnText());
 
 	// view 설정
-	if( !isUseReview ) $('#userReview').remove();
+	if( !isUseReview ) $('#userReview').empty();
 });
 
 
@@ -133,7 +133,12 @@ function checkingHasCameraNPermission(browserText){
 function messageWindowFnt(msg, url){
 	$('#messageAlert').css('display', 'block');
 	$('#messageTag').html(msg);
-	$('.messageBtn').attr('onclick', 'location.href="' + url + '"');
+	
+	if(url){
+		$('.messageBtn').attr('onclick', 'location.href="' + url + '"').val('메인으로');
+	}else{
+		$('.messageBtn').attr('onclick', "$('#messageAlert').css('display', 'none')").val('확인');
+	}
 	
 	$('#messageAlert').css('left', ($(window).width() - $('#messageAlert').width() ) / 2)
 					.css('top', ($(window).height() - $('#messageAlert').height() - 80 ) / 2).css('display', 'block');
@@ -204,7 +209,7 @@ document.getElementById('btn-leave-room').onclick = function() {
         localStream.stop();
     }
     
-     // 사용자 리뷰
+    // 사용자 리뷰
     if( isUseReview ) userReview();
     if( !isUseReview ) location.href = "https://" + location.host;
 };
@@ -526,7 +531,16 @@ connection.onstream = function(event) {
 			video.setAttribute('playsinline', true);
 		}
 	}
-	
+
+    // 음소거 상태인경우
+    if( !$('.buttonVolume').data('value') ){
+    	try {
+    		video.setAttributeNode(document.createAttribute('muted'));
+    	} catch (e) {
+    		video.setAttribute('muted', true);
+    	}
+    }
+    
     if(event.type === 'local') {
     	// 내 영상
         video.muted = true;

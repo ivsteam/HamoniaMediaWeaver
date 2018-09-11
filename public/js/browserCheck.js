@@ -6,7 +6,7 @@
 function browserCheck(isAlert){
 	
 	var text = browserCheckReturnText();
-	var msg = '하모니아는 크롬, 파이어폭스, 사파리 브라우저로 이용하실 수 있습니다.';
+	var msg = '하모니아는 크롬, 파이어폭스, 오페라, 사파리 브라우저로 이용하실 수 있습니다.';
 	var checkBrowser = true;
 	
 	
@@ -41,11 +41,11 @@ function browserCheck(isAlert){
 		
 		// android 브라우저별 사용여부 설정 - 주석 == 사용하는 브라우저
 		if(text == 'kakaotalk'){ checkBrowser = false; }
-		else if(text == 'Samsung')	{ checkBrowser = false; }
+//		else if(text == 'Samsung')	{ checkBrowser = false; }
 		else if(text == 'Ucbrowser'){ checkBrowser = false; }
 		else if(text == 'Edge')		{ checkBrowser = false; }
 		else if(text == 'OperaMini'){ checkBrowser = false; }
-		else if(text == 'Opera')	{ checkBrowser = false; }
+//		else if(text == 'Opera')	{ checkBrowser = false; }
 //		else if(text == 'Chrome')	{ checkBrowser = false; }
 		else if(text == 'Star Office'){ checkBrowser=false; }
 		else if(text == 'WebTV')	{ checkBrowser = false; }
@@ -53,7 +53,7 @@ function browserCheck(isAlert){
 		else if(text == 'Chimera')	{ checkBrowser = false; }
 		else if(text == 'NetPositive'){ checkBrowser=false; }
 		else if(text == 'Phoenix')	{ checkBrowser = false; }
-//		else if(text == 'Firefox')	{ checkBrowser = false; }
+		else if(text == 'Firefox')	{ checkBrowser = false; }
 		else if(text == 'Safari')	{ checkBrowser = false; }
 		else if(text == 'SkipStone'){ checkBrowser = false; }
 		else if(text == 'Netscape')	{ checkBrowser = false; }
@@ -69,7 +69,7 @@ function browserCheck(isAlert){
 	else if(text == 'Ucbrowser'){ checkBrowser = false; }
 	else if(text == 'Edge')		{ checkBrowser = false; }
 	else if(text == 'OperaMini'){ checkBrowser = false; }
-	else if(text == 'Opera')	{ checkBrowser = false; }
+//	else if(text == 'Opera')	{ checkBrowser = false; }
 //	else if(text == 'Chrome')	{ checkBrowser = false; }
 	else if(text == 'Star Office'){ checkBrowser=false; }
 	else if(text == 'WebTV')	{ checkBrowser = false; }
@@ -81,7 +81,7 @@ function browserCheck(isAlert){
 //	else if(text == 'Safari')	{ checkBrowser = false; }
 	else if(text == 'SkipStone'){ checkBrowser = false; }
 	else if(text == 'Netscape')	{ checkBrowser = false; }
-//	else if(text == 'Mozilla')	{ checkBrowser = false; }
+	else if(text == 'Mozilla')	{ checkBrowser = false; }
 	else if(text == 'other')	{ checkBrowser = false; }
 	
 	

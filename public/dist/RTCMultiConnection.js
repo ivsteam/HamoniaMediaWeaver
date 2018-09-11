@@ -78,6 +78,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         var mPeer = connection.multiPeersHandler;
 
         connection.socket.on('extra-data-updated', function(remoteUserId, extra) {
+        	if(isRTCMultiConnectionLogger) console.log('---- extra-data-updated');
+        	
             if (!connection.peers[remoteUserId]) return;
             connection.peers[remoteUserId].extra = extra;
 
@@ -617,6 +619,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         this.createNewPeer = function(remoteUserId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.createNewPeer');
+        	
             if (connection.maxParticipantsAllowed <= connection.getAllParticipants().length) {
                 return;
             }
@@ -646,6 +650,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         this.createAnsweringPeer = function(remoteSdp, remoteUserId, userPreferences) {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.createAnsweringPeer');
+        	
             userPreferences = connection.setUserPreferences(userPreferences || {}, remoteUserId);
 
             var localConfig = this.getLocalConfig(remoteSdp, remoteUserId, userPreferences);
@@ -654,6 +660,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         this.renegotiatePeer = function(remoteUserId, userPreferences, remoteSdp) {
+        	if(isRTCMultiConnectionLogger) console.log('---- this.renegotiatePeer');
+        	
             if (!connection.peers[remoteUserId]) {
                 if (connection.enableLogs) {
                     console.error('Peer (' + remoteUserId + ') does not exist. Renegotiation skipped.');
@@ -2849,8 +2857,9 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             if (!window.enableAdapter) {
                 return oldAddRemoteSdp(remoteSdp, cb);
             }
-//			console.log("111111111111");
-//			if (DetectRTC.browser.name !== 'Safari') {
+            
+            // 주석해제할 경우 safari firefox 간의 영상통화가 되지 않음 
+//			if (DetectRTC.browser.name !== 'Safari') {	
                 remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
 //			}
             
@@ -4582,7 +4591,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
         };
 
         function onUserLeft(remoteUserId) {
-        	if(isRTCMultiConnectionLogger) console.log('---- onUserLeft');
+        	if(isRTCMultiConnectionLogger) console.log('---- onUserLeft : ' + remoteUserId);
             connection.deletePeer(remoteUserId);
         }
 
@@ -4702,8 +4711,8 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 connection.isInitiator = true;
                 
                 var oldUserId = connection.userid;
-//                connection.userid = connection.sessionid = connection.sessionid;
-//                connection.userid += '';
+//				connection.userid = connection.sessionid = connection.sessionid;
+//				connection.userid += '';
                 
                 connection.socket.emit('changed-uuid', roomid);
                 
@@ -4724,7 +4733,6 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                     // tell user if room was opened
                     callback(isRoomExist, roomid);
                 });
-                
             });
         };
 
@@ -5160,7 +5168,6 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
 
         connection.processSdp = function(sdp) {
 
-			
 			console.log("========================1");
 			console.log("=========sdp===============" + sdp);
 			console.log("========================3");

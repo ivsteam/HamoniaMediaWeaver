@@ -11,13 +11,9 @@
 
 ![supported](https://github.com/ivsteam/HamoniaMediaWeaver/blob/master/webrtc-supported.png)
 
-- Desktop PC. Microsoft Edge 12. Google Chrome 28. Mozilla Firefox 22. Safari 11. Opera 18. Vivaldi 1.9.
-- Android. Google Chrome 28 (enabled by default since 29) Mozilla Firefox 24. Opera Mobile 12.
-- Chrome OS.
-- Firefox OS.
-- Blackberry 10.
+- Desktop PC. Google Chrome 28. Mozilla Firefox 22. Safari 11. Opera 18. 
+- Android. Google Chrome 28 (enabled by default since 29) Opera Mobile 12.
 - iOS 11. MobileSafari/WebKit.
-- Tizen 3.0.
 
 ## 사용법
 

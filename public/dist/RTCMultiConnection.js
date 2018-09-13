@@ -2858,8 +2858,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
                 return oldAddRemoteSdp(remoteSdp, cb);
             }
             
-            // 주석해제할 경우 safari firefox 간의 영상통화가 되지 않음 
-//			if (DetectRTC.browser.name !== 'Safari') {	
+//			if (DetectRTC.browser.name !== 'Safari') {
                 remoteSdp.sdp = connection.processSdp(remoteSdp.sdp);
 //			}
             
@@ -5166,6 +5165,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             video: 'VP9'
         };
 
+        // 코덱
         connection.processSdp = function(sdp) {
 
 			console.log("========================1");
@@ -6139,6 +6139,7 @@ window.RTCMultiConnection = function(roomid, forceOptions) {
             }
         };
 
+        // 다른사람이 정보를 업데이트 하자 마자 모든 참가자에게 발동
         connection.onExtraDataUpdated = function(event) {
         	if(isRTCMultiConnectionLogger) console.log('---- connection.onExtraDataUpdated');
         	

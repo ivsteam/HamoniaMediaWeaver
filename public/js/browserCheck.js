@@ -41,7 +41,7 @@ function browserCheck(isAlert){
 		
 		// android 브라우저별 사용여부 설정 - 주석 == 사용하는 브라우저
 		if(text == 'kakaotalk'){ checkBrowser = false; }
-//		else if(text == 'Samsung')	{ checkBrowser = false; }
+		else if(text == 'Samsung')	{ checkBrowser = false; }
 		else if(text == 'Ucbrowser'){ checkBrowser = false; }
 		else if(text == 'Edge')		{ checkBrowser = false; }
 		else if(text == 'OperaMini'){ checkBrowser = false; }

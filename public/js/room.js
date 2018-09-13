@@ -513,6 +513,7 @@ connection.onstream = function(event) {
     event.mediaElement.removeAttribute('src');
     event.mediaElement.removeAttribute('srcObject');
 
+    var id;	// 대화명 전송용
     var width;
     var video = document.createElement('video');
     var text = browserCheckReturnText();
@@ -613,13 +614,15 @@ connection.onstream = function(event) {
     	width = parseInt(connection.videosContainer.clientWidth / 2) - 20;
 //    	width = 15;
     	
+    	// 대화명 전송용 설정
     	// changeNameValue + user .media-container id + changeNameValue + newUserName
-    	connection.send(
-    			changeNameValue 
-    			+ escape( $('#myVideo').parent('.media-box').parent('.media-container').attr('id') ) 
-    			+ changeNameValue 
-    			+ escape(userName)
-    	);
+    	id = $('#myVideo').parent('.media-box').parent('.media-container').attr('id');
+    	
+    	if(DetectRTC.browser.name === 'Firefox') {
+    		// firefox 인 경우 앞 뒤로 {, } 가 붙어서 변경
+    		if(id.indexOf('{') == 0) id = '%7B' + id.split('{')[1];
+    		if(id.indexOf('}') == (id.length - '}'.length)) id = id.split('}')[0] + '%7D';
+    	}
     }
     
     video.srcObject = event.stream;
@@ -656,6 +659,13 @@ connection.onstream = function(event) {
    	$('#myVideo')[0].muted = true;
     
     refreshVideoView(true);
+    
+    // 설정된 대화명이 있으면 전송
+    if(id) {
+    	setTimeout(function() {
+    		connection.send( changeNameValue + escape(id) + changeNameValue + escape(userName) );
+    	}, 1000);
+    }
 };
 
 

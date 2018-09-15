@@ -736,6 +736,9 @@ connection.onclose = function(event) {
     // safari video delete
     $('#'+event.userid).parent('.media-box').parent('.media-container').remove();
 	refreshVideoView(false);
+
+	// 인원수 체크
+	$('#userCnt').text(connection.peers.getLength()+1);
 };
 
 // 방장 종료시 실행

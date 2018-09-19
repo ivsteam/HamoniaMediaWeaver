@@ -21,13 +21,29 @@
 2) 개설자는 방 주소를 대화하고 싶은 다른 참여자와 공유하세요.
 3) 참여자는 방 개설자에게 전달받은 주소를 웹브라우저로 붙여넣기 합니다.
 
+
+## 서버 구축하기
+### 리눅스
+1. 적절한 경로에서 아래의 명령어를 입력합니다.
 ```bash
  - git clone https://github.com/ivsteam/HamoniaMediaWeaver.git
  - cd HamoniaMediaWeaver-master
  - sudo npm install 
  - sudo node server.js
- - https://localhost
 ```
+2. 브라우저로 접속하여 확인합니다.
+
+
+### 윈도우
+1. 프로젝트의 코드를 다운로드 받아 적절한 경로에 압축을 풉니다.
+2. cmd 창을 실행시켜 압축을 푼 경로로 이동합니다.
+3. 아래의 명령어를 입력합니다
+```bash
+ - npm install 
+ - node server.js
+```
+4. https://localhost 로 접속하여 확인합니다.
+
 
 ## WebRTC Stream Resolution 
 ```bash

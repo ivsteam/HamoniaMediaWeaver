@@ -7,6 +7,7 @@
 [인베슘](http://invesume.com) 에서는 하모니아 미디어 위버 서비스를 누구나 사용할 수 있게 무료로 제공하고 있습니다.
 별도의 프로그램 설치가 필요없이, 웹브라우저만 있으면 어디서든 서로 영상대화가 가능합니다.
 
+
 ## 지원되는 웹브라우저
 
 ![supported](https://github.com/ivsteam/HamoniaMediaWeaver/blob/master/webrtc-supported.png)
@@ -14,6 +15,7 @@
 - Desktop PC. Google Chrome 28. Mozilla Firefox 22. Safari 11. Opera 18. 
 - Android. Google Chrome 28 (enabled by default since 29) Opera Mobile 12.
 - iOS 11. MobileSafari/WebKit.
+
 
 ## 사용법
 
@@ -115,17 +117,21 @@ http_app.post('/translate', function(req, res){
 
 이 프로젝트와 관련하여 이슈는 [상단의 이슈 탭](https://github.com/ivsteam/HamoniaMediaWeaver/issues)을 이용해 주세요.
 
+
 ## 참여하기
 
 참여자 지침 [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) 을 먼저 읽어보시고, 깃헙의 풀리퀘스트 과정을 따라 제출해주세요.
+
 
 ## 릴리즈 관리
 
 [릴리즈 목록](https://github.com/ivsteam/HamoniaMediaWeaver/tags) 에서 확인 가능합니다.
 
+
 ## 개발에 참여하신 분
 
 이 프로젝트에 참여한 개발자들을 보시려면 [contributors](https://github.com/ivsteam/HamoniaMediaWeaver/contributors) 에서 확인하세요.
+
 
 ## 라이선스
 

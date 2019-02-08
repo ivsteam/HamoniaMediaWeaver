@@ -21,6 +21,9 @@
 2) 개설자는 방 주소를 대화하고 싶은 다른 참여자와 공유하세요.
 3) 참여자는 방 개설자에게 전달받은 주소를 웹브라우저로 붙여넣기 합니다.
 
+
+## 직접 서버에 구축해서 사용하는 경우
+
 ```bash
  - git clone https://github.com/ivsteam/HamoniaMediaWeaver.git
  - cd HamoniaMediaWeaver-master

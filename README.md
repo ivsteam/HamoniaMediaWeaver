@@ -117,3 +117,4 @@ http_app.post('/translate', function(req, res){
 ## 라이선스
 
 이 프로젝트는 아파치 2.0 라이선스로 배포됩니다. 자세한 라이선스 내용은 [LICENSE](LICENSE) 파일을 확인하세요.
+

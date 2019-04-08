@@ -515,19 +515,32 @@ module.exports = exports = function(app, socketCallback) {
 	        			
 	        			if(roomList[roomid][i]['userid'] == socket.userid){
 							// 첫 번째 제거
-	        				if(i == 0) roomList[roomid].shift();
+	        				if(i == 0) {
+	        					logger.info("-- delete(i == 0)");
+	        					roomList[roomid].shift();
+	        				}
 
-							// 마지막 제거
-	        				else if (i == roomList[roomid].length-1) roomList[roomid].pop();
+	        				// 마지막 제거
+	        				else if (i == roomList[roomid].length-1){
+	        					logger.info("-- delete(i == roomList[roomid].length-1)");
+	        					roomList[roomid].pop();
+	        				}
 
 							// 그 외 제거
-	        				else roomList[roomid].splice(i, i-1);
-	        				
-	        				logger.info("roomList["+roomid+"] is delete ["+i+"]");
-//	        				delete roomList[roomid][i];
+	        				else{
+	        					logger.info("-- delete else");
+	        					roomList[roomid].splice(i, i);
+	        				}
 	        				break;
 	        			}
 	        		}
+                  
+                  	// 해당 방의 접속자 확인
+	        		logger.info(" ---- disconnect - delete after - room user list log start ---- ");
+	        		for(var i=0; i<roomList[roomid].length ;++i){
+	        			logger.info("roomList["+roomid+"]["+i+"]['userid'] : " + roomList[roomid][i]['userid']);
+	        		}
+	        		logger.info(" ---- disconnect - delete after - room user list log end ---- ");
         		}
         		
         		// 사용자가 없는 경우 방 삭제
